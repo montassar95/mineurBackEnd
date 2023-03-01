@@ -73,11 +73,11 @@
     <version>2.0.0.Final</version>
      </dependency>
      
-     <dependency>
-	<groupId>com.itextpdf</groupId>
-	<artifactId>layout</artifactId>
+<!--      <dependency> -->
+<!-- 	<groupId>com.itextpdf</groupId> -->
+<!-- 	<artifactId>layout</artifactId> -->
  
-</dependency>
+<!-- </dependency> -->
      
 <!--      <dependency> -->
 <!--     <groupId>com.lowagie</groupId> -->
