@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: mineur-services
-        image: 090380/mineur-services:1.01
+        image: 090380/mineur-services:1.02
         ports:
         - containerPort: 8080
 
