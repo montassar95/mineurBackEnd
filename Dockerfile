@@ -15,9 +15,9 @@ ENV PATH $CATALINA_HOME/bin:$PATH
 RUN set -eux; \
   mkdir -p "$CATALINA_HOME"; \
   cd /tmp; \
-  wget -q "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.71/bin/apache-tomcat-9.0.71.tar.gz"; \
-  tar -xzf apache-tomcat-9.0.71.tar.gz -C "$CATALINA_HOME" --strip-components=1; 
-#  rm apache-tomcat-9.0.71.tar.gz; 
+  wget -q "https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.72/bin/apache-tomcat-9.0.72.tar.gz"; \
+  tar -xzf apache-tomcat-9.0.72.tar.gz -C "$CATALINA_HOME" --strip-components=1; 
+#  rm apache-tomcat-9.0.72.tar.gz; 
 #  chmod +x -R "$CATALINA_HOME/bin"; \
 #  chown -R tomcat:tomcat "$CATALINA_HOME"
 
