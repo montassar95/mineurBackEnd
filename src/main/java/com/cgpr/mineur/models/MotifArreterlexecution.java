@@ -7,13 +7,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "motArtlex")
-public class MotifArreterlexecution {
+public class MotifArreterlexecution  implements Serializable {
 
 	
 	@Id

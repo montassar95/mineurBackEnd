@@ -15,62 +15,48 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
- 
 import com.cgpr.mineur.models.ApiResponse;
- 
+
 import com.cgpr.mineur.models.TitreAccusation;
 import com.cgpr.mineur.repository.TitreAccusationRepository;
+import com.cgpr.mineur.service.TitreAccusationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/titreAccusation")
 public class TitreAccusationController {
 	@Autowired
-	private TitreAccusationRepository titreAccusationRepository;
-
- 
-
- 
+	private TitreAccusationService titreAccusationServicey;
 
 	@GetMapping("/findTitreAccusationByIdTypeAffaire/{id}")
-	public ApiResponse<TitreAccusation> findTitreAccusationByIdTypeAffaire(@PathVariable("id") long id) {
-		List<TitreAccusation>  accusationData = titreAccusationRepository.findTitreAccusationByIdTypeAffaire(id);
+	public ApiResponse<List<TitreAccusation>> findTitreAccusationByIdTypeAffaire(@PathVariable("id") long id) {
+		List<TitreAccusation> accusationData = titreAccusationServicey.findTitreAccusationByIdTypeAffaire(id);
 		if (accusationData != null) {
 			return new ApiResponse<>(HttpStatus.OK.value(), "accusationData fetched suucessfully", accusationData);
 		} else {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "accusationData Not FOund", null);
 		}
 	}
-	
+
 	@GetMapping("/all")
 	public ApiResponse<List<TitreAccusation>> list() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				titreAccusationRepository.findAllByOrderByIdAsc());
+				titreAccusationServicey.list());
 	}
 
-	
-	
 	@GetMapping("/getone/{id}")
 	public ApiResponse<TitreAccusation> getById(@PathVariable("id") long id) {
-		Optional<TitreAccusation> Data = titreAccusationRepository.findById(id);
-		if (Data.isPresent()) {
+		 TitreAccusation  Data = titreAccusationServicey.getById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
-	
-	
-	 
-	
- 
 
 	@PostMapping("/add")
 	public ApiResponse<TitreAccusation> save(@RequestBody TitreAccusation causeDeces) {
 
 		try {
-			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					titreAccusationRepository.save(causeDeces));
+			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully", titreAccusationServicey.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -81,7 +67,7 @@ public class TitreAccusationController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					titreAccusationRepository.save(causeDeces));
+					titreAccusationServicey.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -91,12 +77,11 @@ public class TitreAccusationController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			titreAccusationRepository.deleteById(id);
+			titreAccusationServicey.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
 		}
 	}
- 
-	 
+
 }

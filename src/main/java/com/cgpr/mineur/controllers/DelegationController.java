@@ -20,40 +20,39 @@ import com.cgpr.mineur.models.CommentEchapper;
 import com.cgpr.mineur.models.Deces;
 import com.cgpr.mineur.models.Delegation;
 import com.cgpr.mineur.repository.DelegationRepository;
+import com.cgpr.mineur.service.DelegationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/delegation")
 public class DelegationController {
 	@Autowired
-	private DelegationRepository delegationRepository;
+	private DelegationService delegationService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<Delegation>> list() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", delegationRepository.findAllByOrderByIdAsc());
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", delegationService.list());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<Delegation> getById(@PathVariable("id") long id) {
-		Optional<Delegation> Data = delegationRepository.findById(id);
-		if (Data.isPresent()) {
+		 Delegation  Data = delegationService.getById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
 
 	@GetMapping("/getDelegationByGouv/{id}")
 	public ApiResponse<List<Delegation>> getDelegationByGouv(@PathVariable("id") long id) {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				delegationRepository.getDelegationByGouv(id));
+				delegationService.getDelegationByGouv(id));
 	}
 
 	@GetMapping("/findByGouvernorat/{idG}/{idD}")
 	public ApiResponse<Delegation> findByGouvernorat(@PathVariable("idG") long idG, @PathVariable("idD") long idD) {
 
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				delegationRepository.findByGouvernorat(idG, idD));
+				delegationService.findByGouvernorat(idG, idD));
 	}
 
 	@PostMapping("/add")
@@ -61,7 +60,7 @@ public class DelegationController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "delegation saved Successfully",
-					delegationRepository.save(delegation));
+					delegationService.save(delegation));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "delegation not saved", null);
 		}
@@ -72,7 +71,7 @@ public class DelegationController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					delegationRepository.save(causeDeces));
+					delegationService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -82,7 +81,7 @@ public class DelegationController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			delegationRepository.deleteById(id);
+			delegationService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);

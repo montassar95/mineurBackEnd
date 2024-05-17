@@ -16,9 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cgpr.mineur.models.ApiResponse;
- 
+
 import com.cgpr.mineur.models.MotifArreterlexecution;
 import com.cgpr.mineur.repository.MotifArreterlexecutionRepository;
+import com.cgpr.mineur.service.MotifArreterlexecutionService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -26,38 +27,28 @@ import com.cgpr.mineur.repository.MotifArreterlexecutionRepository;
 public class MotifArreterlexecutionController {
 
 	@Autowired
-	private MotifArreterlexecutionRepository motifArreterlexecutionRepository;
-
-	 
-	 
+	private MotifArreterlexecutionService motifArreterlexecutionService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<MotifArreterlexecution>> listMotifArreterlexecution() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", motifArreterlexecutionRepository.findAllByOrderByIdAsc());
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
+				motifArreterlexecutionService.listMotifArreterlexecution());
 	}
 
- 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<MotifArreterlexecution> getById(@PathVariable("id") long id) {
-		Optional<MotifArreterlexecution> Data = motifArreterlexecutionRepository.findById(id);
-		if (Data.isPresent()) {
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
-	}
-	
-	
+		 MotifArreterlexecution  Data = motifArreterlexecutionService.getById(id);
 	 
-	
- 
+			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+		  
+	}
 
 	@PostMapping("/add")
 	public ApiResponse<MotifArreterlexecution> save(@RequestBody MotifArreterlexecution causeDeces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					motifArreterlexecutionRepository.save(causeDeces));
+					motifArreterlexecutionService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -68,7 +59,7 @@ public class MotifArreterlexecutionController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					motifArreterlexecutionRepository.save(causeDeces));
+					motifArreterlexecutionService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -78,13 +69,11 @@ public class MotifArreterlexecutionController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			motifArreterlexecutionRepository.deleteById(id);
+			motifArreterlexecutionService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
 		}
 	}
- 
- 
- 
+
 }

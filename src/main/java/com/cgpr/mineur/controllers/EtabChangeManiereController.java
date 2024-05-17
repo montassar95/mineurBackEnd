@@ -18,30 +18,29 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.EtabChangeManiere;
 import com.cgpr.mineur.repository.EtabChangeManiereRepository;
+import com.cgpr.mineur.service.EtabChangeManiereService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/etabChangeManiere")
 public class EtabChangeManiereController {
 	@Autowired
-	private EtabChangeManiereRepository etabChangeManiereRepository;
+	private EtabChangeManiereService etabChangeManiereService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<EtabChangeManiere>> listEtablissement() {
 		
 		return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement List Fetched Successfully.",
-				etabChangeManiereRepository.findAll());
+				etabChangeManiereService.listEtablissement());
 	}
 	 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<EtabChangeManiere> getEtablissementById(@PathVariable("id") String id) {
-		Optional<EtabChangeManiere> etablissementData = etabChangeManiereRepository.findById(id);
-		if (etablissementData.isPresent()) {
+		 EtabChangeManiere  etablissementData = etabChangeManiereService.getEtablissementById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully",
-					etabChangeManiereRepository.findById(id));
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "ETablissement Not FOund", null);
-		}
+					etablissementData);
+		 
 	}
 
 	@PostMapping("/add")
@@ -49,7 +48,7 @@ public class EtabChangeManiereController {
 		System.out.print(etablissement.toString());
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement saved Successfully",
-					etabChangeManiereRepository.save(etablissement));
+					etabChangeManiereService.save(etablissement));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Etablissement not saved", null);
 		}
@@ -60,7 +59,7 @@ public class EtabChangeManiereController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "etablissement updated successfully.",
-					etabChangeManiereRepository.save(etablissement));
+					etabChangeManiereService.update(etablissement));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "etablissement not Saved", null);
 		}
@@ -70,7 +69,7 @@ public class EtabChangeManiereController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") String id) {
 		try {
-			etabChangeManiereRepository.deleteById(id);
+			etabChangeManiereService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "etablissement  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "etablissement not Deleted", null);

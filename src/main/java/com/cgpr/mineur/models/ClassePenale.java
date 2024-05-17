@@ -3,6 +3,9 @@ package com.cgpr.mineur.models;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,9 +16,8 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "claPen")
-public class ClassePenale {
+public class ClassePenale  implements Serializable{
 	@Id
-	//@GeneratedValue
 	private long id;
 	 
 

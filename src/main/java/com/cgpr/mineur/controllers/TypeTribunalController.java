@@ -19,28 +19,27 @@ import com.cgpr.mineur.models.ApiResponse;
  
 import com.cgpr.mineur.models.TypeTribunal;
 import com.cgpr.mineur.repository.TypeTribunalRepository;
+import com.cgpr.mineur.service.TypeTribunalService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/typeTribunal")
 public class TypeTribunalController {
 	@Autowired
-	private TypeTribunalRepository typeTribunalRepository;
+	private TypeTribunalService typeTribunalService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<TypeTribunal>> list() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				typeTribunalRepository.findAllByOrderByIdAsc());
+				typeTribunalService.list());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<TypeTribunal> getById(@PathVariable("id") long id) {
-		Optional<TypeTribunal> Data = typeTribunalRepository.findById(id);
-		if (Data.isPresent()) {
+		 TypeTribunal  Data = typeTribunalService.getById(id);
+	 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
 	
 	
@@ -52,7 +51,7 @@ public class TypeTribunalController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					typeTribunalRepository.save(causeDeces));
+					typeTribunalService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -63,7 +62,7 @@ public class TypeTribunalController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					typeTribunalRepository.save(causeDeces));
+					typeTribunalService.update(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -73,7 +72,7 @@ public class TypeTribunalController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			typeTribunalRepository.deleteById(id);
+			typeTribunalService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);

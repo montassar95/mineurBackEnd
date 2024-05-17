@@ -1,5 +1,6 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 
@@ -14,6 +15,13 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.itextpdf.text.Phrase;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +32,7 @@ import javax.persistence.FetchType;
 @Data
 @Entity
 @Table(name = "arr")
-public class Arrestation {
+public class Arrestation  implements Serializable {
 	 
  
  
@@ -36,6 +44,18 @@ public class Arrestation {
 	@EmbeddedId
 	private ArrestationId arrestationId;
 
+	 
+	
+     @JsonIgnoreProperties({"arrestation" })
+      @Transient
+      private List<Affaire> affaires;
+	
+	
+	
+	
+	
+	
+	
 	@ManyToOne
 	@JoinColumn(name = "enfFK")
 	private Enfant enfant;
@@ -74,7 +94,35 @@ public class Arrestation {
 	private int totaleEchappes;
 	private int totaleResidence;
 	
-//	, cascade = CascadeType.REMOVE
-	//@OneToMany(mappedBy = "arrestation", fetch = FetchType.EAGER)
-	//private List<Affaire> affaires;
+	
+	
+	
+	
+  
+   
+	 
+	  
+	  
+ 	   @Transient
+	   private   java.util.Date dateDebut;
+	   
+ 	   @Transient
+	   private   java.util.Date dateFin;
+	   
+ 	   @Transient
+	   private Echappes echappe ;
+	   
+	   
+ 	   @Transient
+	   private String situationJudiciaire ;
+	   
+	   
+ 	   @Transient
+	   private int  age ;
+	   
+	   
+//	   @Transient
+//	   private String  visite ;
+	   
+ 
 }

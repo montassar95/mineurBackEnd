@@ -18,6 +18,7 @@ import com.cgpr.mineur.models.Liberation;
 import com.cgpr.mineur.models.LiberationId;
 import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.LiberationRepository;
+import com.cgpr.mineur.service.LiberationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -25,48 +26,27 @@ import com.cgpr.mineur.repository.LiberationRepository;
 public class LiberationController {
 
 	@Autowired
-	private LiberationRepository liberationRepository;
+	private LiberationService liberationService;
 
- 
-	
-	@Autowired
-	private ArrestationRepository arrestationRepository;
-	 
+//	@Autowired
+//	private ArrestationRepository arrestationRepository;
 
 	@GetMapping("/all")
 	public ApiResponse<List<Liberation>> listLiberation() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", liberationRepository.findAll());
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", liberationService.listLiberation());
 	}
 
  
-//	@PostMapping("/add")
-//	public ApiResponse<Liberation> save(@RequestBody Liberation liberation) {
-//
-//		try {
-//		 
-//		
-//			
-//			arrestationRepository.save(liberation.getArrestation());
-//		
-//			
-// 			return new ApiResponse<>(HttpStatus.OK.value(), "Liberation saved Successfully",
-// 					liberationRepository.save(liberation));
-//		} catch (Exception e) {
-//			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Arrestation not saved", null);
-//		}
-//	}
-	
+
 	@GetMapping("/getLiberationById/{idEnfant}/{numOrdinale}")
 	public ApiResponse<Liberation> getLiberationById(@PathVariable("idEnfant") String idEnfant,
-			                                         @PathVariable("numOrdinale") long numOrdinale) {
-		
-		LiberationId liberationId = new LiberationId(idEnfant,numOrdinale);
-		Optional<Liberation> cData = liberationRepository.findById(liberationId);
-		if (cData.isPresent()) {
+			@PathVariable("numOrdinale") long numOrdinale) {
+
+		 
+		 Liberation  cData = liberationService.getLiberationById(idEnfant, numOrdinale);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", cData);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
- 
+
 }

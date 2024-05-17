@@ -19,60 +19,24 @@ import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.repository.TransfertRepository;
+import com.cgpr.mineur.service.TransfertService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/transfert")
 public class TransfertController {
 
-	
 	@Autowired
-	private TransfertRepository transfertRepository;
-
-	@Autowired
-	private AffaireRepository affaireRepository;
-
-	 
- 
-	@Autowired
-	private ArrestationRepository arrestationRepository;
- 
-	
-	@Autowired
-	private  DocumentRepository documentRepository;
+	private TransfertService transfertServic;
 
  
+
 	@PostMapping("/add")
 	public ApiResponse<Transfert> save(@RequestBody Transfert transfert) {
 
-		System.out.println(transfert.toString());
+		 
+		Transfert c = transfertServic.save(transfert);
 
-		System.out.println(transfert.getDocumentId().toString());
-
-		if (transfert.getAffaire().getAffaireLien() != null) {
-			transfert.getAffaire().getAffaireLien().setStatut(2);
-			System.out.println("=========================debut lien ==================================");
-			System.out.println(transfert.getAffaire().getAffaireLien().toString());
-			transfert.getAffaire().setNumOrdinalAffaireByAffaire(
-					transfert.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
-			
-			transfert.getAffaire().setTypeDocument("T");
-			transfert.getAffaire().setTypeAffaire(transfert.getAffaire().getAffaireLien().getTypeAffaire());
-			affaireRepository.save(transfert.getAffaire().getAffaireLien());
-			System.out.println("============================fin lien===============================");
-		}
-		System.out.println("================================debut affaire ===========================");
-		System.out.println(transfert.getAffaire().toString());
-		transfert.getAffaire().setTypeDocument("T");
-		affaireRepository.save(transfert.getAffaire());
-		System.out.println("==================================fin affaire=========================");
-		
-		transfert.setTypeAffaire(transfert.getAffaire().getTypeAffaire());
-		
-		System.out.println(transfert);
-		Transfert c = transfertRepository.save(transfert);
-		
- 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully", null);
 		} catch (Exception e) {
@@ -80,6 +44,5 @@ public class TransfertController {
 		}
 
 	}
- 
- 
+
 }

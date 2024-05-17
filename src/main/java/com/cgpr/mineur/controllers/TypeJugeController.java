@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.TypeJuge;
 import com.cgpr.mineur.repository.TypeJugeRepository;
+import com.cgpr.mineur.service.TypeJugeService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -25,21 +26,19 @@ import com.cgpr.mineur.repository.TypeJugeRepository;
 public class TypeJugeController {
 
 	@Autowired
-	private TypeJugeRepository typeJugeRepository;
+	private TypeJugeService typeJugeService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<TypeJuge>> listTypeJuge() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", typeJugeRepository.findAllByOrderByIdAsc());
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", typeJugeService.listTypeJuge());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<TypeJuge> getTypeJugeById(@PathVariable("id") long id) {
-		Optional<TypeJuge> typeData = typeJugeRepository.findById(id);
-		if (typeData.isPresent()) {
+	 TypeJuge  typeData = typeJugeService.getTypeJugeById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully", typeData);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "typeData Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -47,7 +46,7 @@ public class TypeJugeController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeJuge saved Successfully",
-					typeJugeRepository.save(typeJuge));
+					typeJugeService.save(typeJuge));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeJuge not saved", null);
 		}
@@ -58,7 +57,7 @@ public class TypeJugeController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeJuge updated successfully.",
-					typeJugeRepository.save(typeJuge));
+					typeJugeService.save(typeJuge));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeJuge not Saved", null);
 		}
@@ -68,7 +67,7 @@ public class TypeJugeController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			typeJugeRepository.deleteById(id);
+			typeJugeService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeJuge  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeJuge not Deleted", null);

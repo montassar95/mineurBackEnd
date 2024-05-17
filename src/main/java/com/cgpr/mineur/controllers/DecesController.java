@@ -22,35 +22,34 @@ import com.cgpr.mineur.models.Enfant;
 import com.cgpr.mineur.models.Gouvernorat;
 import com.cgpr.mineur.repository.DecesRepository;
 import com.cgpr.mineur.repository.GouvernoratRepository;
+import com.cgpr.mineur.service.DecesService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/deces")
 public class DecesController {
 	@Autowired
-	private DecesRepository decesRepository;
+	private DecesService decesService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<Deces>> list() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				decesRepository.findAll());
+				decesService.list());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<Deces> getById(@PathVariable("id") long id) {
-		Optional<Deces> Data = decesRepository.findById(id);
-		if (Data.isPresent()) {
+		 Deces  Data = decesService.getById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
 	
 	@PostMapping("/add")
 	public ApiResponse<Deces> save(@RequestBody Deces deces) {
 
 		try {
-			return new ApiResponse<>(HttpStatus.OK.value(), "Enfant saved Successfully", decesRepository.save(deces));
+			return new ApiResponse<>(HttpStatus.OK.value(), "Enfant saved Successfully", decesService.save(deces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Enfant not saved", null);
 		}
@@ -67,7 +66,7 @@ public class DecesController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					decesRepository.save(causeDeces));
+					decesService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -77,7 +76,7 @@ public class DecesController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			decesRepository.deleteById(id);
+			decesService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);

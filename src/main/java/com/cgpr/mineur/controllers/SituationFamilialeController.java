@@ -19,28 +19,27 @@ import com.cgpr.mineur.models.ApiResponse;
 
 import com.cgpr.mineur.models.SituationFamiliale;
 import com.cgpr.mineur.repository.SituationFamilialeRepository;
+import com.cgpr.mineur.service.SituationFamilialeService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/situationFamiliale")
 public class SituationFamilialeController {
 	@Autowired
-	private SituationFamilialeRepository situationFamilialeRepository;
+	private SituationFamilialeService situationFamilialeService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<SituationFamiliale>> listNationalite() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				situationFamilialeRepository.findAllByOrderByIdAsc());
+				situationFamilialeService.listNationalite());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<SituationFamiliale> getById(@PathVariable("id") long id) {
-		Optional<SituationFamiliale> Data = situationFamilialeRepository.findById(id);
-		if (Data.isPresent()) {
+		 SituationFamiliale  Data = situationFamilialeService.getById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -48,7 +47,7 @@ public class SituationFamilialeController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully",
-					situationFamilialeRepository.save(situationFamiliale));
+					situationFamilialeService.save(situationFamiliale));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not saved", null);
 		}
@@ -59,7 +58,7 @@ public class SituationFamilialeController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					situationFamilialeRepository.save(situationFamiliale));
+					situationFamilialeService.update(situationFamiliale));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  not Saved", null);
 		}
@@ -69,7 +68,7 @@ public class SituationFamilialeController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			situationFamilialeRepository.deleteById(id);
+			situationFamilialeService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "   Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not Deleted", null);

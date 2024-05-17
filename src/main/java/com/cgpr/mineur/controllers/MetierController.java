@@ -20,28 +20,27 @@ import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.Metier;
 
 import com.cgpr.mineur.repository.MetierRepository;
+import com.cgpr.mineur.service.MetierService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/metier")
 public class MetierController {
 	@Autowired
-	private MetierRepository metierRepository;
+	private MetierService  metierService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<Metier>> list() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				metierRepository.findAllByOrderByIdAsc());
+				metierService.list());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<Metier> getById(@PathVariable("id") long id) {
-		Optional<Metier> Data = metierRepository.findById(id);
-		if (Data.isPresent()) {
+		 Metier  Data = metierService.getById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
 
 	
@@ -52,7 +51,7 @@ public class MetierController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					metierRepository.save(gouv));
+					metierService.save(gouv));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -63,7 +62,7 @@ public class MetierController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					metierRepository.save(gouv));
+					metierService.save(gouv));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -73,7 +72,7 @@ public class MetierController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			metierRepository.deleteById(id);
+			metierService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);

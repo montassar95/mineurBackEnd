@@ -7,13 +7,16 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "gra")
-public class Grade {
+public class Grade  implements Serializable {
 	@Id
 	@GeneratedValue
 	private long id;

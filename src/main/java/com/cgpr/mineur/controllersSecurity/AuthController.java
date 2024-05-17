@@ -66,14 +66,15 @@ public class AuthController {
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
-		return ResponseEntity.ok(new JwtResponse(jwt, 
-												 userDetails.getId(), 
-												 userDetails.getUsername(), 
-												  
-												 roles,
-												 userDetails.getPersonelle()
+		return ResponseEntity.ok(new JwtResponse(    jwt, 
+													 userDetails.getId(), 
+													 userDetails.getUsername(), 
+													 roles,
+													 userDetails.getPersonelle()
 												));
 	}
+	
+ 
 
 	@PostMapping("/signup")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest) {

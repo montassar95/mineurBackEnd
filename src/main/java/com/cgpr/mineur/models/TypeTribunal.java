@@ -1,4 +1,6 @@
 package com.cgpr.mineur.models;
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "typTri")
-public class TypeTribunal {
+public class TypeTribunal  implements Serializable {
 	@Id 
 	private long id;
  

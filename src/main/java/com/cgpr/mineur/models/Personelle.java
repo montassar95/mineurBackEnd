@@ -11,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 @NoArgsConstructor
@@ -18,7 +20,7 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @Table(name = "per")
-public class Personelle {
+public class Personelle  implements Serializable {
 	@Id
 	private long id;
 	private long matricule;

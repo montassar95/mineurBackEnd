@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.CauseMutation;
- 
+
 import com.cgpr.mineur.models.LieuDeces;
 import com.cgpr.mineur.repository.CauseMutationRepository;
 import com.cgpr.mineur.repository.LieuDecesRepository;
+import com.cgpr.mineur.service.LieuDecesService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -28,36 +29,28 @@ import com.cgpr.mineur.repository.LieuDecesRepository;
 public class LieuDecesController {
 
 	@Autowired
-	private LieuDecesRepository lieuDecesRepository;
-
-	 
-	 
+	private LieuDecesService lieuDecesService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<LieuDeces>> listCauseMutation() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", lieuDecesRepository.findAllByOrderByIdAsc());
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
+				lieuDecesService.listCauseMutation());
 	}
 
- 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<LieuDeces> getById(@PathVariable("id") long id) {
-		Optional<LieuDeces> Data = lieuDecesRepository.findById(id);
-		if (Data.isPresent()) {
+		 LieuDeces  Data = lieuDecesService.getById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
-	
-	
- 
 
 	@PostMapping("/add")
 	public ApiResponse<LieuDeces> save(@RequestBody LieuDeces causeDeces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					lieuDecesRepository.save(causeDeces));
+					lieuDecesService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -68,7 +61,7 @@ public class LieuDecesController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					lieuDecesRepository.save(causeDeces));
+					lieuDecesService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -78,12 +71,11 @@ public class LieuDecesController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			lieuDecesRepository.deleteById(id);
+			lieuDecesService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
 		}
 	}
- 
- 
+
 }

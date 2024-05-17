@@ -19,28 +19,27 @@ import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.Gouvernorat;
  
 import com.cgpr.mineur.repository.GouvernoratRepository;
+import com.cgpr.mineur.service.GouvernoratService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/gouvernorat")
 public class GouvernoratController {
 	@Autowired
-	private GouvernoratRepository gouvernoratRepository;
+	private GouvernoratService gouvernoratService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<Gouvernorat>> list() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				gouvernoratRepository.findAllByOrderByIdAsc());
+				gouvernoratService.list());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<Gouvernorat> getById(@PathVariable("id") long id) {
-		Optional<Gouvernorat> Data = gouvernoratRepository.findById(id);
-		if (Data.isPresent()) {
+		 Gouvernorat  Data = gouvernoratService.getById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
 
 	
@@ -51,7 +50,7 @@ public class GouvernoratController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					gouvernoratRepository.save(gouv));
+					gouvernoratService.save(gouv));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -61,8 +60,7 @@ public class GouvernoratController {
 	public ApiResponse<Gouvernorat> update(@RequestBody Gouvernorat gouv) {
 		try {
 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					gouvernoratRepository.save(gouv));
+			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.", gouvernoratService.save(gouv));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -72,7 +70,7 @@ public class GouvernoratController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			gouvernoratRepository.deleteById(id);
+			gouvernoratService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);

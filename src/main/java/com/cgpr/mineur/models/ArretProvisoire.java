@@ -1,5 +1,6 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.EmbeddedId;
@@ -15,7 +16,7 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @Table(name = "arrPro")
-public class ArretProvisoire {
+public class ArretProvisoire  implements Serializable {
 
 	@EmbeddedId
 	protected ArretProvisoireId arretProvisoireId;

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.ResultatTransfert;
 import com.cgpr.mineur.repository.ResultatTransfertRepository;
+import com.cgpr.mineur.service.ResultatTransfertService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -25,21 +26,19 @@ import com.cgpr.mineur.repository.ResultatTransfertRepository;
 public class ResultatTransfertController{
 
 	@Autowired
-	private ResultatTransfertRepository resultatTransfertRepository;
+	private ResultatTransfertService resultatTransfertService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<ResultatTransfert>> listTypeJuge() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", resultatTransfertRepository.findAllByOrderByIdAsc());
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", resultatTransfertService.listTypeJuge());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<ResultatTransfert> getTypeJugeById(@PathVariable("id") long id) {
-		Optional<ResultatTransfert> typeData = resultatTransfertRepository.findById(id);
-		if (typeData.isPresent()) {
+		 ResultatTransfert  typeData = resultatTransfertService.getTypeJugeById(id);
+	 
 			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully", typeData);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "typeData Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -47,7 +46,7 @@ public class ResultatTransfertController{
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeJuge saved Successfully",
-					resultatTransfertRepository.save(res));
+					resultatTransfertService.save(res));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeJuge not saved", null);
 		}
@@ -58,7 +57,7 @@ public class ResultatTransfertController{
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeJuge updated successfully.",
-					resultatTransfertRepository.save(res));
+					resultatTransfertService.update(res));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeJuge not Saved", null);
 		}
@@ -68,7 +67,7 @@ public class ResultatTransfertController{
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			resultatTransfertRepository.deleteById(id);
+			resultatTransfertService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeJuge  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeJuge not Deleted", null);

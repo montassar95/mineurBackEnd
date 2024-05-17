@@ -1,5 +1,6 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.EmbeddedId;
@@ -16,12 +17,12 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @Table(name = "accCarRec")
-public class AccusationCarteRecup {
+public class AccusationCarteRecup  implements Serializable {
 
 	@EmbeddedId                        
 	private AccusationCarteRecupId accusationCarteRecupId = new AccusationCarteRecupId();;
 	
-// 	@Column(columnDefinition = "LONGTEXT")
+ 
     private String textAccusation;
 
 	private int jour;

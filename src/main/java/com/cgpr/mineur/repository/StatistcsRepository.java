@@ -2,12 +2,14 @@ package com.cgpr.mineur.repository;
 
  
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Temporal;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
+import com.cgpr.mineur.models.Arrestation;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.ResidenceId;
@@ -18,28 +20,39 @@ import com.cgpr.mineur.models.ResidenceId;
 @Repository
 public interface StatistcsRepository  extends CrudRepository<Residence, ResidenceId> {
 	
-	      
+	  @Query("SELECT a.arrestation FROM Residence a WHERE   a.statut = 0 and "
+			  +   "((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 )  "  
+	  		+ "  ")
+	   List<Arrestation>findArrestationByEtablissement(String etablissementId);
 	   
 	     
 	   
 	   
 	 	   @Query("SELECT count(a) FROM Residence a where"
-	 	   		 						   		+ "  a.statut = 0 and a.etablissement.id  = ?1 and a.arrestation.enfant.nationalite.id = 1" )
+	 	   		 						   		+ "  a.statut = 0 and "
+	 	   		 					        +   "((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 )  "  
+	 	   		 						   		+ " and a.arrestation.enfant.nationalite.id = 1" )
 	 	  int findByAllEnfantExist( String etablissementId );
 	 	   
 	 	   
 	 	  @Query("SELECT count(a) FROM Residence a where"
-				   		+ "  a.statut = 0 and a.etablissement.id  = ?1 and (a.arrestation.enfant.dateNaissance between  ?2 and  ?3)" )
+				   		+ "  a.statut = 0 and"
+				        +   "(((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 ) )  "  
+				   		+ " and (a.arrestation.enfant.dateNaissance between  ?2 and  ?3)" )
               int findByAllByAge( String etablissementId ,@Temporal Date start, @Temporal Date end);
 	 
 	 	   
 	 	  @Query("SELECT count(a) FROM Residence a where"
-				   		+ "  a.statut = 0 and a.etablissement.id  = ?1 and (a.arrestation.enfant.classePenale.id = 1"
+				   		+ "  a.statut = 0 and "
+				        +   "((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 )  "  
+				   		+ " and (a.arrestation.enfant.classePenale.id = 1"
 				   		+ "  and a.residenceId.numOrdinaleArrestation = 1)" )
          int findByAllEnfantDebutant( String etablissementId );
 	 	  
 	 	 @Query("SELECT count(a) FROM Residence a where"
-				   		+ "  a.statut = 0 and a.etablissement.id  = ?1 and (a.arrestation.enfant.classePenale.id = 2"
+				   		+ "  a.statut = 0 and "
+				        +   "((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 )  "  
+				   		+ "and (a.arrestation.enfant.classePenale.id = 2"
 				   		+ "or a.residenceId.numOrdinaleArrestation > 1)" )
            int findByAllEnfantAncien( String etablissementId );
 	 	 
@@ -47,7 +60,9 @@ public interface StatistcsRepository  extends CrudRepository<Residence, Residenc
 	 	 //-----------------------------------------------------------------------------------------------------------------
 	 	 
 	 	 @Query("SELECT count(a) FROM Residence a where"
-			   		+ "  a.statut = 0 and a.etablissement.id  = ?1 and (a.arrestation.enfant.niveauEducatif.id >= ?2)"
+			   		+ "  a.statut = 0 and"
+			        +   "((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 )  "  
+			   		+ "and (a.arrestation.enfant.niveauEducatif.id >= ?2)"
 			   		+ "and (a.arrestation.enfant.niveauEducatif.id <= ?3)" )
            int findByAllEnfantNiveauEducatif( String etablissementId ,long a,long b);
 	 	 //------------------------------------------------------------------------------------------------------------------
@@ -55,14 +70,56 @@ public interface StatistcsRepository  extends CrudRepository<Residence, Residenc
 //-----------------------------------------------------------------------------------------------------------------
 	 	 
 	 	 @Query("SELECT count(a) FROM Residence a where"
-			   		+ "  a.statut = 0 and a.etablissement.id  = ?1 and (a.arrestation.enfant.situationFamiliale.id = ?2)" )
+			   		+ "  a.statut = 0 and"
+			        +   "((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 )  "  
+			   		+ "and (a.arrestation.enfant.situationFamiliale.id = ?2)" )
            int findByAllEnfantSituationFamiliale( String etablissementId ,long a);
 	 	 //------------------------------------------------------------------------------------------------------------------
 	 	 
 	 	  @Query("SELECT count(a) FROM Residence a where"
-				   		+ "  a.statut = 0 and a.etablissement.id  = ?1 and a.arrestation.enfant.nationalite.id != 1" )
+				   		+ "  a.statut = 0 and "
+				        +   "((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 )  "  
+				   		+ "and a.arrestation.enfant.nationalite.id != 1" )
              int findByAllEnfantExistEtranger( String etablissementId );
 	   
+	 	  @Query("SELECT count(a) FROM Residence a where"
+			   		+ "  a.statut = 0   and a.arrestation.enfant.nationalite.id != 1 and a.arrestation.enfant.sexe  = ?1" )
+       int findByAllEnfantExistEtrangerBySexe(   String Sexe);
+	 	  
+	 	  
+	 	  
+	 	  
+		   @Query("SELECT count(a) FROM Residence a WHERE "
+		   		   + " a.arrestation.enfant.sexe  = ?1 and"
+			   	 
+			   	 
+			   		+ "  a.statut = 0 and   a.arrestation in "
+			   		+ "(SELECT aff.arrestation FROM Affaire aff where aff.statut = 0 and "
+			   	 
+			   		+ "   aff.typeAffaire.id = ?2  "
+			   		 
+			   		+ " ) ")
+				int calculTerorist( String Sexe ,long typeAffaire  );
+				
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
+	 	  
 	   
 	   @Query("SELECT count(a) FROM Residence a WHERE (?1 =  0L or a.arrestation.enfant.classePenale.id = ?1) and"
 		   		+ "(?2 =  0L or a.arrestation.enfant.niveauEducatif.id = ?2) and"
@@ -85,6 +142,9 @@ public interface StatistcsRepository  extends CrudRepository<Residence, Residenc
 		long delegation, Etablissement etablissement, long gouvernoratTribunal  ,long typeTribunal  ,
 		long typeAffaire ,@Temporal Date start, @Temporal Date end,String etranger );
 	
+	   
+	   
+	   
 	   
 	   
 		   @Query("SELECT count(a) FROM Residence a WHERE   a.arrestation.liberation is not null   and "
@@ -148,7 +208,8 @@ long delegation, Etablissement etablissement  ,@Temporal Date start, @Temporal D
 		   		+ "aff.typeDocument = 'CP'  or "
 		   		+ "aff.typeDocument = 'AE')"
 		   		+ " and aff.statut = 0)  and " 
-		   		+ " a.statut = 0 and a.etablissement.id  = ?1 " )
+		   		+ " a.statut = 0 and "
+		   		+ "((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 ) " )
 		   int findByAllEnfantExistJuge ( String etablissementId );
 	   
 	   @Query("SELECT  count(a)  FROM Residence a WHERE "
@@ -162,7 +223,8 @@ long delegation, Etablissement etablissement  ,@Temporal Date start, @Temporal D
 		   		+ "aff.typeDocument = 'AE')"
 		   		+ " and aff.statut = 0) and"
    
-		   		+ " a.statut = 0 and a.etablissement.id  = ?1 " )
+		   		+ " a.statut = 0 and "
+		   		+ "((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 ) " )
 		   int findByAllEnfantExistArret( String etablissementId  );
 	   
 	   @Query("SELECT  count(a)  FROM Residence a WHERE "

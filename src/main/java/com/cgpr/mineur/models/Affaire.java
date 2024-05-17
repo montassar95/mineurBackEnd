@@ -1,5 +1,6 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.List;
 
@@ -25,24 +26,24 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "aff")
-public class Affaire {
+public class Affaire  implements Serializable {
 
 	@EmbeddedId
 	private AffaireId affaireId;
+
+	@ManyToOne
+	@JoinColumns({ @JoinColumn(name = "a_idEnf", referencedColumnName = "idEnf"),
+			@JoinColumn(name = "a_numOrd", referencedColumnName = "numOrd") })
+	private Arrestation arrestation;
 
 	private long numOrdinalAffaire;
 
 	private long numOrdinalAffaireByAffaire;
 
 	@ManyToOne
-	@JoinColumns({ @JoinColumn(name = "a_idEnf", referencedColumnName = "idEnf"),
-			@JoinColumn(name = "a_numOrd", referencedColumnName = "numOrd") })
-	private Arrestation arrestation;
- 
-	@ManyToOne
 	@JoinColumn(name = "tribunalFK")
 	private Tribunal tribunal;
- 
+
 	@OneToOne
 	@JoinColumns({ @JoinColumn(name = "aL_idEnf", referencedColumnName = "idEnf"),
 			@JoinColumn(name = "aL_numAff", referencedColumnName = "numAff"),
@@ -52,7 +53,6 @@ public class Affaire {
 	})
 	private Affaire affaireLien;
 
-	
 	@OneToOne
 	@JoinColumns({ @JoinColumn(name = "aF_idEnf", referencedColumnName = "idEnf"),
 			@JoinColumn(name = "aF_numAff", referencedColumnName = "numAff"),
@@ -61,71 +61,58 @@ public class Affaire {
 
 	})
 	private Affaire affaireAffecter;
-	
-	
-	
-	
-	
-	
+
 	private int statut;
 
+	
+	
 	@JsonIgnore
 	@OneToMany(mappedBy = "affaire", cascade = CascadeType.REMOVE)
 	private List<Document> documents;
-	
-	
-	
-	
+
 	@Transient
- 	private List<TitreAccusation> titreAccusations;
-	
-	
+	private List<TitreAccusation> titreAccusations;
+
 	private String typeDocument;
+
+	private String typeDocumentActuelle;
+
 	private Date dateEmissionDocument;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "typeAffaireFK3")
 	private TypeAffaire typeAffaire;
-	
-	
+
 	@Transient
 	private int jour;
 	@Transient
 	private int mois;
 	@Transient
 	private int annee;
-    
-	
-	
+
 	@Transient
 	private int jourArret;
 	@Transient
 	private int moisArret;
 	@Transient
 	private int anneeArret;
-	
+
 	@Transient
 	private String typeFile;
-	
-	
-//	@ManyToOne
-//	@JoinColumn(name = "TypeJugeFK")
-//	private Type;
-	
-	
- 	@Transient
+
+	@ManyToOne
+	@JoinColumn(name = "typeJugeFK")
 	private TypeJuge typeJuge;
-	
+
 	@Transient
 	private Date dateEmission;
-	
-	
+
 	private Date dateDebutPunition;
 
 	private Date dateFinPunition;
-	private  long daysDiffJuge ;
- 
-	
-	// @ToString.Exclude
+	private long daysDiffJuge;
+
+	@Transient
+	private boolean affairePrincipale;
 
 }

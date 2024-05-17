@@ -19,6 +19,7 @@ import com.cgpr.mineur.models.ApiResponse;
  
 import com.cgpr.mineur.models.CauseLiberation;
 import com.cgpr.mineur.repository.CauseLiberationRepository;
+import com.cgpr.mineur.service.CauseLiberationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -26,58 +27,49 @@ import com.cgpr.mineur.repository.CauseLiberationRepository;
 public class CauseLiberationController {
 
 	@Autowired
-	private CauseLiberationRepository causeLiberationRepository;
+	private CauseLiberationService causeLiberationService;
 
 	 
 	 
 
 	@GetMapping("/all")
 	public ApiResponse<List<CauseLiberation>> listCauseLiberation() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", causeLiberationRepository.findAllByOrderByIdAsc());
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", causeLiberationService.listCauseLiberation());
 	}
 
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<CauseLiberation> getTypeAffaireById(@PathVariable("id") long id) {
-		Optional<CauseLiberation> typeData = causeLiberationRepository.findById(id);
-		if (typeData.isPresent()) {
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "typeData Not FOund", null);
-		}
+		
+		 CauseLiberation  typeData =causeLiberationService.getTypeAffaireById(id);
+		 	return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
+		 
 	}
 
 	@PostMapping("/add")
 	public ApiResponse<CauseLiberation> save(@RequestBody CauseLiberation causeDeces) {
 
-		try {
-			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					causeLiberationRepository.save(causeDeces));
-		} catch (Exception e) {
-			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
-		}
+		 	return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
+		 			causeLiberationService.save(causeDeces));
+		 
 	}
 
 	@PutMapping("/update")
 	public ApiResponse<CauseLiberation> update(@RequestBody CauseLiberation causeDeces) {
-		try {
+		 
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					causeLiberationRepository.save(causeDeces));
-		} catch (Exception e) {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
-		}
+					causeLiberationService.save(causeDeces));
+		 
 
 	}
 
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
-		try {
-			causeLiberationRepository.deleteById(id);
+		 
+		  causeLiberationService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
-		} catch (Exception e) {
-			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
-		}
+		 
 	}
  
  

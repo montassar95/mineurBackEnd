@@ -9,15 +9,17 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "del")
-public class Delegation {
+public class Delegation  implements Serializable {
 	@Id
-	//@GeneratedValue
 	private long id;
 	 
 

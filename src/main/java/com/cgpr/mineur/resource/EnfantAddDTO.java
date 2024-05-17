@@ -19,8 +19,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class EnfantAddDTO {
  
-	private Enfant enfan;
+	private Enfant enfant;
 	private Arrestation arrestation;
 	private Residence residence;
 	private Etablissement etablissement;
+	private String img;
 }

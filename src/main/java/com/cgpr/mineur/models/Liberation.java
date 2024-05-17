@@ -1,5 +1,6 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.Column;
@@ -18,7 +19,7 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @Table(name = "lib")
-public class Liberation {
+public class Liberation  implements Serializable {
 	@EmbeddedId
 	private LiberationId liberationId;
 

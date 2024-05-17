@@ -16,19 +16,24 @@ import com.cgpr.mineur.models.ArretProvisoire;
 import com.cgpr.mineur.models.CarteHeber;
 import com.cgpr.mineur.models.TitreAccusation;
 import com.cgpr.mineur.repository.AccusationCarteHeberRepository;
+import com.cgpr.mineur.service.AccusationCarteHeberService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/accusationCarteHeber")
 public class AccusationCarteHeberController {
 
-	@Autowired
-	private AccusationCarteHeberRepository accusationCarteHeberRepository;
 
+	
+	@Autowired
+	private AccusationCarteHeberService accusationCarteHeberService;
+
+	
+	
 	@PostMapping("/add")
 	public ApiResponse<AccusationCarteHeber> save(@RequestBody AccusationCarteHeber accusationCarteHeber) {
 
-		accusationCarteHeberRepository.save(accusationCarteHeber);
+		accusationCarteHeberService.save(accusationCarteHeber);
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully", null);
@@ -39,10 +44,10 @@ public class AccusationCarteHeberController {
 	}
 
 	@PostMapping("/findTitreAccusationbyCarteHeber")
-	public ApiResponse<List<ArretProvisoire>> findTitreAccusationbyCarteHeber(@RequestBody CarteHeber carteHeber) {
+	public ApiResponse<List<TitreAccusation>> findTitreAccusationbyCarteHeber(@RequestBody CarteHeber carteHeber) {
 
-		List<TitreAccusation> list = accusationCarteHeberRepository
-				.getTitreAccusationbyDocument(carteHeber.getDocumentId());
+		List<TitreAccusation> list = accusationCarteHeberService
+				.findTitreAccusationbyCarteHeber(carteHeber );
 		System.out.println(list.toString());
 		if (list.isEmpty()) {
 

@@ -19,28 +19,27 @@ import com.cgpr.mineur.models.ApiResponse;
 
 import com.cgpr.mineur.models.SituationSocial;
 import com.cgpr.mineur.repository.SituationSocialRepository;
+import com.cgpr.mineur.service.SituationSocialService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/situationSocial")
 public class SituationSocialController {
 	@Autowired
-	private SituationSocialRepository situationSocialRepository;
+	private SituationSocialService situationSocialService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<SituationSocial>> listNationalite() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				situationSocialRepository.findAllByOrderByIdAsc());
+				situationSocialService.listNationalite());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<SituationSocial> getById(@PathVariable("id") long id) {
-		Optional<SituationSocial> Data = situationSocialRepository.findById(id);
-		if (Data.isPresent()) {
+		 SituationSocial  Data = situationSocialService.getById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -48,7 +47,7 @@ public class SituationSocialController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully",
-					situationSocialRepository.save(situationFamiliale));
+					situationSocialService.save(situationFamiliale));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not saved", null);
 		}
@@ -59,7 +58,7 @@ public class SituationSocialController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					situationSocialRepository.save(situationFamiliale));
+					situationSocialService.update(situationFamiliale));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  not Saved", null);
 		}
@@ -69,7 +68,7 @@ public class SituationSocialController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			situationSocialRepository.deleteById(id);
+			situationSocialService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "   Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not Deleted", null);

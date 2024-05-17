@@ -33,10 +33,6 @@ public class DocumentId implements Serializable {
  	private long numOrdinalDocByAffaire;
  	
  	
-// 	@ManyToOne(fetch=FetchType.LAZY)
-// 	@JoinColumns({
-// 	  @JoinColumn(name = "codProvincia", insertable = false, updatable = false),
-// 	  @JoinColumn(name = "codRegion", insertable = false, updatable = false)
-// 	})
+ 
 
 }

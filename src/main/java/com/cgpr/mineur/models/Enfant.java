@@ -1,5 +1,6 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.GeneratedValue;
@@ -20,7 +21,7 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @Table(name = "enf")
-public class Enfant {
+public class Enfant  implements Serializable {
 	@Id
 	private String id;
 	private String nom;
@@ -35,7 +36,8 @@ public class Enfant {
 	private String lieuNaissance;
 	private String sexe;
 
-//	@Column(columnDefinition = "LONG")
+ 
+ @Transient 
 	@Lob
 	private String img;
 
@@ -75,6 +77,8 @@ public class Enfant {
 	
 	@Transient
 	private String etat;
+	
+	private int nbrEnfant;
 	
 	
 }

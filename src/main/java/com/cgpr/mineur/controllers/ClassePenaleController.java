@@ -19,28 +19,27 @@ import com.cgpr.mineur.models.ApiResponse;
  
 import com.cgpr.mineur.models.ClassePenale;
 import com.cgpr.mineur.repository.ClassePenaleRepository;
+import com.cgpr.mineur.service.ClassePenaleService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/classePenale")
 public class ClassePenaleController {
 	@Autowired
-	private ClassePenaleRepository classePenaleRepository;
+	private ClassePenaleService classePenaleService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<ClassePenale>> list() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				classePenaleRepository.findAllByOrderByIdAsc());
+				classePenaleService.list());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<ClassePenale> getById(@PathVariable("id") long id) {
-		Optional<ClassePenale> Data = classePenaleRepository.findById(id);
-		if (Data.isPresent()) {
+		ClassePenale Data = classePenaleService.getById(id);
+	
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		
 	}
 	
 	
@@ -51,7 +50,7 @@ public class ClassePenaleController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					classePenaleRepository.save(causeDeces));
+					classePenaleService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -62,7 +61,7 @@ public class ClassePenaleController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					classePenaleRepository.save(causeDeces));
+					classePenaleService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -72,7 +71,7 @@ public class ClassePenaleController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			classePenaleRepository.deleteById(id);
+			classePenaleService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);

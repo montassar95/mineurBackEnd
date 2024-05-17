@@ -20,28 +20,27 @@ import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.CommentTrouver;
 import com.cgpr.mineur.repository.CommentEchapperRepository;
 import com.cgpr.mineur.repository.CommentTrouverRepository;
+import com.cgpr.mineur.service.CommentTrouverService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/commentTrouver")
 public class CommentTrouverController {
 	@Autowired
-	private CommentTrouverRepository commentTrouverRepository;
+	private CommentTrouverService commentTrouverService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<CommentTrouver>> listTrouver() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				commentTrouverRepository.findAllByOrderByIdAsc());
+				commentTrouverService.listTrouver());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<CommentTrouver> getTypeAffaireById(@PathVariable("id") long id) {
-		Optional<CommentTrouver> typeData = commentTrouverRepository.findById(id);
-		if (typeData.isPresent()) {
+		 CommentTrouver  typeData = commentTrouverService.getTypeAffaireById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "typeData Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -49,7 +48,7 @@ public class CommentTrouverController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					commentTrouverRepository.save(causeDeces));
+					commentTrouverService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -60,7 +59,7 @@ public class CommentTrouverController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					commentTrouverRepository.save(causeDeces));
+					commentTrouverService.update(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -70,7 +69,7 @@ public class CommentTrouverController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			commentTrouverRepository.deleteById(id);
+			commentTrouverService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);

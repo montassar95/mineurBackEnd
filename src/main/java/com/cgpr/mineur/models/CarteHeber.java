@@ -18,7 +18,7 @@ public class CarteHeber extends Document {
 	private static final long serialVersionUID = 1L;
  
 
-//	@Column(columnDefinition = "LONGTEXT")
+ 
 	private String textJugement;
 
  

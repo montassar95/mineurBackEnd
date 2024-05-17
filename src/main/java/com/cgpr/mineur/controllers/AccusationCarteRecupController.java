@@ -1,9 +1,5 @@
 package com.cgpr.mineur.controllers;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,28 +13,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cgpr.mineur.models.AccusationCarteRecup;
-import com.cgpr.mineur.models.AccusationCarteRecupId;
-import com.cgpr.mineur.models.AccusationCarteRecup;
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.CarteRecup;
-import com.cgpr.mineur.repository.AccusationCarteRecupRepository;
-import com.cgpr.mineur.repository.AccusationCarteRecupRepository;
+import com.cgpr.mineur.service.AccusationCarteRecupService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/accusationCarteRecup")
 public class AccusationCarteRecupController {
 
+	 
 	@Autowired
-	private AccusationCarteRecupRepository accusationCarteRecupRepository;
+	private AccusationCarteRecupService accusationCarteRecupService;
 
 	@PostMapping("/findByCarteRecup")
-	public ApiResponse<List<AccusationCarteRecup>> findByCarteDepot(@RequestBody CarteRecup carteRecup) {
+	public ApiResponse<List<AccusationCarteRecup>> findByCarteRecup(@RequestBody CarteRecup carteRecup) {
 
-		System.out.println(carteRecup.toString());
+	 
 
-		List<AccusationCarteRecup> list = accusationCarteRecupRepository.findByCarteRecup(carteRecup.getDocumentId());
-		System.out.println(list.toString());
+		List<AccusationCarteRecup> list = accusationCarteRecupService.findByCarteRecup(carteRecup );
+		 
 		if (list.isEmpty()) {
 
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not ", null);
@@ -57,24 +51,13 @@ public class AccusationCarteRecupController {
 	@GetMapping("/calcule/{date}/{duree}")
 	public ApiResponse<Object> getArrestationById(@PathVariable("date") String date, @PathVariable("duree") int duree) {
 
-		Date dateC = null;
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		String dateDtring = "";
+	 	String dateDtring = "";
 
-		try {
-			dateC = simpleDateFormat.parse(date);
-
-			Calendar cal = Calendar.getInstance();
-			cal.setTime(dateC);
-
-			cal.add(Calendar.DATE, duree);
-			Date modifiedDate = cal.getTime();
-
-			dateDtring = simpleDateFormat.format(modifiedDate);
-			System.out.println(dateDtring);
-		} catch (ParseException e) {
-			e.printStackTrace();
-		}
+		 
+			 
+			dateDtring = (String) accusationCarteRecupService.getArrestationById(date , duree);
+			 
+		 
 		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", dateDtring);
 
 	}
@@ -82,7 +65,7 @@ public class AccusationCarteRecupController {
 	@PostMapping("/add")
 	public ApiResponse<AccusationCarteRecup> save(@RequestBody AccusationCarteRecup accusationCarteRecup) {
 
-		accusationCarteRecupRepository.save(accusationCarteRecup);
+		accusationCarteRecupService.save(accusationCarteRecup);
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully", null);

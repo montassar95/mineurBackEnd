@@ -26,6 +26,7 @@ import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.CarteHeberRepository;
 import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.repository.TransfertRepository;
+import com.cgpr.mineur.service.CarteHeberService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -33,64 +34,22 @@ import com.cgpr.mineur.repository.TransfertRepository;
 public class CarteHeberController {
 
 	@Autowired
-	private CarteHeberRepository carteHeberRepository;
+	private CarteHeberService carteHeberService;
 
-	@Autowired
-	private AffaireRepository affaireRepository;
-
-	@Autowired
-	private ArrestationRepository arrestationRepository;
- 
-	
-	@Autowired
-	private  DocumentRepository documentRepository;
- 
-	
-	@Autowired
-	private  AccusationCarteHeberRepository accusationCarteHeberRepository;
+	 
 	
 	
 	@PostMapping("/add")
 	public ApiResponse<CarteHeber> save(@RequestBody CarteHeber carteHeber) {
 
 		 
-		if (carteHeber.getAffaire().getAffaireLien() != null) {
-			carteHeber.getAffaire().getAffaireLien().setStatut(1);
-			System.out.println("=========================debut lien ==================================");
-			System.out.println(carteHeber.getAffaire().getAffaireLien().toString());
-			carteHeber.getAffaire().setNumOrdinalAffaireByAffaire(
-			carteHeber.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
-			carteHeber.getAffaire().setTypeDocument("CH");
-			affaireRepository.save(carteHeber.getAffaire().getAffaireLien());
-			System.out.println("============================fin lien===============================");
-		}
-		System.out.println("================================debut affaire ===========================");
-		System.out.println(carteHeber.getAffaire().toString());
-		carteHeber.getAffaire().setTypeDocument("CH");
-		carteHeber.getAffaire().setTypeAffaire(carteHeber.getTypeAffaire());
-		affaireRepository.save(carteHeber.getAffaire());
-		System.out.println("==================================fin affaire=========================");
-		
-		
-		 List<AccusationCarteHeber> listacc =accusationCarteHeberRepository.findByCarteHeber( carteHeber.getDocumentId()  );
-		
-		 
-		 if(!listacc.isEmpty()) {
-			 
-			 for(AccusationCarteHeber acc :  listacc){
-				 accusationCarteHeberRepository.delete(acc);
-			 }
-			
-		 }
-		CarteHeber c = carteHeberRepository.save(carteHeber);
+	 
+		CarteHeber c = carteHeberService.save(carteHeber);
 		 
 		
 
-		try {
-			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully", c);
-		} catch (Exception e) {
-			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not saved", null);
-		}
+		 	return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully", c);
+		 
 
 	}
  

@@ -14,6 +14,7 @@ import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.CartePropagationRepository;
 import com.cgpr.mineur.repository.DocumentRepository;
+import com.cgpr.mineur.service.CartePropagationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -21,21 +22,11 @@ import com.cgpr.mineur.repository.DocumentRepository;
 public class CartePropagationController {
 
 	@Autowired
-	private CartePropagationRepository cartePropagationRepository;
+	private CartePropagationService cartePropagationService;
 
 	 
 	
-	@Autowired
-	private AffaireRepository affaireRepository;
-
-	@Autowired
-	private ArrestationRepository arrestationRepository;
- 
-	
-	@Autowired
-	private  DocumentRepository documentRepository;
-	
-	
+	 
 	
 	
 	
@@ -45,17 +36,8 @@ public class CartePropagationController {
 
 		 
 		 
-		System.out.println("================================debut affaire ===========================");
-		System.out.println(cartePropagation.getAffaire().toString());
-		cartePropagation.getAffaire().setTypeDocument("CP");
-//	 	 cartePropagation.getAffaire().setTypeAffaire(cartePropagation.getTypeAffaire());
-	 
-  	affaireRepository.save(cartePropagation.getAffaire());
-		System.out.println("==================================fin affaire=========================");
-		
-		
-		cartePropagation.setTypeAffaire(cartePropagation.getAffaire().getTypeAffaire());
-		CartePropagation c = cartePropagationRepository.save(cartePropagation);
+		 
+		CartePropagation c = cartePropagationService.save(cartePropagation);
 		 
 		
  

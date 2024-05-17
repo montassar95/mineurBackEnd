@@ -19,6 +19,7 @@ import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.Personelle;
 import com.cgpr.mineur.repository.EtablissementRepository;
 import com.cgpr.mineur.repository.PersonelleRepository;
+import com.cgpr.mineur.service.PersonelleService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -27,12 +28,12 @@ public class PersonelleController {
 	
 	
 	@Autowired
-	private PersonelleRepository personelleRepository;
+	private PersonelleService personelleService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<Personelle>> listPersonelle() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "Personelle List Fetched Successfully.",
-				personelleRepository.findAll());
+				personelleService.listPersonelle());
 	}
 	@PostMapping("/add")
 	
@@ -40,7 +41,7 @@ public class PersonelleController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "personelle saved Successfully",
-					personelleRepository.save(personelle));
+					personelleService.save(personelle));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "personelle not saved", null);
 		}

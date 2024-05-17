@@ -21,6 +21,7 @@ import com.cgpr.mineur.repository.AppelEnfantRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.repository.TransfertRepository;
+import com.cgpr.mineur.service.AppelEnfantService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -28,47 +29,16 @@ import com.cgpr.mineur.repository.TransfertRepository;
 public class AppelEnfantController {
 
 	@Autowired
-	private AppelEnfantRepository appelEnfantRepository;
+	private AppelEnfantService appelEnfantService;
 
-	@Autowired
-	private AffaireRepository affaireRepository;
-
-	@Autowired
-	private ArrestationRepository arrestationRepository;
-
-	@Autowired
-	private DocumentRepository documentRepository;
+	 
 
 	@PostMapping("/add")
 	public ApiResponse<AppelEnfant> save(@RequestBody AppelEnfant appelEnfant) {
 
-		System.out.println(appelEnfant.toString());
-
-		System.out.println(appelEnfant.getDocumentId().toString());
-
-		System.out.println("================================debut affaire ===========================");
-		System.out.println(appelEnfant.getAffaire().toString());
-		appelEnfant.getAffaire().setTypeDocument("AE");
-		appelEnfant.getAffaire().setTypeAffaire(appelEnfant.getAffaire().getTypeAffaire());
-		affaireRepository.save(appelEnfant.getAffaire());
-		System.out.println("==================================fin affaire=========================");
-		appelEnfant.getAffaire().setNumOrdinalAffaireByAffaire(3);
-		appelEnfant.setTypeAffaire(appelEnfant.getAffaire().getTypeAffaire());
-		AppelEnfant c = appelEnfantRepository.save(appelEnfant);
-
-//		Arrestation ar = arrestationRepository.findByIdEnfantAndStatut0(c.getDocumentId().getIdEnfant());
-//		List<Affaire> aData = documentRepository.findStatutJurByArrestation(c.getDocumentId().getIdEnfant() );
-//		 
-//		if (aData.isEmpty()) {
-//			ar.setEtatJuridique ("juge");
-//		} else {
-//			ar.setEtatJuridique( "arret");
-//		}
-//		List<Affaire> affprincipale = affaireRepository.findAffairePrincipale(c.getDocumentId().getIdEnfant(),c.getDocumentId().getNumOrdinalArrestation(),PageRequest.of(0,1));
-// 		ar.setNumAffairePricipale(affprincipale.get(0).getAffaireId().getNumAffaire()); 
-// 		ar.setTribunalPricipale(affprincipale.get(0).getTribunal());
-//	    ar.setNumOrdinalAffairePricipale(affprincipale.get(0).getNumOrdinalAffaire());
-//		arrestationRepository.save(ar);
+		 
+		appelEnfantService.save(appelEnfant);
+		
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully", null);
 		} catch (Exception e) {

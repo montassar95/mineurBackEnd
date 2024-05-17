@@ -17,10 +17,10 @@ public class Revue extends Document {
 
 	private static final long serialVersionUID = 1L;
 	
-//	@Column(columnDefinition = "LONGTEXT")
+
 	private String textJugement;
 
-//	private String refuse;
+
 
 	 
 

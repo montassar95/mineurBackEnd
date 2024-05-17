@@ -19,28 +19,27 @@ import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.NiveauEducatif;
 import com.cgpr.mineur.repository.NiveauEducatifRepository;
+import com.cgpr.mineur.service.NiveauEducatifService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/niveauEducatif")
 public class NiveauEducatifController {
 	@Autowired
-	private NiveauEducatifRepository niveauEducatifRepository;
+	private NiveauEducatifService niveauEducatifService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<NiveauEducatif>> listNiveauEducatif() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				niveauEducatifRepository.findAllByOrderByIdAsc());
+				niveauEducatifService.listNiveauEducatif());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<Etablissement> getNiveauEducatifById(@PathVariable("id") long id) {
-		Optional<NiveauEducatif> Data = niveauEducatifRepository.findById(id);
-		if (Data.isPresent()) {
+	public ApiResponse<NiveauEducatif> getNiveauEducatifById(@PathVariable("id") long id) {
+		 NiveauEducatif Data = niveauEducatifService.getNiveauEducatifById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -48,7 +47,7 @@ public class NiveauEducatifController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully",
-					niveauEducatifRepository.save(niveauEducatif));
+					niveauEducatifService.save(niveauEducatif));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Etablissement not saved", null);
 		}
@@ -59,7 +58,7 @@ public class NiveauEducatifController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					niveauEducatifRepository.save(niveauEducatif));
+					niveauEducatifService.save(niveauEducatif));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  not Saved", null);
 		}
@@ -69,7 +68,7 @@ public class NiveauEducatifController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			niveauEducatifRepository.deleteById(id);
+			niveauEducatifService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "   Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not Deleted", null);

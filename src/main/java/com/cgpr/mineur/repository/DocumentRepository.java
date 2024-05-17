@@ -59,35 +59,7 @@ public interface DocumentRepository extends PagingAndSortingRepository<Document,
 		 		+ "or  a.typeDocument = 'AE')"
 		 		+ "and  a.arrestation.arrestationId.numOrdinale = (select max(ar.arrestationId.numOrdinale) from Arrestation ar where ar.enfant.id = ?1) order by a.numOrdinalAffaire desc ")
 		 List<Affaire> findStatutJurByArrestation (String idEnfant );
-	 
-	 
-	 
-	 @Query("SELECT d FROM Document d WHERE d.documentId.idEnfant = ?1 "
-							+ " and d.documentId.numOrdinalArrestation = ?2 "
-							+ " and d.documentId.numOrdinalAffaire = ?3 "
-							+ " and (d.typeDocument = 'CJ' or d.typeDocument = 'CJA' or d.typeDocument = 'CD'  or d.typeDocument = 'CH')"
-							+ " and d.documentId.numOrdinalDocByAffaire = (select max"
-							+ "( do.documentId.numOrdinalDocByAffaire)FROM Document do"
-							+ " WHERE do.documentId.idEnfant = ?1 " + 
-							"  and do.documentId.numOrdinalArrestation = ?2 "  
-							+"  and do.documentId.numOrdinalAffaire = ?3  "
-							+ " and (do.typeDocument = 'CJ' or do.typeDocument = 'CJA' or do.typeDocument = 'CD'  or do.typeDocument = 'CH')"
-						                                            	+ " )" )
-List<Document>  getDocumentByAffaireforAccusation (String idEnfant,long numOrdinalArrestation,long numOrdinalAffaire,  Pageable pageable ); 
-	 
-	 @Query("SELECT d FROM Document d WHERE d.documentId.idEnfant = ?1 "
-				+ " and d.documentId.numOrdinalArrestation = ?2 "
-				+ " and d.documentId.numOrdinalAffaire = ?3 "
-				 
-				+ " and d.documentId.numOrdinalDocByAffaire = (select max"
-				+ "( do.documentId.numOrdinalDocByAffaire)FROM Document do"
-				+ " WHERE do.documentId.idEnfant = ?1 " + 
-				"  and do.documentId.numOrdinalArrestation = ?2 "  
-				+"  and do.documentId.numOrdinalAffaire = ?3  "
-			 
-			                                            	+ " )" )
-  Document   getLastDocumentByAffaireforAccusation (String idEnfant,long numOrdinalArrestation,long numOrdinalAffaire  ); 
-
+	      
 	 
 	 @Query("SELECT d FROM Document d WHERE d.documentId.idEnfant = ?1 "
 				+ " and d.documentId.numOrdinalArrestation = ?2 "
@@ -95,6 +67,73 @@ List<Document>  getDocumentByAffaireforAccusation (String idEnfant,long numOrdin
 				 
 				+ " and d.documentId.numOrdinalDocByAffaire =  ?4" )
 Document   getDocument (String idEnfant,long numOrdinalArrestation,long numOrdinalAffaire , long numOrdinalDocByAffaire ); 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+//	 
+//	 @Query("SELECT d FROM Document d WHERE d.documentId.idEnfant = ?1 "
+//				+ " and d.documentId.numOrdinalArrestation = ?2 "
+//				+ " and d.documentId.numOrdinalAffaire = ?3 "
+//				+ " and (d.typeDocument = 'CJ' or d.typeDocument = 'CJA' or d.typeDocument = 'CD'  or d.typeDocument = 'CH')"
+//				+ " and d.documentId.numOrdinalDocByAffaire = (select max"
+//				+ "( do.documentId.numOrdinalDocByAffaire)FROM Document do"
+//				+ " WHERE do.documentId.idEnfant = ?1 " + 
+//				"  and do.documentId.numOrdinalArrestation = ?2 "  
+//				+"  and do.documentId.numOrdinalAffaire = ?3  "
+//				+ " and (do.typeDocument = 'CJ' or do.typeDocument = 'CJA' or do.typeDocument = 'CD'  or do.typeDocument = 'CH')"
+//			                                            	+ " )" )
+//List<Document>  getDocumentByAffaireforAccusation (String idEnfant,long numOrdinalArrestation,long numOrdinalAffaire,  Pageable pageable ); 
+//
+//@Query("SELECT d FROM Document d WHERE d.documentId.idEnfant = ?1 "
+//	+ " and d.documentId.numOrdinalArrestation = ?2 "
+//	+ " and d.documentId.numOrdinalAffaire = ?3 "
+//	 
+//	+ " and d.documentId.numOrdinalDocByAffaire = (select max"
+//	+ "( do.documentId.numOrdinalDocByAffaire)FROM Document do"
+//	+ " WHERE do.documentId.idEnfant = ?1 " + 
+//	"  and do.documentId.numOrdinalArrestation = ?2 "  
+//	+"  and do.documentId.numOrdinalAffaire = ?3  "
+//
+//                                         	+ " )" )
+//Document   getLastDocumentByAffaireforAccusation (String idEnfant,long numOrdinalArrestation,long numOrdinalAffaire  ); 
+	 
+	 
+	 
+	 @Query("SELECT d FROM Document d WHERE d.documentId.idEnfant = ?1 "
+		        + "AND d.documentId.numOrdinalArrestation = ?2 "
+		        + "AND d.documentId.numOrdinalAffaire = ?3 "
+		        + "AND (               (d.typeDocument = 'CJ'   AND  d.typeDocumentActuelle is null  ) "
+				                 + "OR (d.typeDocument = 'CJA'  AND d.typeDocumentActuelle is null)"
+				                 + "OR (d.typeDocument = 'CD'   AND d.typeDocumentActuelle is null) "
+				                 + "OR (d.typeDocument = 'CH'   AND d.typeDocumentActuelle is null)"
+		             + ") "
+		        
+		        + "AND d.documentId.numOrdinalDocByAffaire = (SELECT MAX(do.documentId.numOrdinalDocByAffaire) FROM Document do "
+		        + "WHERE do.documentId.idEnfant = ?1 "
+		        + "AND do.documentId.numOrdinalArrestation = ?2 "
+		        + "AND do.documentId.numOrdinalAffaire = ?3 "
+		        + "AND (               (do.typeDocument = 'CJ'     AND do.typeDocumentActuelle is null ) "
+					                + "OR (do.typeDocument = 'CJA'  AND do.typeDocumentActuelle is null)"
+					                + "OR (do.typeDocument = 'CD'   AND do.typeDocumentActuelle is null) "
+					                + "OR (do.typeDocument = 'CH'   AND do.typeDocumentActuelle is null)"
+    + ") "
+		        + ")")
+		List<Document> getDocumentByAffaireforAccusation(String idEnfant, long numOrdinalArrestation, long numOrdinalAffaire, Pageable pageable);
+
+	 
+	 @Query("SELECT d FROM Document d WHERE d.documentId.idEnfant = ?1 "
+		        + "AND d.documentId.numOrdinalArrestation = ?2 "
+		        + "AND d.documentId.numOrdinalAffaire = ?3 "
+		        + "AND d.documentId.numOrdinalDocByAffaire = (SELECT MAX(do.documentId.numOrdinalDocByAffaire) FROM Document do "
+		        + "WHERE do.documentId.idEnfant = ?1 "
+		        + "AND do.documentId.numOrdinalArrestation = ?2 "
+		        + "AND do.documentId.numOrdinalAffaire = ?3)")
+		Document getLastDocumentByAffaire (String idEnfant, long numOrdinalArrestation, long numOrdinalAffaire);
+
 
 
 }

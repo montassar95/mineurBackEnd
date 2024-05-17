@@ -19,6 +19,7 @@ import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.TypeAffaire;
 import com.cgpr.mineur.repository.TypeAffaireRepository;
+import com.cgpr.mineur.service.TypeAffaireService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -26,22 +27,20 @@ import com.cgpr.mineur.repository.TypeAffaireRepository;
 public class TypeAffaireController {
 
 	@Autowired
-	private TypeAffaireRepository typeAffaireRepository;
+	private TypeAffaireService typeAffaireService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<TypeAffaire>> listTypeAffaire() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement List Fetched Successfully.",
-				typeAffaireRepository.findAllByOrderByIdAsc());
+				typeAffaireService.listTypeAffaire());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<TypeAffaire> getTypeAffaireById(@PathVariable("id") long id) {
-		Optional<TypeAffaire> typeData = typeAffaireRepository.findById(id);
-		if (typeData.isPresent()) {
+		 TypeAffaire  typeData = typeAffaireService.getTypeAffaireById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully", typeData);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "typeData Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -49,18 +48,18 @@ public class TypeAffaireController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					typeAffaireRepository.save(typeAffaire));
+					typeAffaireService.save(typeAffaire));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<Etablissement> update(@RequestBody TypeAffaire typeAffaire) {
+	public ApiResponse<TypeAffaire> update(@RequestBody TypeAffaire typeAffaire) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire updated successfully.",
-					typeAffaireRepository.save(typeAffaire));
+					typeAffaireService.save(typeAffaire));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -71,15 +70,7 @@ public class TypeAffaireController {
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
 			
- 		  
-			if (typeAffaireRepository.existsById(id)) {
-				
-				typeAffaireRepository.deleteById(id);
-			}
-			else {
-				System.out.println("non pas");
-		 
-			}
+			typeAffaireService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			System.err.println(e.toString());		

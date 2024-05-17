@@ -1,5 +1,6 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.FetchType;
@@ -19,8 +20,8 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @Table(name = "deces")
-public class Deces {
-	 //dec in oracle
+public class Deces  implements Serializable {
+	
 	@Id
 	private long enfantIdDeces;
 	

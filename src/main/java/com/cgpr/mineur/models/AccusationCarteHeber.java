@@ -1,5 +1,8 @@
 package com.cgpr.mineur.models;
 import javax.persistence.Entity;
+
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.JoinColumn;
@@ -16,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "accCarHeb")
-public class AccusationCarteHeber {
+public class AccusationCarteHeber  implements Serializable {
 
 	@EmbeddedId
 	private AccusationCarteDepotId accusationCarteHeberId;
@@ -29,6 +32,6 @@ public class AccusationCarteHeber {
 	@ManyToOne
 	@JoinColumn(name = "titreAccHebFK")
 	private TitreAccusation titreAccusation;
-// 
+ 
 
 }

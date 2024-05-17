@@ -19,6 +19,7 @@ import com.cgpr.mineur.models.ApiResponse;
  
 import com.cgpr.mineur.models.CauseMutation;
 import com.cgpr.mineur.repository.CauseMutationRepository;
+import com.cgpr.mineur.service.CauseMutationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -26,24 +27,22 @@ import com.cgpr.mineur.repository.CauseMutationRepository;
 public class CauseMutationController {
 
 	@Autowired
-	private CauseMutationRepository causeMutationRepository;
+	private CauseMutationService  causeMutationService;
 
 	 
 	 
 
 	@GetMapping("/all")
 	public ApiResponse<List<CauseMutation>> listCauseMutation() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", causeMutationRepository.findAllByOrderByIdAsc());
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", causeMutationService.listCauseMutation());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<CauseMutation> getTypeAffaireById(@PathVariable("id") long id) {
-		Optional<CauseMutation> typeData = causeMutationRepository.findById(id);
-		if (typeData.isPresent()) {
+		 CauseMutation  typeData = causeMutationService.getTypeAffaireById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "typeData Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -51,7 +50,7 @@ public class CauseMutationController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					causeMutationRepository.save(causeDeces));
+					causeMutationService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -62,7 +61,7 @@ public class CauseMutationController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					causeMutationRepository.save(causeDeces));
+					causeMutationService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -72,7 +71,7 @@ public class CauseMutationController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			causeMutationRepository.deleteById(id);
+			causeMutationService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);

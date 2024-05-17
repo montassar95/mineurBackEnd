@@ -18,28 +18,27 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.Nationalite;
 import com.cgpr.mineur.repository.NationaliteRepository;
+import com.cgpr.mineur.service.NationaliteService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/nationalite")
 public class NationaliteController {
 	@Autowired
-	private NationaliteRepository nationaliteRepository;
+	private NationaliteService nationaliteService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<Nationalite>> listNationalite() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				nationaliteRepository.findAllByOrderByIdAsc());
+				nationaliteService.listNationalite());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<Nationalite> getNationaliteById(@PathVariable("id") long id) {
-		Optional<Nationalite> Data = nationaliteRepository.findById(id);
-		if (Data.isPresent()) {
+		 Nationalite  Data = nationaliteService.getNationaliteById(id);
+	 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -47,7 +46,7 @@ public class NationaliteController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully",
-					nationaliteRepository.save(nationalite));
+					nationaliteService.save(nationalite));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Nationalite not saved", null);
 		}
@@ -58,7 +57,7 @@ public class NationaliteController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					nationaliteRepository.save(nationalite));
+					nationaliteService.save(nationalite));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  not Saved", null);
 		}
@@ -68,7 +67,7 @@ public class NationaliteController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			nationaliteRepository.deleteById(id);
+			nationaliteService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "   Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not Deleted", null);

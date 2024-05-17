@@ -22,7 +22,7 @@ public class CarteRecup extends Document {
 
 	 
 
-//	@Column(columnDefinition = "LONGTEXT")
+ 
 	private String textJugement;
 
 	 

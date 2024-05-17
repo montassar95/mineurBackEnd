@@ -2,15 +2,18 @@ package com.cgpr.mineur.resource;
  
 
  
+import com.cgpr.mineur.models.CauseLiberation;
 import com.cgpr.mineur.models.ClassePenale;
 import com.cgpr.mineur.models.Delegation;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.Gouvernorat;
 import com.cgpr.mineur.models.Metier;
+import com.cgpr.mineur.models.Nationalite;
 import com.cgpr.mineur.models.NiveauEducatif;
 import com.cgpr.mineur.models.SituationFamiliale;
 import com.cgpr.mineur.models.SituationSocial;
 import com.cgpr.mineur.models.TypeAffaire;
+import com.cgpr.mineur.models.TypeJuge;
 import com.cgpr.mineur.models.TypeTribunal;
 
 import lombok.AllArgsConstructor;
@@ -48,7 +51,13 @@ public class PDFListExistDTO {
  private Gouvernorat gouvernoratTribunal;
  private TypeTribunal typeTribunal;
  
+ private TypeJuge typeJuge;
+ 
+ private CauseLiberation  causeLiberation;
  private TypeAffaire typeAffaire;
+ 
+ 
+ private Nationalite nationalite;
  private int age1;
  private int age2;
  
@@ -59,4 +68,8 @@ public class PDFListExistDTO {
  
  private String checkEtranger;
  private String checkUniqueAff;
+ 
+ private String datePrintAllCentre;
+ 
+ 
 }

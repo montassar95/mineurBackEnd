@@ -18,51 +18,41 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.Tribunal;
 import com.cgpr.mineur.repository.TribunalRepository;
+import com.cgpr.mineur.service.TribunalService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/tribunal")
 public class TribunalController {
 	@Autowired
-	private TribunalRepository tribunalRepository;
+	private TribunalService tribunalService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<Tribunal>> listTribunal() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal List Fetched Successfully.",
-				tribunalRepository.findAllByOrderByIdAsc());
+				tribunalService.listTribunal());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<Tribunal> getTribunalById(@PathVariable("id") long id) {
-		Optional<Tribunal> tribunalData = tribunalRepository.findById(id);
-		if (tribunalData.isPresent()) {
+		 Tribunal  tribunalData = tribunalService.getTribunalById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal fetched suucessfully", tribunalData);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "tribunal Not FOund", null);
-		}
+		 
 	}
 	
 	@GetMapping("/searchTribunal/{idGouv}/{idType}")
-	public ApiResponse<Tribunal> searchTribunal(@PathVariable("idGouv") long idGouv,@PathVariable("idType") long idType) {
+	public ApiResponse<List<Tribunal>> searchTribunal(@PathVariable("idGouv") long idGouv,@PathVariable("idType") long idType) {
 		List<Tribunal> tribunalData;
-		if(idGouv>0 && idType==0) {
-			tribunalData = tribunalRepository.findByIdGouv(idGouv);
-		}
-		else if(idType>0 && idGouv==0) {
-			
-			tribunalData = tribunalRepository.findByIdType(idType);
-		}
-		else {
-			tribunalData = tribunalRepository.findByIdGouvAndIdType(idGouv,idType);
-		}
+		 
+			tribunalData = tribunalService.searchTribunal(idGouv, idType);
+		 
 		 
 	  
-		if (tribunalData.isEmpty()) {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "tribunal Not FOund", null);
-		} else {
+		 
 			
 			return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal fetched suucessfully", tribunalData);
-		}
+	 
 	}
 
 	@PostMapping("/add")
@@ -70,7 +60,7 @@ public class TribunalController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal saved Successfully",
-					tribunalRepository.save(tribunal));
+					tribunalService.save(tribunal));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "tribunal not saved", null);
 		}
@@ -81,7 +71,7 @@ public class TribunalController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "tribunal updated successfully.",
-					tribunalRepository.save(tribunal));
+					tribunalService.save(tribunal));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "tribunal not Saved", null);
 		}
@@ -91,7 +81,7 @@ public class TribunalController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			tribunalRepository.deleteById(id);
+			tribunalService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "tribunal  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "tribunal not Deleted", null);

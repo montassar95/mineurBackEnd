@@ -18,44 +18,42 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.repository.EtablissementRepository;
+import com.cgpr.mineur.service.EtablissementService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/etablissement")
 public class EtablissementController2 {
 	@Autowired
-	private EtablissementRepository etablissementRepository;
+	private EtablissementService etablissementService;
 
 	@GetMapping("/all")
 	public ApiResponse<List<Etablissement>> listEtablissement() {
 		
 		return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement List Fetched Successfully.",
-				etablissementRepository.findAll());
+				etablissementService.listEtablissement());
 	}
 	@GetMapping("/allCentre")
 	public ApiResponse<List<Etablissement>> listEtablissementCentre() {
 		
-		List<Etablissement> allCentre =  etablissementRepository.listEtablissementCentre();
+		List<Etablissement> allCentre =  etablissementService.listEtablissementCentre();
 		return new ApiResponse<>(HttpStatus.OK.value(), "EtablissementCentre List Fetched Successfully.",
 				allCentre);
 	}
 	@GetMapping("/getone/{id}")
 	public ApiResponse<Etablissement> getEtablissementById(@PathVariable("id") String id) {
-		Optional<Etablissement> etablissementData = etablissementRepository.findById(id);
-		if (etablissementData.isPresent()) {
-			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully",
-					etablissementRepository.findById(id));
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "ETablissement Not FOund", null);
-		}
+		 Etablissement  etablissementData = etablissementService.getEtablissementById(id);
+		 
+			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully", etablissementData);
+		 
 	}
 
 	@PostMapping("/add")
 	public ApiResponse<Etablissement> save(@RequestBody Etablissement etablissement) {
-		System.out.print(etablissement.toString());
+		 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement saved Successfully",
-					etablissementRepository.save(etablissement));
+					etablissementService.save(etablissement));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Etablissement not saved", null);
 		}
@@ -66,7 +64,7 @@ public class EtablissementController2 {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "etablissement updated successfully.",
-					etablissementRepository.save(etablissement));
+					etablissementService.save(etablissement));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "etablissement not Saved", null);
 		}
@@ -76,7 +74,7 @@ public class EtablissementController2 {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") String id) {
 		try {
-			etablissementRepository.deleteById(id);
+			etablissementService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "etablissement  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "etablissement not Deleted", null);

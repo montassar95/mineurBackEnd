@@ -7,8 +7,7 @@ import javax.persistence.Table;
 
 import lombok.Data;
 import javax.persistence.Entity;
-//@NoArgsConstructor
-//@AllArgsConstructor
+
 @Data
 @Entity
 @Table(name = "chanLieu")

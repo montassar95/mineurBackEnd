@@ -1,5 +1,7 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -13,9 +15,8 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "resTran")
-public class ResultatTransfert {
+public class ResultatTransfert  implements Serializable {
 	@Id
-	//@GeneratedValue
 	private long id;
 	 
 

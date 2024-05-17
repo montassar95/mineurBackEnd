@@ -19,6 +19,7 @@ import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.ResidenceId;
 import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.ResidenceRepository;
+import com.cgpr.mineur.service.ResidenceService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -26,202 +27,155 @@ import com.cgpr.mineur.repository.ResidenceRepository;
 public class ResidenceController {
 
 	@Autowired
-	private ResidenceRepository residenceRepository;
+	private ResidenceService residenceService;
 
-	@Autowired
-	private ArrestationRepository arrestationRepository;
-	
+	 
 	@GetMapping("/all")
 	public ApiResponse<List<Residence>> list() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement List Fetched Successfully.",
-				residenceRepository.findAll());
+				residenceService.list());
 	}
 
-	
 	@GetMapping("/findByIdEnfantAndStatutEnCour/{id}/{numOrdinale}")
-	public ApiResponse<Residence> geById(@PathVariable("id") String id,@PathVariable("numOrdinale") long numOrdinale) {
-		 Residence  aData = residenceRepository.findByIdEnfantAndStatutEnCour(id,numOrdinale);
-		if (aData!= null ) {
+	public ApiResponse<Residence> geById(@PathVariable("id") String id, @PathVariable("numOrdinale") long numOrdinale) {
+		Residence aData = residenceService.geById(id, numOrdinale);
+		if (aData != null) {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", aData);
 		} else {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "a Not FOund", null);
-		   }
 		}
-	
-	
-	 
-	
-	
+	}
+
 	@GetMapping("/findByEnfantAndArrestation/{id}/{numOrdinale}")
-	public ApiResponse<Residence> findByEnfantAndArrestation(@PathVariable("id") String id,@PathVariable("numOrdinale") long numOrdinale) {
-		 List<Residence>  cData = residenceRepository.findByEnfantAndArrestation(id,numOrdinale);
-			if (cData != null) {
-				return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", cData);
-			} else {
-				return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
-			}
-	
+	public ApiResponse<List<Residence>> findByEnfantAndArrestation(@PathVariable("id") String id,
+			@PathVariable("numOrdinale") long numOrdinale) {
+		List<Residence> cData = residenceService.findByEnfantAndArrestation(id, numOrdinale);
+		if (cData != null) {
+			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", cData);
+		} else {
+			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
+		}
+
 	}
-	
-	
-	
+
 	@GetMapping("/findByIdEnfantAndStatut0/{idEnfant}/{numOrdinale}")
-	public ApiResponse<Residence> findByArrestationAndStatut0(@PathVariable("idEnfant") String idEnfant,@PathVariable("numOrdinale") long numOrdinale) {
-		 
-		// Residence  cData = residenceRepository.findMaxResidence(idEnfant,numOrdinale);
-		Residence  cData = residenceRepository.findByIdEnfantAndStatut0(idEnfant,numOrdinale);
+	public ApiResponse<Residence> findByArrestationAndStatut0(@PathVariable("idEnfant") String idEnfant,
+			@PathVariable("numOrdinale") long numOrdinale) {
+
+		// Residence cData = residenceRepository.findMaxResidence(idEnfant,numOrdinale);
+		Residence cData = residenceService.findByArrestationAndStatut0(idEnfant, numOrdinale);
 		if (cData != null) {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", cData);
 		} else {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
 		}
 	}
-	
+
 	@GetMapping("/findByIdEnfantAndMaxResidence/{idEnfant}/{numOrdinale}")
-	public ApiResponse<Residence> findByArrestationAndMaxResidence(@PathVariable("idEnfant") String idEnfant,@PathVariable("numOrdinale") long numOrdinale) {
-		 
-		 Residence  cData = residenceRepository.findMaxResidence(idEnfant,numOrdinale);
-		 // Residence  cData = residenceRepository.findByIdEnfantAndStatut0(idEnfant,numOrdinale);
+	public ApiResponse<Residence> findByArrestationAndMaxResidence(@PathVariable("idEnfant") String idEnfant,
+			@PathVariable("numOrdinale") long numOrdinale) {
+
+		Residence cData = residenceService.findByArrestationAndMaxResidence(idEnfant, numOrdinale);
+		// Residence cData =
+		// residenceRepository.findByIdEnfantAndStatut0(idEnfant,numOrdinale);
 		if (cData != null) {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", cData);
 		} else {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
 		}
 	}
-	
+
 	@GetMapping("/findByIdEnfantAndStatutArrestation0/{idEnfant}")
-	public ApiResponse<Residence> findByIdEnfantAndStatutArrestation0(@PathVariable("idEnfant") String idEnfant) {
-		 
-		 List<Residence>  cData = residenceRepository.findByIdEnfantAndStatutArrestation0(idEnfant);
+	public ApiResponse<List<Residence>> findByIdEnfantAndStatutArrestation0(@PathVariable("idEnfant") String idEnfant) {
+
+		List<Residence> cData = residenceService.findByIdEnfantAndStatutArrestation0(idEnfant);
 		if (cData != null) {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", cData);
 		} else {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  Not FOund", null);
 		}
 	}
+
 	@PostMapping("/add")
 	public ApiResponse<Residence> save(@RequestBody Residence residance) {
 		System.out.println(residance.toString());
 
 		try {
-			Residence  cData = residenceRepository.findByIdEnfantAndStatut0(residance.getResidenceId().getIdEnfant(),residance.getArrestation().getArrestationId().getNumOrdinale());
-		if(cData== null) {
+			Residence cData = residenceService.save(residance);
 			 
-			Residence  r = residenceRepository.save(residance);
-			return new ApiResponse<>(HttpStatus.OK.value(), "Typeresidance saved Successfully",r);
-					 
-		} else {
-			cData.setDateSortie(residance.getDateEntree());
-			cData.setEtablissementSortie(residance.getEtablissement());
-			cData.setCauseMutationSortie(residance.getCauseMutation());
-			residenceRepository.save(cData);
-			residance.getResidenceId().setNumOrdinaleResidence(cData.getResidenceId().getNumOrdinaleResidence()+1);
-			residance.setStatut(2);
-			residance.setDateEntree(null);
-			residance.setEtablissementEntree(cData.getEtablissement());
-			
-			return new ApiResponse<>(HttpStatus.OK.value(), "Typeresidance saved Successfully",
-					residenceRepository.save(residance));
-		}
-			
+
+				return new ApiResponse<>(HttpStatus.OK.value(), "Typeresidance saved Successfully",cData);
+			 
+
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not saved", null);
 		}
 	}
-	
+
 	@PostMapping("/accepterResidence")
 	public ApiResponse<Residence> accepterResidence(@RequestBody Residence residance) {
 		System.out.println(residance.toString());
 
-		try {
-			Residence  cData = residenceRepository.findByIdEnfantAndStatut0(residance.getResidenceId().getIdEnfant(),residance.getArrestation().getArrestationId().getNumOrdinale());
-			cData.setStatut(1);
-			residance.setStatut(0);
-		 	residenceRepository.save(cData );
-			return new ApiResponse<>(HttpStatus.OK.value(), "Typeresidance saved Successfully",
-					residenceRepository.save(residance));
-		} catch (Exception e) {
-			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not saved", null);
-		}
+		 
+			Residence cData = residenceService.accepterResidence(residance );
+		 
+			return new ApiResponse<>(HttpStatus.OK.value(), "Typeresidance saved Successfully", cData);
+		 
 	}
-	
-	
 
 	@PutMapping("/update")
 	public ApiResponse<Residence> update(@RequestBody Residence residance) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					residenceRepository.save(residance));
+					residenceService.save(residance));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "  not Saved", null);
 		}
 
 	}
-	
-	
+
 	@GetMapping("/countTotaleRecidence/{idEnfant}/{numOrdinaleArrestation}")
-	public ApiResponse<Object> countTotaleRecidence(@PathVariable("idEnfant") String idEnfant,@PathVariable("numOrdinaleArrestation") long numOrdinaleArrestation) {
-		
-	 int total =residenceRepository.countTotaleRecidence(
-				idEnfant,numOrdinaleArrestation);
-	 if(total==0) {
-		 total =0;
-	 }
-	 else {total=total-1;}
-		
+	public ApiResponse<Object> countTotaleRecidence(@PathVariable("idEnfant") String idEnfant,
+			@PathVariable("numOrdinaleArrestation") long numOrdinaleArrestation) {
+
+		int total = (int) residenceService.countTotaleRecidence(idEnfant, numOrdinaleArrestation);
 		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "ok", total);
-	 }
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "ok", total);
+	}
+
 	@GetMapping("/countTotaleRecidenceWithetabChangeManiere/{idEnfant}/{numOrdinaleArrestation}")
-	public ApiResponse<Object> countTotaleRecidenceWithetabChangeManiere(@PathVariable("idEnfant") String idEnfant,@PathVariable("numOrdinaleArrestation") long numOrdinaleArrestation) {
-		
-	 
-		System.out.println(residenceRepository.countTotaleRecidenceWithetabChangeManiere(
-					idEnfant,numOrdinaleArrestation)+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+	public ApiResponse<Object> countTotaleRecidenceWithetabChangeManiere(@PathVariable("idEnfant") String idEnfant,
+			@PathVariable("numOrdinaleArrestation") long numOrdinaleArrestation) {
+
 		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "ok",residenceRepository.countTotaleRecidenceWithetabChangeManiere(
-					idEnfant,numOrdinaleArrestation)  );
-	 }
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "ok",
+				residenceService.countTotaleRecidenceWithetabChangeManiere(idEnfant, numOrdinaleArrestation));
+	}
+
 	@PostMapping("/deleteResidenceStatut2")
 	public ApiResponse<Residence> deleteResidenceStatut2(@RequestBody ResidenceId residanceId) {
-	 
 
 		try {
-			residenceRepository.deleteById(residanceId);
-			Residence  cData = residenceRepository.findByIdEnfantAndStatut0(residanceId.getIdEnfant(),residanceId.getNumOrdinaleArrestation());
-			cData.setDateSortie(null);
-			cData.setEtablissementSortie(null);
-			cData.setCauseMutationSortie(null);
-		 	residenceRepository.save(cData );
-			return new ApiResponse<>(HttpStatus.OK.value(), "Typeresidance saved Successfully",
-					null);
+			residenceService.deleteResidenceStatut2(residanceId);
+			 
+			return new ApiResponse<>(HttpStatus.OK.value(), "Typeresidance saved Successfully", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not saved", null);
 		}
 	}
-	
-	
+
 	@PostMapping("/deleteResidenceStatut0")
 	public ApiResponse<Residence> deleteResidenceStatut0(@RequestBody ResidenceId residanceId) {
-	 
 
 		try {
+
+			Residence cData = residenceService.deleteResidenceStatut0(residanceId );
 			 
-			Residence  cData = residenceRepository.findByIdEnfantAndStatut0(residanceId.getIdEnfant(),residanceId.getNumOrdinaleArrestation());
-			cData.setDateSortie(null);
-			cData.setDateEntree(null);
-			cData.setStatut(2);
-			cData.setNumArrestation(null);
-			
-			Residence  lastData1 = residenceRepository.findMaxResidenceWithStatut1(residanceId.getIdEnfant(),residanceId.getNumOrdinaleArrestation());
-			
-			lastData1.setStatut(0);
-			residenceRepository.save(lastData1 );
-			residenceRepository.save(cData );
-			
-			return new ApiResponse<>(HttpStatus.OK.value(), "Typeresidance saved Successfully",
-					null);
+
+			return new ApiResponse<>(HttpStatus.OK.value(), "Typeresidance saved Successfully", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "  not saved", null);
 		}

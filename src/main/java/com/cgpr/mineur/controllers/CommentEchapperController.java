@@ -19,6 +19,7 @@ import com.cgpr.mineur.models.ApiResponse;
  
 import com.cgpr.mineur.models.CommentEchapper;
 import com.cgpr.mineur.repository.CommentEchapperRepository;
+import com.cgpr.mineur.service.CommentEchapperService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -27,24 +28,22 @@ public class CommentEchapperController {
 	
 	
 	@Autowired
-	private CommentEchapperRepository commentEchapperRepository;
+	private CommentEchapperService commentEchapperService;
 
 	
 	
 	@GetMapping("/all")
 	public ApiResponse<List<CommentEchapper>> listCommentEchapper() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				commentEchapperRepository.findAllByOrderByIdAsc());
+				commentEchapperService.listCommentEchapper());
 	}
 
 	@GetMapping("/getone/{id}")
 	public ApiResponse<CommentEchapper> getTypeAffaireById(@PathVariable("id") long id) {
-		Optional<CommentEchapper> typeData = commentEchapperRepository.findById(id);
-		if (typeData.isPresent()) {
+		 CommentEchapper  typeData = commentEchapperService.getTypeAffaireById(id);
+		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
-		} else {
-			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "typeData Not FOund", null);
-		}
+		 
 	}
 
 	@PostMapping("/add")
@@ -52,7 +51,7 @@ public class CommentEchapperController {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					commentEchapperRepository.save(causeDeces));
+					commentEchapperService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
@@ -63,7 +62,7 @@ public class CommentEchapperController {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					commentEchapperRepository.save(causeDeces));
+					commentEchapperService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -73,7 +72,7 @@ public class CommentEchapperController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			commentEchapperRepository.deleteById(id);
+			commentEchapperService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);

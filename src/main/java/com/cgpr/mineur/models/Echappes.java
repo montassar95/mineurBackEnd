@@ -1,5 +1,6 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.EmbeddedId;
@@ -17,7 +18,7 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @Table(name = "ech")
-public class Echappes {
+public class Echappes  implements Serializable {
 	
 	@EmbeddedId
 	private EchappesId echappesId;
@@ -28,7 +29,7 @@ public class Echappes {
 	@ManyToOne
 	@JoinColumn(name = "comEchFK")
 	private CommentEchapper commentEchapper;
-//	
+ 	
 	@ManyToOne
 	@JoinColumn(name = "comTroFK")
 	private CommentTrouver commentTrouver;
@@ -45,7 +46,7 @@ public class Echappes {
 			@JoinColumn(name = "r_numOrdRes_e", referencedColumnName = "numOrdRes")
 		        })
 	private Residence residenceEchapper;
-//	
+ 
 	
 	@ManyToOne
 	@JoinColumns({

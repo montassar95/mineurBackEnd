@@ -7,8 +7,7 @@ import lombok.Data;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-//@NoArgsConstructor
-//@AllArgsConstructor
+
 @Data
 @Entity
 @Table(name = "tra")

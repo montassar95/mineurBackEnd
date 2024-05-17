@@ -1,5 +1,6 @@
 package com.cgpr.mineur.models;
 
+import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.EmbeddedId;
@@ -18,8 +19,13 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @Table(name = "res")
-public class Residence {
+public class Residence implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@EmbeddedId
 	private ResidenceId residenceId;
 
@@ -62,8 +68,33 @@ public class Residence {
 	private Date dateFin;
 	
 	
+	   @Transient
+	   private String  nbVisite ;
+	
 	
 	@ManyToOne
 	@JoinColumn(name = "etabChange")
 	private EtabChangeManiere etabChangeManiere;
+
+
+
+	public Residence(ResidenceId residenceId, String numArrestation, int statut) {
+		super();
+		this.residenceId = residenceId;
+		this.numArrestation = numArrestation;
+		this.statut = statut;
+	}
+
+
+
+	public Residence(ResidenceId residenceId, String numArrestation, Etablissement etablissement, int statut) {
+		super();
+		this.residenceId = residenceId;
+		this.numArrestation = numArrestation;
+		this.etablissement = etablissement;
+		this.statut = statut;
+	}
+	
+	
+	
 }

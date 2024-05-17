@@ -1,4 +1,6 @@
 package com.cgpr.mineur.models;
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -13,11 +15,10 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "typJug")
-public class TypeJuge {
+public class TypeJuge  implements Serializable {
 	@Id
-	//@GeneratedValue
+
 	private long id;
-	//private long code_typeJuge;
 	private String libelle_typeJuge;
 	private String situation;
 

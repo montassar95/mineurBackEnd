@@ -19,7 +19,7 @@ public class CarteDepot extends Document {
 
 	 
 
-//	@Column(columnDefinition = "LONGTEXT")
+ 
 	private String textJugement;
 
   

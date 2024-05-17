@@ -34,6 +34,7 @@ public  class Document implements Serializable {
 	protected DocumentId documentId;
 
 	protected String typeDocument;
+	private String typeDocumentActuelle;
 	
 	@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 	@ManyToOne(fetch = FetchType.LAZY)

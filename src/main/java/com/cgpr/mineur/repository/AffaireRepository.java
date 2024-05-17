@@ -13,6 +13,8 @@ import org.springframework.stereotype.Repository;
 import com.cgpr.mineur.models.Affaire;
 import com.cgpr.mineur.models.AffaireId;
 import com.cgpr.mineur.models.ArrestationId;
+
+
 import org.springframework.data.domain.Pageable;
 
  
@@ -44,7 +46,7 @@ public interface AffaireRepository extends PagingAndSortingRepository<Affaire, A
 	 @Query("SELECT a FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1 and a.arrestation.arrestationId.numOrdinale = ?2 and (a.typeDocument = 'CJ'   or a.typeDocument = 'CR' or a.typeDocument = 'CRR') and a.statut = 0 order by a.numOrdinalAffaire desc ")
 	 List<Affaire> findByArrestationByCJorCR (String idEnfant,long numOrdinale );
 	 
-	 @Query("SELECT a FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1 and a.arrestation.arrestationId.numOrdinale = ?2 and (a.typeDocument = 'CH' or a.typeDocument = 'CD' or a.typeDocument = 'CP' or a.typeDocument = 'T' or a.typeDocument = 'CJ' or a.typeDocument = 'CJA') and a.statut = 0 order by a.numOrdinalAffaire desc ")
+	 @Query("SELECT a FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1 and a.arrestation.arrestationId.numOrdinale = ?2 and (a.typeDocument = 'CH' or a.typeDocument = 'CD' or a.typeDocument = 'CP' or a.typeDocument = 'T' or a.typeDocument = 'CJ' or a.typeDocument = 'CJA' or a.typeDocument = 'CHL') and a.statut = 0 order by a.numOrdinalAffaire desc ")
 	 List<Affaire> findByArrestationToTransfert (String idEnfant,long numOrdinale);
 	 
 	 @Query("SELECT a FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1 and a.arrestation.arrestationId.numOrdinale = ?2 and "
@@ -192,10 +194,17 @@ public interface AffaireRepository extends PagingAndSortingRepository<Affaire, A
 	 List<Affaire>  findAffairePrincipaleSansAEX (String idEnfant,long numOrdinale ,Pageable pageable );
 	 
 	 
-	 @Query("select min(a.dateDebutPunition)  FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1 and a.arrestation.arrestationId.numOrdinale = ?2 and a.statut = 0 and a.affaireAffecter = null")
+	 @Query("select min(a.dateDebutPunition)  FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1 and "
+	 		+ "a.arrestation.arrestationId.numOrdinale = ?2 and a.statut = 0 and a.affaireAffecter = null and a.daysDiffJuge > 0" )
   	 Date getDateDebutPunition(String idEnfant,long numOrdinale);
 	 
-	 @Query("select max(a.dateFinPunition)  FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1 and a.arrestation.arrestationId.numOrdinale = ?2 and a.statut = 0 and a.affaireAffecter = null")
+	 
+	 
+	 
+	 
+	 
+	 
+	 @Query("select max(a.dateFinPunition)  FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1 and a.arrestation.arrestationId.numOrdinale = ?2 and a.statut = 0 and a.affaireAffecter = null and a.typeDocument != 'AEX' and a.typeDocument != 'CJA' ")
   	 Date getDateFinPunition(String idEnfant,long numOrdinale);
 	 
 	 

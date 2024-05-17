@@ -8,13 +8,16 @@ import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
 import javax.persistence.Entity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "titAcc")
-public class TitreAccusation {
+public class TitreAccusation  implements Serializable {
 
 	@Id
 	private long id;
