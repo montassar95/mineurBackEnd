@@ -1,8 +1,10 @@
+
 package com.cgpr.mineur.models;
 
 import java.io.Serializable;
 import java.sql.Date;
 
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -12,9 +14,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.Entity;
+
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

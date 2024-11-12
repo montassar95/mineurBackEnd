@@ -31,7 +31,7 @@ public class StatisticsEnfant {
     
     
     public static StatisticsEnfant calculerTotaux(List<List<Residence>> enfantAffiches,
-    		ChargeAllEnfantService chargeAllEnfantService, StatistcsRepository statistcsRepository) {
+    		  StatistcsRepository statistcsRepository) {
         StatisticsEnfant totals = new StatisticsEnfant();
 
         if (enfantAffiches.size() > 0) {
@@ -43,9 +43,13 @@ public class StatisticsEnfant {
             totals.setTotalCentre(totals.getTotalMjaz() + totals.getTotalMghira() + totals.getTotalMourouj()
                     + totals.getTotalSoukJdid() + totals.getTotalSidiHani());
             
-            // Vous devez obtenir les valeurs de chargeAllEnfantService et statistcsRepository à partir de quelque part
-            totals.setTotalEtrangerMasculin(chargeAllEnfantService .masculinEtranger);
-            totals.setTotalEtrangerFeminin(chargeAllEnfantService .femininEtranger);
+          //       Vous devez obtenir les valeurs de chargeAllEnfantService et statistcsRepository à partir de quelque part
+	      //		      totals.setTotalEtrangerMasculin(chargeAllEnfantService .masculinEtranger);
+		//	       totals.setTotalEtrangerFeminin(chargeAllEnfantService .femininEtranger);
+                
+            totals.setTotalEtrangerMasculin(statistcsRepository .calculEtanger("ذكر" ));
+            totals.setTotalEtrangerFeminin(statistcsRepository .calculEtanger("أنثى" ));
+            
             totals.setTotalTeroristMasculin(statistcsRepository.calculTerorist("ذكر", 5));
             totals.setTotalTeroristFeminin(statistcsRepository.calculTerorist("أنثى", 5));
              

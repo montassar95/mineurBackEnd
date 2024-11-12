@@ -1,38 +1,49 @@
 package com.cgpr.mineur.service.Impl;
 
 import java.sql.Date;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import com.cgpr.mineur.dto.CalculeAffaireDto;
+import com.cgpr.mineur.converter.AffaireConverter;
+import com.cgpr.mineur.converter.AffaireIdConverter;
+import com.cgpr.mineur.converter.ArrestationConverter;
+import com.cgpr.mineur.converter.ArretProvisoireConverter;
+import com.cgpr.mineur.converter.ResidenceConverter;
+import com.cgpr.mineur.dto.AffaireData;
+import com.cgpr.mineur.dto.AffaireDto;
+import com.cgpr.mineur.dto.ArrestationDto;
+import com.cgpr.mineur.dto.ArretProvisoireDto;
+import com.cgpr.mineur.dto.DocumentSearchCriteriaDto;
+import com.cgpr.mineur.dto.FicheDeDetentionDto;
+import com.cgpr.mineur.dto.ResidenceDto;
+import com.cgpr.mineur.dto.TribunalDto;
+import com.cgpr.mineur.dto.VerifierAffaireDto;
+import com.cgpr.mineur.models.AccusationCarteDepot;
+import com.cgpr.mineur.models.AccusationCarteHeber;
+import com.cgpr.mineur.models.AccusationCarteRecup;
 import com.cgpr.mineur.models.Affaire;
 import com.cgpr.mineur.models.AffaireId;
-import com.cgpr.mineur.models.Arrestation;
+import com.cgpr.mineur.models.ArrestationId;
 import com.cgpr.mineur.models.ArretProvisoire;
 import com.cgpr.mineur.models.Arreterlexecution;
 import com.cgpr.mineur.models.CarteDepot;
 import com.cgpr.mineur.models.CarteHeber;
 import com.cgpr.mineur.models.CarteRecup;
-import com.cgpr.mineur.models.ChangementLieu;
 import com.cgpr.mineur.models.Document;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.TitreAccusation;
 import com.cgpr.mineur.models.Transfert;
-import com.cgpr.mineur.models.Tribunal;
-import com.cgpr.mineur.models.TypeAffaire;
-import com.cgpr.mineur.repository.AccusationCarteDepotRepository;
-import com.cgpr.mineur.repository.AccusationCarteHeberRepository;
-import com.cgpr.mineur.repository.AccusationCarteRecupRepository;
 import com.cgpr.mineur.repository.AffaireRepository;
+import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.ArretProvisoireRepository;
 import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.repository.EchappesRepository;
@@ -40,12 +51,9 @@ import com.cgpr.mineur.repository.ResidenceRepository;
 import com.cgpr.mineur.service.AffaireService;
 import com.cgpr.mineur.tools.AffaireUtils;
 
-import lombok.Data;
-
 @Service
-public class AffaireServiceImpl implements  AffaireService{
+public class AffaireServiceImpl implements AffaireService {
 
-	
 	@Autowired
 	private AffaireRepository affaireRepository;
 
@@ -53,562 +61,534 @@ public class AffaireServiceImpl implements  AffaireService{
 	private DocumentRepository documentRepository;
 
 	@Autowired
-	private AccusationCarteRecupRepository accusationCarteRecupRepository;
-
-	@Autowired
-	private AccusationCarteDepotRepository accusationCarteDepotRepository;
-
-	@Autowired
-	private AccusationCarteHeberRepository accusationCarteHeberRepository;
-
-	
-	
-
-	@Autowired
 	private ResidenceRepository residenceRepository;
-	
+
 	@Autowired
 	private EchappesRepository echappesRepository;
 	
-	
+	@Autowired
+	private ArrestationRepository arrestationRepository;
+
 	@Autowired
 	private ArretProvisoireRepository arretProvisoireRepository;
-	
-	
+
 	public static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-	
-	@Override
-	public  List<Affaire>  listAffaire() {
-		return (List<Affaire>) affaireRepository.findAll();
-	}
 
 	@Override
-	public  Affaire  getAffaireById(  String idEnfant,  String numAffaire,   long idTribunal,  long numOrdinaleArrestation) {
-		System.out.println("numAffaire : ");
-		System.out.println(numAffaire);
-		AffaireId id = new AffaireId(idEnfant, numAffaire, idTribunal, numOrdinaleArrestation);
-		Optional<Affaire> aData = affaireRepository.findById(id);
-		if (aData.isPresent()) {
-			return aData.get();
-		} else {
-			List<Affaire> eData = affaireRepository.findAffaireByAnyArrestation(idEnfant, numAffaire, idTribunal);
-			if (eData.isEmpty()) {
-				return   null ; // message 0
-			} else {
-				return  null;  // message 1
-
-			}
-
-		}
-	}
-
-	@Override
-	public  List<Affaire>  findAffaireByAnyArrestation(  String idEnfant,  String numAffaire,  long idTribunal) {
-
-		List<Affaire> aData = affaireRepository.findAffaireByAnyArrestation(idEnfant, numAffaire, idTribunal);
-		if (aData.isEmpty()) {
-			return   null ;
-		} else {
-			return   aData ;
-
-		}
-	}
-
-	@Override
-	public  Affaire  findAffaireByAffaireLien(  String idEnfant,  String numAffaire,  long idTribunal) {
-
-		Affaire aData = affaireRepository.findAffaireByAffaireLien(idEnfant, numAffaire, idTribunal);
-		if (aData != null) {
-			return  aData ;
-		} else {
-			return   null ;
-		}
-	}
-
-	
-
-	@Override
-	public  List<Affaire>  findByArrestationToTransfert( String idEnfant, long numOrdinale) {
-
-		List<Affaire> lesAffaires = affaireRepository.findByArrestationToTransfert(idEnfant, numOrdinale);
-		if (lesAffaires.isEmpty()) {
-			return  null ;
-		} else {
-
-			List<Affaire> output = lesAffaires.stream().map(s -> {
-
-				Document doc = documentRepository.getLastDocumentByAffaire(idEnfant, numOrdinale,
-						s.getNumOrdinalAffaire());
-
-				s.setTypeDocument(doc.getTypeDocument());
-
-				s.setDateEmissionDocument(doc.getDateEmission());
-
-				List<Document> accData = documentRepository.getDocumentByAffaireforAccusation(idEnfant, numOrdinale,
-						s.getNumOrdinalAffaire(), PageRequest.of(0, 1));
-
-				List<TitreAccusation> titreAccusations = null;
-
-				if (accData.size() > 0) {
-					if (accData.get(0) instanceof CarteRecup) {
-
-						titreAccusations = accusationCarteRecupRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-						System.err.print(accData.get(0));
-						CarteRecup c = (CarteRecup) accData.get(0);
-						s.setAnnee(c.getAnnee());
-						s.setMois(c.getMois());
-						s.setJour(c.getJour());
-						s.setAnneeArret(c.getAnneeArretProvisoire());
-						s.setMoisArret(c.getMoisArretProvisoire());
-						s.setJourArret(c.getJourArretProvisoire());
-						s.setTypeJuge(c.getTypeJuge());
-
-					} else if (accData.get(0) instanceof CarteDepot) {
-						titreAccusations = accusationCarteDepotRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-					} else if (accData.get(0) instanceof CarteHeber) {
-						titreAccusations = accusationCarteHeberRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-						System.out.println("CarteHeber.." + accData.get(0).getDocumentId());
-					}
-
-				}
-				return s;
-			}).collect(Collectors.toList());
-			return   output ;
-		}
-	}
-
-	@Override
-	public  List<Affaire>  findByArrestationToArret(  String idEnfant,  long numOrdinale) {
-
-		List<Affaire> lesAffaires = affaireRepository.findByArrestationToArret(idEnfant, numOrdinale);
-		if (lesAffaires.isEmpty()) {
-			return   null ;
-		} else {
-			List<Affaire> output = lesAffaires.stream().map(s -> {
-
-				Document doc = documentRepository.getLastDocumentByAffaire(idEnfant, numOrdinale,
-						s.getNumOrdinalAffaire());
-				s.setTypeDocument(doc.getTypeDocument());
-
-				s.setDateEmissionDocument(doc.getDateEmission());
-
-				List<Document> accData = documentRepository.getDocumentByAffaireforAccusation(idEnfant, numOrdinale,
-						s.getNumOrdinalAffaire(), PageRequest.of(0, 1));
-
-				List<TitreAccusation> titreAccusations = null;
-
-				if (accData.size() > 0) {
-					if (accData.get(0) instanceof CarteRecup) {
-
-						titreAccusations = accusationCarteRecupRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-						System.err.print(accData.get(0));
-						CarteRecup c = (CarteRecup) accData.get(0);
-						s.setAnnee(c.getAnnee());
-						s.setMois(c.getMois());
-						s.setJour(c.getJour());
-						s.setAnneeArret(c.getAnneeArretProvisoire());
-						s.setMoisArret(c.getMoisArretProvisoire());
-						s.setJourArret(c.getJourArretProvisoire());
-						s.setTypeJuge(c.getTypeJuge());
-
-					} else if (accData.get(0) instanceof CarteDepot) {
-						titreAccusations = accusationCarteDepotRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-					} else if (accData.get(0) instanceof CarteHeber) {
-						titreAccusations = accusationCarteHeberRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-						System.out.println("CarteHeber.." + accData.get(0).getDocumentId());
-					}
-
-				}
-				return s;
-			}).collect(Collectors.toList());
-			return output ;
-		}
-	}
-
-	@Override
-	public  List<Affaire>  findByArrestationByCJorCR( String idEnfant, long numOrdinale) {
-
-		List<Affaire> lesAffaires = affaireRepository.findByArrestationByCJorCR(idEnfant, numOrdinale);
-		if (lesAffaires.isEmpty()) {
-			return   null ;
-		} else {
-			List<Affaire> output = lesAffaires.stream().map(s -> {
-
-				Document doc = documentRepository.getLastDocumentByAffaire(idEnfant, numOrdinale,
-						s.getNumOrdinalAffaire());
-
-				s.setTypeDocument(doc.getTypeDocument());
-
-				s.setDateEmissionDocument(doc.getDateEmission());
-
-				List<Document> accData = documentRepository.getDocumentByAffaireforAccusation(idEnfant, numOrdinale,
-						s.getNumOrdinalAffaire(), PageRequest.of(0, 1));
-
-				List<TitreAccusation> titreAccusations = null;
-
-				if (accData.size() > 0) {
-					if (accData.get(0) instanceof CarteRecup) {
-
-						titreAccusations = accusationCarteRecupRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-						System.err.print(accData.get(0));
-						CarteRecup c = (CarteRecup) accData.get(0);
-						s.setAnnee(c.getAnnee());
-						s.setMois(c.getMois());
-						s.setJour(c.getJour());
-						s.setAnneeArret(c.getAnneeArretProvisoire());
-						s.setMoisArret(c.getMoisArretProvisoire());
-						s.setJourArret(c.getJourArretProvisoire());
-						s.setTypeJuge(c.getTypeJuge());
-
-					} else if (accData.get(0) instanceof CarteDepot) {
-						titreAccusations = accusationCarteDepotRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-					} else if (accData.get(0) instanceof CarteHeber) {
-						titreAccusations = accusationCarteHeberRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-						System.out.println("CarteHeber.." + accData.get(0).getDocumentId());
-					}
-
-				}
-				return s;
-			}).collect(Collectors.toList());
-			return  output ;
-		}
-	}
-
-	@Override
-	public  List<Affaire>  findByArrestationByCDorCHorCP(  String idEnfant, long numOrdinale) {
-
-		List<Affaire> lesAffaires = affaireRepository.findByArrestationToPropaga(idEnfant, numOrdinale);
-		if (lesAffaires.isEmpty()) {
-			return  null ;
-		} else {
-			List<Affaire> output = lesAffaires.stream().map(s -> {
-
-				Document doc = documentRepository.getLastDocumentByAffaire(idEnfant, numOrdinale,
-						s.getNumOrdinalAffaire());
-
-				s.setTypeDocument(doc.getTypeDocument());
-
-				s.setDateEmissionDocument(doc.getDateEmission());
-
-				List<Document> accData = documentRepository.getDocumentByAffaireforAccusation(idEnfant, numOrdinale,
-						s.getNumOrdinalAffaire(), PageRequest.of(0, 1));
-
-				List<TitreAccusation> titreAccusations = null;
-
-				if (accData.size() > 0) {
-					if (accData.get(0) instanceof CarteRecup) {
-
-						titreAccusations = accusationCarteRecupRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-						System.err.print(accData.get(0));
-						CarteRecup c = (CarteRecup) accData.get(0);
-						s.setAnnee(c.getAnnee());
-						s.setMois(c.getMois());
-						s.setJour(c.getJour());
-						s.setAnneeArret(c.getAnneeArretProvisoire());
-						s.setMoisArret(c.getMoisArretProvisoire());
-						s.setJourArret(c.getJourArretProvisoire());
-						s.setTypeJuge(c.getTypeJuge());
-
-					} else if (accData.get(0) instanceof CarteDepot) {
-						titreAccusations = accusationCarteDepotRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-					} else if (accData.get(0) instanceof CarteHeber) {
-						titreAccusations = accusationCarteHeberRepository
-								.getTitreAccusationbyDocument(accData.get(0).getDocumentId());
-						s.setTitreAccusations(titreAccusations);
-						s.setDateEmission(accData.get(0).getDateEmission());
-						System.out.println("CarteHeber.." + accData.get(0).getDocumentId());
-					}
-
-				}
-				return s;
-			}).collect(Collectors.toList());
-			return   output ;
-		}
-	}
-
-	@Override
-	public  List<Affaire>  findByNumOrdinalAffaire(  String idEnfant, long numOrdinale,  long numOrdinalAffaire) {
-
-		List<Affaire> aData = affaireRepository.findByNumOrdinalAffaire(idEnfant, numOrdinale, numOrdinalAffaire);
-		if (aData.isEmpty()) {
-			return  null ;
-		} else {
-			return   aData ;
-		}
-	}
-
-	@Override
-	public  Affaire  verifierNumOrdinalAffaire(@RequestBody Affaire affaire,
-			@PathVariable("numOrdinaleArrestationActuelle") long numOrdinaleArrestationActuelle) {
-
-		int sommeAffaire = affaireRepository.countAffaire(affaire.getArrestation().getArrestationId());
-		System.out.println("sommeAffaire");
-
-		System.out.println(affaire.toString());
-		int maxAffaire = 0;
-		if (sommeAffaire > 0) {
-			maxAffaire = affaireRepository.maxAffaire(affaire.getArrestation().getArrestationId());
-		}
+	public Object calculerDateFin(String date, int duree) {
+		java.util.Date dateC = null;
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		String dateDtring = "";
 
 		try {
-			System.out.println(affaire.toString());
-			System.out.println(numOrdinaleArrestationActuelle);
-//------------------------------------------ test si l'affaire origine existe ou nn------------------------------------------------------------------------------------------
-			Optional<Affaire> affaireChercher = affaireRepository.findById(affaire.getAffaireId());
+			dateC = simpleDateFormat.parse(date);
 
-//------------------------------------------l'affaire origine existe ------------------------------------------------------------------------------------------
-			if (affaireChercher.isPresent()) {
-				System.out.println("j'ai trouvé l'affaire principale");
+			Calendar cal = Calendar.getInstance();
+			cal.setTime(dateC);
 
-//------------------------------------------tester  ------------------------------------------------------------------------------------------
-				if (affaireChercher.get().getArrestation().getArrestationId()
-						.getNumOrdinale() == numOrdinaleArrestationActuelle) {
-					System.out.println("l'affaire d origine mm aresstation");
-					affaire.setNumOrdinalAffaire(affaireChercher.get().getNumOrdinalAffaire());
+			cal.add(Calendar.DATE, duree);
+			java.util.Date modifiedDate = cal.getTime();
+
+			dateDtring = simpleDateFormat.format(modifiedDate);
+			System.out.println(dateDtring);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return dateDtring;
+
+	}
+
+	@Override
+	public AffaireDto mettreAJourNumeroOrdinal(AffaireDto affaireDto) {
+		// Conversion du DTO en entité
+		Affaire affaire = AffaireConverter.dtoToEntitybasic(affaireDto);
+
+		
+		
+		// Récupération du numéro ordinal maximum pour l'arrestation active
+		Integer result = affaireRepository
+				.trouverMaxAffaireParArrestationIdEtStatutActif(affaire.getArrestation().getArrestationId());
+		
+		int maxAffaire = (result != null) ? result : 0; 
+
+		try {
+
+			// Vérification de l'existence de l'affaire dans la base de données
+			Optional<Affaire> affaireExistante = affaireRepository.findById(affaire.getAffaireId());
+
+			if (affaireExistante.isPresent()) {
+				// L'affaire existe déjà
+
+				// Vérification du lien de l'affaire
+				if (affaire.getAffaireLien() == null) {
+					System.out.println("L'affaire  n'a pas de lien proposé . Utilisation du numéro ordinal existant.");
+					affaire.setNumOrdinalAffaire(affaireExistante.get().getNumOrdinalAffaire());
 				} else {
-					System.out.println("l'affaire d origine   pas  mm aresstation");
-					affaire.setNumOrdinalAffaire(maxAffaire + 1);
+					System.out.println("Erreur : l'affaire existe déjà et un lien ne peut pas être ajouté.");
+					// Gestion de l'exception ici si nécessaire
 				}
 
-				return   affaire ;
+				return AffaireConverter.entityToDto(affaire);
 			} else {
-				System.out.println("j'ai pas trouvé l'affaire principale");
+				// L'affaire n'existe pas
+				System.out.println("Aucune affaire principale trouvée.");
 
-				if (affaire.getAffaireLien() != null) {
+				if (affaire.getAffaireLien() == null) {
+					System.out.println("Aucune affaire de lien proposé. Attribution d'un nouveau numéro ordinal.");
+					affaire.setNumOrdinalAffaire(maxAffaire + 1);
+				} else {
+					System.out.println("Affaire de lien proposé.");
 
-					System.out.println("l'affaire de lien n'est pas null");
-					Optional<Affaire> affaireLienChercher = affaireRepository
+					// Vérification de l'existence de l'affaire de lien
+					Optional<Affaire> affaireLienExistante = affaireRepository
 							.findById(affaire.getAffaireLien().getAffaireId());
 
-					if (affaireLienChercher.isPresent()) {
-
-						if (affaireLienChercher.get().getArrestation().getArrestationId().getNumOrdinale() == affaire
-								.getArrestation().getArrestationId().getNumOrdinale()) {
-							System.out.println("l'affaire de lien mm aresstation");
-							affaire.setNumOrdinalAffaire(affaire.getAffaireLien().getNumOrdinalAffaire());
-						} else {
-							System.out.println("l'affaire de lien pas  mm aresstation");
-							affaire.setNumOrdinalAffaire(maxAffaire + 1);
-						}
-
+					if (affaireLienExistante.isPresent()) {
+						// L'affaire de lien existe
+						System.out.println(
+								"L'affaire  de lien proposé existe . Utilisation du numéro ordinal de l''affaire  de lien existant.");
+						affaire.setNumOrdinalAffaire(affaire.getAffaireLien().getNumOrdinalAffaire());
 					} else {
+						// L'affaire de lien n'existe pas
+						System.out.println(
+								"Aucune affaire de lien trouvée. Attribution du même nouveau numéro ordinal que l'affaire principale.");
 						affaire.getAffaireLien().setNumOrdinalAffaire(maxAffaire + 1);
 						affaire.setNumOrdinalAffaire(maxAffaire + 1);
 					}
-
-				} else {
-					System.out.println("l'affaire de lien est null");
-					affaire.setNumOrdinalAffaire(maxAffaire + 1);
-					System.out.println(maxAffaire + 1);
-					System.out.println(affaire.getArrestation());
 				}
 
-				affaire.getAffaireId().setNumOrdinaleArrestation(numOrdinaleArrestationActuelle);
-				// Affaire affaireEnregistrer =affaireRepository.save(affaire);
-
-				return   affaire ;
-
+				return AffaireConverter.entityToDto(affaire);
 			}
 
 		} catch (Exception e) {
-			return   null ;
+			// Gestion de l'exception, enregistrement de l'erreur
+			System.err.println("Erreur lors de la mise à jour de l'affaire : " + e.getMessage());
+			return null;
 		}
 	}
 
 	@Override
-	public  Affaire  update(@RequestBody Affaire affaire) {
-		try {
+	public FicheDeDetentionDto obtenirInformationsDeDetentionParIdDetention(String idEnfant, long numOrdinale) {
 
-			return   affaireRepository.save(affaire) ;
-		} catch (Exception e) {
-			return   null ;
+		
+		System.out.println("*********************** debut fiche detention **************");
+		// Récupérer l'arrestation
+		ArrestationId arrestationId = new ArrestationId(idEnfant, numOrdinale);
+		ArrestationDto arrestation = ArrestationConverter.entityToDto(arrestationRepository.findById(arrestationId).get());
+          System.out.println(arrestation.toString());
+		// Récupérer la liste des affaires en fonction des paramètres fournis
+		List<AffaireDto> lesAffairesDto = trouverAffairesParAction("general", idEnfant, numOrdinale);
+		
+		 System.out.println(lesAffairesDto.toString());
+		FicheDeDetentionDto dto = new FicheDeDetentionDto();
+
+		// Si aucune affaire n'est trouvée, retourner un DTO vide
+		if (lesAffairesDto.isEmpty()) {
+			System.out.println("no");
+		 
+			return dto;
+		}
+		else {
+			System.out.println("yes");
 		}
 
-	}
+		dto.setArrestation(arrestation);
+		
+		
+		System.out.println(lesAffairesDto.size());
+		// Mettre à jour les informations de l'affaire principale
+		AffaireUtils.updateAffairePrincipale(lesAffairesDto);
+		System.out.println(lesAffairesDto.size());
+		// Déterminer l'état juridique en fonction de l'affaire principale
+		dto.setEtatJuridique(
+				AffaireUtils.determineEtatJuridique(arrestation, lesAffairesDto));
 
-	@Override
-	public  Object  getDateDebutPunition(  String idEnfant,  long numOrdinale) {
+		// Trier les affaires par numéro ordinal en ordre décroissant
+		lesAffairesDto = lesAffairesDto.stream()
+				.sorted(Comparator.comparing(AffaireDto::getNumOrdinalAffaire).reversed()).collect(Collectors.toList());
+		dto.setAffaires(lesAffairesDto);
 
-		Date aData = affaireRepository.getDateDebutPunition(idEnfant, numOrdinale);
-		if (aData != null) {
-			return  aData ;
-		} else {
-			return   null ;
-		}
-	}
+		// Traiter chaque affaire pour les calculs pénaux et les détails de jugement
+		for (AffaireDto element : lesAffairesDto) {
+			// Effectuer les calculs pénaux si l'affaire n'est pas affectée et répond aux
+			// critères
+			if (element.getAffaireAffecter() == null && !"AEX".equals(element.getTypeDocument())
+					&& (element.getTypeJuge() == null || element.getTypeJuge().getId() != 29)) {
+				AffaireUtils.calculerPenal(element, dto);
+			}
+			// Calculer les détails du jugement provisoire
+			AffaireUtils.calculerArret(element, dto);
 
-	@Override
-	public  Object  getDateFinPunition( String idEnfant,  long numOrdinale) {
+			// Définir la date de jugement principale
+			dto.setDateJugementPrincipale(dateFormat.format(element.getDateEmission()));
 
-		Date aData = affaireRepository.getDateFinPunition(idEnfant, numOrdinale);
-		if (aData != null) {
-			return   aData ;
-		} else {
-
-			List<Affaire> affprincipale = affaireRepository.findAffairePrincipale(idEnfant, numOrdinale);
-			if (affprincipale.isEmpty()) {
-				return   null ;
-			} else {
-				boolean allSameName = affprincipale.stream().allMatch(x -> x.getTypeDocument().equals("AEX"));
-				if (allSameName) {
-					
-					aData = affprincipale.get(0).getDocuments().get(affprincipale.get(0).getDocuments().size() - 1)
-							.getDateEmission();
-					return  aData ;
-				} else {
-					return   null ;
-				}
+			// Vérifier les types de documents spécifiques et définir les indicateurs
+			// appropriés
+			if ("CJ".equals(element.getTypeDocument()) || "CJA".equals(element.getTypeDocument())) {
+				dto.setDateJuge(true);
 			}
 
+			// Traiter les documents d'appel
+			if ("AP".equals(element.getTypeDocument())) {
+				dto.setDateAppelParquet(dateFormat.format(element.getDateEmissionDocument()));
+				dto.setAppelParquet(true);
+				dto.setDateJuge(true);
+			} else if ("AE".equals(element.getTypeDocument())) {
+				dto.setDateAppelEnfant(dateFormat.format(element.getDateEmissionDocument()));
+				dto.setAppelEnfant(true);
+				dto.setDateJuge(true);
+			}
+
+			// Traiter les changements de lieu si applicable
+			if ("CHL".equals(element.getTypeDocumentActuelle())) {
+				AffaireUtils.traiterChangementLieu(element, dto, documentRepository, residenceRepository);
+			}
+
+			// Vérifier les types de juge spécifiques et définir l'indicateur d'âge adulte
+			if (element.getTypeJuge() != null && element.getTypeJuge().getId() == 4) {
+				dto.setAgeAdulte(true);
+			}
+		}
+
+		// Totaliser les résidences selon des critères spécifiques
+		dto.setTotaleRecidenceWithetabChangeManiere(
+				residenceRepository.countTotaleRecidenceWithetabChangeManiere(idEnfant, numOrdinale));
+
+		// Totaliser les échappés
+		dto.setTotaleEchappe(echappesRepository.countByEnfantAndArrestation(idEnfant, numOrdinale));
+
+		// Totaliser les résidences
+		dto.setTotaleRecidence(residenceRepository.countTotaleRecidence(idEnfant, numOrdinale));
+
+		// Définir les informations de libération à partir de la première affaire
+		dto.setLiberation(arrestation.getLiberation());
+
+		// Récupérer les résidences associées à l'enfant et à l'arrestation
+		List<Residence> residences = residenceRepository.findByEnfantAndArrestation(idEnfant, numOrdinale);
+		if (residences != null) {
+			List<ResidenceDto> residencesDto = residences.stream().map(ResidenceConverter::entityToDto)
+					.collect(Collectors.toList());
+			dto.setResidences(residencesDto);
+		}
+
+		// Déterminer la date de début de punition
+		Date dateDebut = affaireRepository.getDateDebutPunition(idEnfant, numOrdinale);
+		if (dateDebut != null) {
+			dto.setDateDebut(dateFormat.format(dateDebut));
+		}
+
+		// Déterminer la date de fin de punition
+		Date dateFin = affaireRepository.getDateFinPunition(idEnfant, numOrdinale);
+		if (dateFin == null) {
+			boolean allSameName = dto.getEtatJuridique().toString().equals("pasInsertionLiberable");
+			if (allSameName) {
+				dateFin = lesAffairesDto.get(0).getDocuments().get(0).getDateEmission();
+			}
+		}
+
+		if (dateFin != null) {
+			dto.setDateFin(dateFormat.format(dateFin));
+		}
+
+		// Récupérer les arrêts provisoires associés à l'arrestation
+		List<ArretProvisoire> list = arretProvisoireRepository.getArretProvisoirebyArrestation(idEnfant, numOrdinale);
+		if (!list.isEmpty()) {
+			List<ArretProvisoireDto> listDto = list.stream().map(ArretProvisoireConverter::entityToDto)
+					.collect(Collectors.toList());
+			dto.setArretProvisoires(listDto);
+		}
+		System.out.println("*********************** debut fiche detention **************");
+		return dto;
+	}
+
+	@Override
+	public VerifierAffaireDto validerAffaire(AffaireData affaireData) {
+		System.err.println("------------------------------------------------------------------------");
+		System.out.println(affaireData.toString());
+		String idEnfant = affaireData.getIdEnfant();
+		ArrestationDto arrestationDto = affaireData.getArrestation();
+		String numAffaire1 = affaireData.getNumAffaire1();
+		TribunalDto tribunal1 = affaireData.getTribunal1();
+		String numAffaire2 = affaireData.getNumAffaire2();
+		TribunalDto tribunal2 = affaireData.getTribunal2();
+		AffaireDto affaireOrigine = affaireData.getAffaireOrigine();
+		VerifierAffaireDto verifierAffaireDto = new VerifierAffaireDto();
+
+		AffaireId idAffaire = new AffaireId(idEnfant, numAffaire1, tribunal1.getId(),
+				arrestationDto.getArrestationId().getNumOrdinale());
+		
+		Optional<Affaire> affaireDemmande = affaireRepository.findById(idAffaire);
+
+		// ---------------------------Chercher l'affaire origine existe ou n'exist
+		// pas-------------------------------------------------------------------------------------
+		if (affaireDemmande.isPresent()) {
+			// ------------------- l'affaire origine existe
+			// -----------------------------------------------------------------------------------------
+			Affaire affaireExist = affaireDemmande.get();
+
+			System.out.println(affaireExist.toString());
+
+			affaireOrigine = AffaireConverter.entityToDto(affaireExist);
+			// --------------------Chercher si l'affaire origine est un lien d'autre affaire
+			// ou n'est pas un lien d'une aucune affaire
+			// -------------------------------------------------------------------------------------
+			Optional<Affaire> affairelienResult = affaireRepository.findAffaireByAffaireLien(
+					affaireExist.getAffaireId().getIdEnfant(), affaireExist.getAffaireId().getNumAffaire(),
+					affaireExist.getAffaireId().getIdTribunal());
+
+			if (affairelienResult.isPresent()) {
+				// -------------------- l'affaire origine est un lien d'autre affaire
+				// ------------------------ ----------------------------------------------------
+				Affaire affairelien = affairelienResult.get();
+				verifierAffaireDto.setDisplayAlertAffaireOrigineLier(true);
+
+			}
+			// -------------------- l'affaire origine n'est pas un lien d'une aucune affaire
+			// ----------
+			else {
+				// -------------------- Tester si l'affaire d'origine avoir un lien avec un
+				// autre affaire ou n'avoir pas un lien avec un affaire ------------------------
+				// --------------------------------------------------------------------------------------------
+
+				// -------------------- l'affaire d'origine avoir un lien avec un autre affaire
+				// ------------------------ -------------------------------------------
+				if (affaireExist.getAffaireLien() != null) {
+					// -------------------- Tester si les champs d'affaire de lien sont remplis ou
+					// ne sont pas remplis -----------------
+					if (numAffaire2 != null && tribunal2 != null) {
+						// -------------------- les champs d'affaire de lien sont remplis et l'affaire
+						// d'origine avoir un lien avec un autre affaire-------------------
+						// ------------------------
+						// --------------------------------------------------------------------------------------------
+
+						// -------------------- Tester si les champs d'affaire de lien à saisir sont les
+						// memes que l'affaire de lien reel ou nn ------------------------
+						// --------------------------------------------------------------------------------------------
+
+						if (affaireExist.getAffaireLien().getAffaireId().getNumAffaire() != numAffaire2
+								&& affaireExist.getAffaireLien().getAffaireId().getIdTribunal() != tribunal2.getId()) {
+
+							// -------------------- les champs d'affaire de lien à saisir sont les memes que
+							// l'affaire de lien reel ------------------------
+							// --------------------------------------------------------------------------------------------
+
+							verifierAffaireDto.setDisplayAlertLienAutre(true);
+						} else {
+							// -------------------- les champs d'affaire de lien à saisir ne sont pas les
+							// memes que l'affaire de lien reel ------------------------
+							// --------------------------------------------------------------------------------------------
+
+							verifierAffaireDto.setDisplayAlertLienMeme(true);
+						}
+
+					} else {
+						// -------------------- les champs d'affaire de lien ne sont pas remplis et
+						// l'affaire d'origine avoir un lien avec un autre affaire-------------------
+						// ------------------------
+						// --------------------------------------------------------------------------------------------
+
+						verifierAffaireDto.setDisplayAlertOrigineExistAvecLien(true);
+					}
+				}
+				// -------------------- l'affaire d'origine n'avoir pas un lien avec un affaire
+				// ------------------------
+				// --------------------------------------------------------------------------------------------
+
+				else {
+					verifierAffaireDto.setDisplayAlertOrigineExistSansLien(true);
+
+					verifierAffaireDto.setNextBoolean(true);
+				}
+			}
+		} else {
+			verifierAffaireDto.setDisplayNewAffaireOrigine(true);
+			// -----------------------lien-----------------
+			// -------------------- assuerer que l'affaire d'origine avoir l'arrestation
+			// actuel ------------------------
+			// --------------------------------------------------------------------------------------------
+			// this.affaireOrigine.arrestation = this.arrestation;
+
+			// -------------------- Tester si les champs d'affaire de lien sont remplis ou
+			// ne sont pas remplis ------------------------
+			// --------------------------------------------------------------------------------------------
+
+			// -------------------- --les champs d'affaire de lien sont remplis
+			// ------------------------
+			// --------------------------------------------------------------------------------------------
+
+			if (numAffaire2 != null && tribunal2 != null) {
+				AffaireId idAffaireLien = new AffaireId(idEnfant, numAffaire2, tribunal2.getId(),
+						arrestationDto.getArrestationId().getNumOrdinale());
+				// -------------------- --Chercher l'affaire de lien exisit ou n'existe pas
+				// ------------------------
+				// --------------------------------------------------------------------------------------------
+
+				Optional<Affaire> affaireLienDemmande = affaireRepository.findById(idAffaireLien);
+
+				if (affaireLienDemmande.isPresent()) {
+					Affaire affaireLienExist = affaireLienDemmande.get();
+
+					affaireOrigine.setAffaireLien(AffaireConverter.entityToDto(affaireLienExist));
+
+					// -------------------- -l'affaire de lien exisit ------------------------
+					// --------------------------------------------------------------------------------------------
+
+					Optional<Affaire> affairelienResult = affaireRepository.findAffaireByAffaireLien(
+							affaireLienExist.getAffaireId().getIdEnfant(),
+							affaireLienExist.getAffaireId().getNumAffaire(),
+							affaireLienExist.getAffaireId().getIdTribunal());
+					// --------------------Chercher si l'affaire de lien est un lien d'autre affaire
+					// ou n'est pas un lien d'une aucune affaire
+					// -------------------------------------------------------------------------------------
+
+					if (affairelienResult.isPresent()) {
+
+						// -------------------- l'affaire de lien est un lien d'autre affaire
+						// ------------------------
+						// -------------------------------------------------------------------------------------
+
+						verifierAffaireDto.setDisplayAlertAffaireLienLier(true);
+					} else {
+						// -------------------- l'affaire de lien n'est pas un lien d'autre affaire
+						// ------------------------
+						// -------------------------------------------------------------------------------------
+
+						affaireOrigine = mettreAJourNumeroOrdinal(affaireOrigine);
+						verifierAffaireDto.setNextBoolean(true);
+					}
+
+				} else {
+					// -------------------- -- l'affaire de lien n'existe pas
+					// ----------------------------------------------------------------------------------------------------------------------
+
+					List<Affaire> eData = affaireRepository.findAffaireByAnyArrestation(idEnfant, numAffaire2,
+							tribunal2.getId());
+					if (!eData.isEmpty()) {
+						verifierAffaireDto.setDisplayAlertLienAutreArrestation(true);
+					} else {
+						verifierAffaireDto.setDisplayNext(true); // accepter()
+
+					}
+
+					AffaireDto affaireLien = new AffaireDto();
+					affaireLien.setAffaireId(AffaireIdConverter.entityToDto(idAffaireLien));
+					affaireLien.setArrestation(arrestationDto);
+					affaireLien.setTribunal(tribunal2);
+					affaireOrigine.setAffaireLien(affaireLien);
+					affaireOrigine = mettreAJourNumeroOrdinal(affaireOrigine);
+				}
+
+			}
+
+			// -------------------- les champs d'affaire de lien ne sont pas remplis
+			// ------------------------
+			// --------------------------------------------------------------------------------------------
+
+			else {
+				affaireOrigine.setAffaireLien(null);
+
+				affaireOrigine = mettreAJourNumeroOrdinal(affaireOrigine);
+
+				verifierAffaireDto.setNextBoolean(true);
+			}
+		}
+		affaireOrigine.setAffaireId(AffaireIdConverter.entityToDto(idAffaire));
+		verifierAffaireDto.setAffaire(affaireOrigine);
+		System.out.println(verifierAffaireDto.toString());
+		return verifierAffaireDto;
+	}
+
+	@Override
+	public List<AffaireDto> trouverAffairesParAction(String action, String idEnfant, long numOrdinale) {
+		switch (action) {
+		case "general":
+			return trouverAffairesGeneral(idEnfant, numOrdinale);
+		case "transferer":
+			return trouverAffairesATransferer(idEnfant, numOrdinale);
+		case "arreter":
+			return trouverAffairesAArreter(idEnfant, numOrdinale);
+		case "appelerOuReviser":
+			return trouverAffairesAAppelerOuReviser(idEnfant, numOrdinale);
+		case "prolonger":
+			return trouverAffairesAProlonger(idEnfant, numOrdinale);
+		default:
+			throw new IllegalArgumentException("Action non reconnue");
 		}
 	}
-	
-	
-	@Override
-//	public List<Affaire> findByArrestation(String idEnfant, long numOrdinale) {
-//	    // Récupère les affaires de la base de données
-//	    List<Affaire> lesAffaires = affaireRepository.findByArrestation(idEnfant, numOrdinale);
-//
-//	    // Liste pour stocker les affaires enrichies
-//	    List<Affaire> output = new ArrayList<>();
-//
-//	    // Pour chaque affaire récupérée
-//	    for (Affaire affaire : lesAffaires) {
-//	        try {
-//	            // Récupère le dernier document associé à l'affaire
-//	            Document lastDocument = documentRepository.getLastDocumentByAffaire(idEnfant, numOrdinale, affaire.getNumOrdinalAffaire());
-//	            if (lastDocument != null) {
-//	                // Enrichit l'affaire avec les données du document
-//	                affaire.setTypeDocument(lastDocument.getTypeDocument());
-//	                affaire.setDateEmissionDocument(lastDocument.getDateEmission());
-//
-//	                // Si le document est un Transfert ou une Arreterlexecution, met à jour le type de fichier
-//	                if (lastDocument instanceof Transfert) {
-//	                    Transfert t = (Transfert) lastDocument;
-//	                    affaire.setTypeFile(t.getTypeFile());
-//	                } else if (lastDocument instanceof Arreterlexecution) {
-//	                    Arreterlexecution t = (Arreterlexecution) lastDocument;
-//	                    affaire.setTypeFile(t.getTypeFile());
-//	                }
-//
-//	                // Récupère les documents d'accusation associés à l'affaire
-//	                List<Document> accData = documentRepository.getDocumentByAffaireforAccusation(idEnfant, numOrdinale, affaire.getNumOrdinalAffaire(), PageRequest.of(0, 1));
-//
-//	                // Si des documents d'accusation sont présents
-//	                if (!accData.isEmpty()) {
-//	                    Document lastDocAvecAccusation = accData.get(0);
-//	                    // Enrichit l'affaire avec les données du document d'accusation
-//	                    affaire.setTitreAccusations(accusationCarteRecupRepository.getTitreAccusationbyDocument(lastDocAvecAccusation.getDocumentId()));
-//	                    affaire.setDateEmission(lastDocAvecAccusation.getDateEmission());
-//	                    if (lastDocAvecAccusation instanceof CarteRecup) {
-//	                        CarteRecup c = (CarteRecup) lastDocAvecAccusation;
-//	                        affaire.setAnnee(c.getAnnee());
-//	                        affaire.setMois(c.getMois());
-//	                        affaire.setJour(c.getJour());
-//	                        affaire.setAnneeArret(c.getAnneeArretProvisoire());
-//	                        affaire.setMoisArret(c.getMoisArretProvisoire());
-//	                        affaire.setJourArret(c.getJourArretProvisoire());
-//	                        affaire.setTypeJuge(c.getTypeJuge());
-//	                    }
-//	                }
-//	            }
-//	        } catch (Exception e) {
-//	            // Gestion des exceptions
-//	            e.printStackTrace();
-//	            // Continue avec la prochaine affaire
-//	            continue;
-//	        }
-//	        // Ajoute l'affaire enrichie à la liste de sortie
-//	        output.add(affaire);
-//	    }
-//
-//	    // Retourne la liste d'affaires enrichies
-//	    return output;
-//	}
 
-	public  List<Affaire>  findByArrestation(  String idEnfant,  long numOrdinale) {
-	
-		List<Affaire> lesAffaires = affaireRepository.findByArrestation(idEnfant, numOrdinale);
+	private List<AffaireDto> trouverAffairesGeneral(String idEnfant, long numOrdinale) {
+		 System.out.println("rqt"+affaireRepository.findAffairePrincipale(idEnfant, numOrdinale).size());
+		return processAffaires(affaireRepository.findAffairePrincipale(idEnfant, numOrdinale));
 
+	}
+
+	public List<AffaireDto> trouverAffairesATransferer(String idEnfant, long numOrdinale) {
+		return processAffaires(affaireRepository.findByArrestationToTransfert(idEnfant, numOrdinale));
+	}
+
+	public List<AffaireDto> trouverAffairesAArreter(String idEnfant, long numOrdinale) {
+		return processAffaires(affaireRepository.findByArrestationToArret(idEnfant, numOrdinale));
+	}
+
+	public List<AffaireDto> trouverAffairesAAppelerOuReviser(String idEnfant, long numOrdinale) {
+		return processAffaires(affaireRepository.trouverAffairesAAppelerOuReviser(idEnfant, numOrdinale));
+	}
+
+	public List<AffaireDto> trouverAffairesAProlonger(String idEnfant, long numOrdinale) {
+		return processAffaires(affaireRepository.findByArrestationToPropaga(idEnfant, numOrdinale));
+	}
+
+	public List<AffaireDto> processAffaires(List<Affaire> lesAffaires) {
+	System.out.println("avant "+lesAffaires.size()); 
+	
 		List<Affaire> output = lesAffaires.stream().map(s -> {
 
-			Document lastDocument = documentRepository.getLastDocumentByAffaire(idEnfant, numOrdinale, s.getNumOrdinalAffaire());
+			Document lastDocument = documentRepository.getLastDocumentByAffaire(s.getAffaireId().getIdEnfant(),
+					s.getAffaireId().getNumOrdinaleArrestation(), s.getNumOrdinalAffaire());
+
 			if (lastDocument != null) {
 				s.setTypeDocument(lastDocument.getTypeDocument());
 
 				s.setDateEmissionDocument(lastDocument.getDateEmission());
-				
-		//pour definire le type de Transfert exactement  ("إحــــــالة "=> value: "T") ("تخلــــــي"=> value: "A")  ( "تعهــــــد"=> value: "G")			
-				if (lastDocument instanceof Transfert) { 
-					  
+
+				// pour definire le type de Transfert exactement ("إحــــــالة "=> value: "T")
+				// ("تخلــــــي"=> value: "A") ( "تعهــــــد"=> value: "G")
+				if (lastDocument instanceof Transfert) {
+
 					Transfert t = (Transfert) lastDocument;
 
 					s.setTypeFile(t.getTypeFile());
-					
+
 				}
-		//pour definire le type de Arreterlexecution exactement  ("إيقاف تنفيذ الحكم " => value: "AEX") ("ســــــــــــراح"=> value: "L")
+				// pour definire le type de Arreterlexecution exactement ("إيقاف تنفيذ الحكم "
+				// => value: "AEX") ("ســــــــــــراح"=> value: "L")
 				if (lastDocument instanceof Arreterlexecution) {
 					Arreterlexecution t = (Arreterlexecution) lastDocument;
 
 					s.setTypeFile(t.getTypeFile());
-				
+
 				}
 
-				List<Document> accData = documentRepository.getDocumentByAffaireforAccusation(idEnfant, numOrdinale,
-						s.getNumOrdinalAffaire(), PageRequest.of(0, 1));
+				DocumentSearchCriteriaDto criteria = new DocumentSearchCriteriaDto(s.getAffaireId().getIdEnfant(),
+						s.getAffaireId().getNumOrdinaleArrestation(), s.getNumOrdinalAffaire());
+				Document accData = documentRepository.getDocumentByAffaireforAccusation(criteria);
+				// pour difinier les accusation de l'affaire
+				List<TitreAccusation> titreAccusations = new ArrayList<TitreAccusation>();
 
-				List<TitreAccusation> titreAccusations = null;
+				if (accData != null) {
 
-				if (accData.size() > 0) {
-				
-					Document lastDocAvecAccusation = accData.get(0);
-					
+					Document lastDocAvecAccusation = accData;
+
 					if (lastDocAvecAccusation instanceof CarteRecup) {
 
-						titreAccusations = accusationCarteRecupRepository
-								.getTitreAccusationbyDocument(lastDocAvecAccusation.getDocumentId());
+						CarteRecup c = (CarteRecup) lastDocAvecAccusation;
+						for (AccusationCarteRecup accusation : c.getAccusationCarteRecups()) {
+							titreAccusations.add(accusation.getTitreAccusation());
+						}
 
 						s.setTitreAccusations(titreAccusations);
 						s.setDateEmission(lastDocAvecAccusation.getDateEmission());
-					
-						CarteRecup c = (CarteRecup) lastDocAvecAccusation;
+
 						s.setAnnee(c.getAnnee());
 						s.setMois(c.getMois());
 						s.setJour(c.getJour());
@@ -619,17 +599,24 @@ public class AffaireServiceImpl implements  AffaireService{
 
 					} else if (lastDocAvecAccusation instanceof CarteDepot) {
 
-						titreAccusations = accusationCarteDepotRepository
-								.getTitreAccusationbyDocument(lastDocAvecAccusation.getDocumentId());
+						CarteDepot c = (CarteDepot) lastDocAvecAccusation;
+						for (AccusationCarteDepot accusation : c.getAccusationCarteDepots()) {
+							titreAccusations.add(accusation.getTitreAccusation());
+						}
 						s.setTitreAccusations(titreAccusations);
 						s.setDateEmission(lastDocAvecAccusation.getDateEmission());
 
 					} else if (lastDocAvecAccusation instanceof CarteHeber) {
-						titreAccusations = accusationCarteHeberRepository
-								.getTitreAccusationbyDocument(lastDocAvecAccusation.getDocumentId());
+
+						CarteHeber c = (CarteHeber) lastDocAvecAccusation;
+						for (AccusationCarteHeber accusation : c.getAccusationCarteHebers()) {
+							titreAccusations.add(accusation.getTitreAccusation());
+						}
+
 						s.setTitreAccusations(titreAccusations);
+
 						s.setDateEmission(lastDocAvecAccusation.getDateEmission());
-						 
+
 					}
 
 				}
@@ -637,266 +624,9 @@ public class AffaireServiceImpl implements  AffaireService{
 			}
 			return s;
 		}).collect(Collectors.toList());
-
-		return  output ;
+		System.out.println("apres "+output.stream().map(AffaireConverter::entityToDto).collect(Collectors.toList()).size());
+		return output.stream().map(AffaireConverter::entityToDto).collect(Collectors.toList());
 
 	}
-	
 
-
- 
-	@Override
-	public CalculeAffaireDto calculerAffaire(String idEnfant, long numOrdinale) {
-		
-		
-		 
-	   
-	    List<Affaire> lesAffaires = findByArrestation(idEnfant, numOrdinale);
-	    CalculeAffaireDto dto = new CalculeAffaireDto();
-	    
-	    
-	    
-	    
-	    
-	    if (lesAffaires.isEmpty()) {
-	        dto.setSansAffaire(true);
-	        return dto;
-	    }
-	    else {
- 	    	dto.setAffaires(lesAffaires);
-	    	 dto.setSansAffaire(false);
-	    }
-	    
-	    Arrestation arrestationCourant = AffaireUtils.processArrestationToGetAffairPrincipal(lesAffaires.get(0).getArrestation(), affaireRepository);
-		
-	    dto.setNbrAffaires(lesAffaires.size());
-	    dto.setDisplayArrestation(true);
-	   // dto.setDisplayAffaire(true);
-	 	   
-	    for (Affaire element : lesAffaires) {
-	        if (element.getAffaireAffecter() == null &&
-	            !"AEX".equals(element.getTypeDocument()) &&
-	            (element.getTypeJuge() == null || element.getTypeJuge().getId() != 29)) {
-	            AffaireUtils.calculerPenal(element, dto);
-	        }
-
-	        AffaireUtils.calculerArret(element, dto);
-	        dto.setDateJugementPrincipale(dateFormat.format(element.getDateEmission()));
-	      
-	        
-	        dto.setEtatJuridique(arrestationCourant.getEtatJuridique());
-	       
-	        
-	        if(arrestationCourant != null) {
-	        	
-	        	
-	        	
-	        	
-	        	if (element.getNumOrdinalAffaire() ==  arrestationCourant.getNumOrdinalAffairePricipale()) {
-			 		 
-	        		element.setAffairePrincipale(true);
-					
-			 	}
-	        }
-	        
-	        if ("CJ".equals(element.getTypeDocument()) || "CJA".equals(element.getTypeDocument())) {
-				dto.setDateJuge(true);
-			}
-	    	
-	        if ("AP".equals(element.getTypeDocument())) {
-	            dto.setDateAppelParquet(dateFormat.format(element.getDateEmissionDocument()));
-	            dto.setAppelParquet(true);
-	            dto.setDateJuge(true);
-	        } else if ("AE".equals(element.getTypeDocument())) {
-	            dto.setDateAppelEnfant(dateFormat.format(element.getDateEmissionDocument()));
-	            dto.setAppelEnfant(true);
-	            dto.setDateJuge(true);
-	        }
-
-	       
-		 
-	        
-	        if ("CHL".equals(element.getTypeDocumentActuelle())) {
-	            AffaireUtils.traiterChangementLieu(element, dto, documentRepository, residenceRepository);
-	        }
-
-	        if (element.getTypeJuge() != null && element.getTypeJuge().getId() == 4) {
-	            dto.setAgeAdulte(true);
-	        }
-	    }
-	    
-		
-	    dto.setTotaleRecidenceWithetabChangeManiere(residenceRepository.countTotaleRecidenceWithetabChangeManiere(idEnfant, numOrdinale));
-	    int total = residenceRepository.countTotaleRecidence(idEnfant, numOrdinale);
-		if (total == 0) {
-			total = 0;
-		} else {
-			total = total - 1;
-		}
-		
-
-	      dto.setTotaleRecidence(total);
-          dto.setLiberation(arrestationCourant.getLiberation());
-          
-          dto.setTotaleEchappe(echappesRepository.countByEnfantAndArrestation(idEnfant, numOrdinale));
-          
-          List<Residence> cData = residenceRepository.findByEnfantAndArrestation(idEnfant, numOrdinale);
-  		if (cData != null) {
-  			dto.setResidences(cData);   
-  		}  
-  	//----------------------------------------
-  		Date dateDebut = affaireRepository.getDateDebutPunition(idEnfant, numOrdinale);
-  		
-		if (dateDebut!= null) {
-			dto.setDateDebut(dateFormat.format(dateDebut)); 
-		}  
-		
-		 
-		
-		//----------------------------------------
-  		
-  		Date dateFin = affaireRepository.getDateFinPunition(idEnfant, numOrdinale);
-		if (dateFin == null) {
-		 
-	
-
-			List<Affaire> affprincipale = affaireRepository.findAffairePrincipale(idEnfant, numOrdinale);
-			if (!affprincipale.isEmpty()) {
-				
-				boolean allSameName = affprincipale.stream().allMatch(x -> x.getTypeDocument().equals("AEX"));
-				if (allSameName) {
-				
-					dateFin = affprincipale.get(0).getDocuments().get(affprincipale.get(0).getDocuments().size() - 1)
-							.getDateEmission();
-					 
-				}
-
-			}
-
-		}
-		
-		if (dateFin != null) {
-			dto.setDateFin(dateFormat.format(dateFin)); 
-		}
-		
-		
-		 
-		//----------------------------------------------------------
-		
-		 List<ArretProvisoire> list = arretProvisoireRepository.getArretProvisoirebyArrestation(idEnfant, numOrdinale);
-		 if(!list.isEmpty()) {
-			 dto.setArretProvisoires(list);
-		 }
-	    return dto;
-	}
-
-//	public CalculeAffaireDto calculerAffaire(String idEnfant,  long numOrdinale) {
-//		List<Affaire> lesAffaires =  findByArrestation(idEnfant, numOrdinale);
-//		 CalculeAffaireDto dto = new CalculeAffaireDto();
-//		if(lesAffaires.isEmpty()) {
-//			dto.setSansAffaire(true);
-//			return dto;
-//		}
-//		 
-//		
-//		dto.setNbrAffaires(lesAffaires.size()) ;
-//		dto.setDisplayArrestation(true);
-//		dto.setDisplayAffaire(true);
-//        
-//         
-//         
-//		    for(Affaire element : lesAffaires) {  
-//		    	if (
-//			        element.getAffaireAffecter() == null &&
-//			        !"AEX".equals(element.getTypeDocument()) &&
-//			        (element.getTypeJuge() == null || element.getTypeJuge().getId() != 29)
-//			    ) {
-//			        dto.setJourPenal(dto.getJourPenal() + element.getJour());
-//			        dto.setMoisPenal(dto.getMoisPenal() + element.getMois());
-//			        dto.setMoisPenal(dto.getMoisPenal() + (int) Math.floor(dto.getJourPenal() / 30) * 1);
-//			        dto.setJourPenal(dto.getJourPenal() - (int) Math.floor((dto.getJourPenal() % 365) / 30) * 30);
-//			        dto.setJourPenal(dto.getJourPenal() - (int) Math.floor(dto.getJourPenal() / 365) * 365);
-//			        dto.setAnneePenal(dto.getAnneePenal() + (int) Math.floor(element.getAnnee()));
-//			        dto.setAnneePenal(dto.getAnneePenal() + (int) Math.floor(dto.getMoisPenal() / 12));
-//			        dto.setMoisPenal(dto.getMoisPenal() - (int) Math.floor(dto.getMoisPenal() / 12) * 12);
-//			    }
-//
-//			    dto.setJourArret(dto.getJourArret() + element.getJourArret());
-//			    dto.setMoisArret(dto.getMoisArret() + element.getMoisArret());
-//			    dto.setMoisArret(dto.getMoisArret() + (int) Math.floor(dto.getJourArret() / 30) * 1);
-//			    dto.setJourArret(dto.getJourArret() - (int) Math.floor((dto.getJourArret() % 365) / 30) * 30);
-//			    dto.setJourArret(dto.getJourArret() - (int) Math.floor(dto.getJourArret() / 365) * 365);
-//			    dto.setAnneeArret(dto.getAnneeArret() + (int) Math.floor(element.getAnneeArret()));
-//			    dto.setAnneeArret(dto.getAnneeArret() + (int) Math.floor(dto.getMoisArret() / 12));
-//			    dto.setMoisArret(dto.getMoisArret() - (int) Math.floor(dto.getMoisArret() / 12) * 12);
-//
-//			    dto.setDateJugementPrincipale(dateFormat.format(element.getDateEmission()));
-//			    if ("AP".equals(element.getTypeDocument())) {
-//			        dto.setDateAppelParquet(dateFormat.format(element.getDateEmissionDocument() ));
-//			        dto.setAppelParquet(true);
-//			        dto.setDateJuge(true);
-//			    }
-//
-//			    if ("AE".equals(element.getTypeDocument())) {
-//			    	dto.setDateAppelEnfant(dateFormat.format(element.getDateEmissionDocument()));
-//			        dto.setAppelEnfant(true);
-//			        dto.setDateJuge(true);
-//			      
-//			    }
-//		    
-//
-//		    if ("CHL".equals(element.getTypeDocumentActuelle())) {
-//		        List<Document> documents = documentRepository.getDocumentByAffaire(
-//		            element.getArrestation().getArrestationId().getIdEnfant(),
-//		            element.getArrestation().getArrestationId().getNumOrdinale(),
-//		            element.getNumOrdinalAffaire()
-//		        );
-//
-//		        if (!documents.isEmpty()) {
-//		            Document document1 = documents.get(0);
-//		            Document document2 = documents.get(1);
-//
-//		            if (document1 instanceof ChangementLieu) {
-//		                ChangementLieu changementLieu = (ChangementLieu) document1;
-//
-//		                if ("changementEtab".equals(changementLieu.getType()) &&
-//		                    element.getArrestation() != null &&
-//		                    element.getArrestation().getLiberation() == null) {
-//		                    dto.setChangementLieuCh(true);
-//		                } else if ("mutation".equals(changementLieu.getType())) {
-//		                    Residence residence = residenceRepository.findMaxResidence(
-//		                        element.getArrestation().getArrestationId().getIdEnfant(),
-//		                        element.getArrestation().getArrestationId().getNumOrdinale()
-//		                    );
-//
-//		                    if (residence != null &&
-//		                        residence.getStatut() != 2 &&
-//		                        residence.getEtablissement().getId() != changementLieu.getEtablissementtMutation().getId()) {
-//		                        dto.setChangementLieuMu(true);
-//		                    }
-//		                }
-//		            }
-//
-//		            if ("AP".equals(document2.getTypeDocument())) {
-//		                dto.setDateAppelParquet(dateFormat.format(element.getDateEmissionDocument()));
-//		                dto.setAppelParquet(true);
-//		                dto.setDateJuge(true);
-//		            }
-//
-//		            if ("AE".equals(document2.getTypeDocument())) {
-//		                dto.setDateAppelEnfant(dateFormat.format(element.getDateEmissionDocument()));
-//		                dto.setAppelEnfant(true);
-//		                dto.setDateJuge(true);
-//		            }
-//		        }
-//		    }
-//		    if (element.getTypeJuge() != null && element.getTypeJuge().getId() == 4) {
-//	 	    	dto.setAgeAdulte(true);;
-//	     }
-//		    }
-//		 
-//	    return   dto ;
-//	}
-	
- 
 }

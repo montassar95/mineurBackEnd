@@ -2,10 +2,15 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.MetierConverter;
+import com.cgpr.mineur.converter.NationaliteConverter;
+import com.cgpr.mineur.dto.NationaliteDto;
+import com.cgpr.mineur.models.Metier;
 import com.cgpr.mineur.models.Nationalite;
 import com.cgpr.mineur.repository.NationaliteRepository;
 import com.cgpr.mineur.service.NationaliteService;
@@ -21,35 +26,40 @@ public class NationaliteServiceImpl implements NationaliteService{
 	private NationaliteRepository nationaliteRepository;
 
 	@Override
-	public List<Nationalite> listNationalite() {
-		return nationaliteRepository.findAllByOrderByIdAsc();
+	public List<NationaliteDto> listNationalite() {
+		
+		 List<Nationalite > list =nationaliteRepository.findAllByOrderByIdAsc();
+		 
+			return list. stream().map(NationaliteConverter::entityToDto).collect(Collectors.toList());  
+		 
 	}
 
 	@Override
-	public Nationalite getNationaliteById( long id) {
+	public NationaliteDto getNationaliteById( long id) {
 		Optional<Nationalite> Data = nationaliteRepository.findById(id);
 		if (Data.isPresent()) {
-			return  Data.get();
+			return  NationaliteConverter .entityToDto(Data.get());
 		} else {
 			return  null;
 		}
 	}
 
 	@Override
-	public  Nationalite  save(  Nationalite nationalite) {
+	public  NationaliteDto  save(  NationaliteDto nationaliteDto) {
 
 		try {
-			return nationaliteRepository.save(nationalite );
+			
+			return NationaliteConverter.entityToDto(nationaliteRepository.save(NationaliteConverter.dtoToEntity(nationaliteDto) ))  ;
 		} catch (Exception e) {
 			return   null ;
 		}
 	}
 
 	@Override
-	public Nationalite  update(  Nationalite nationalite) {
+	public NationaliteDto  update(  NationaliteDto nationaliteDto) {
 		try {
 
-			return  nationaliteRepository.save(nationalite );
+			return NationaliteConverter.entityToDto(nationaliteRepository.save(NationaliteConverter.dtoToEntity(nationaliteDto) ))  ;
 		} catch (Exception e) {
 			return   null ;
 		}

@@ -10,17 +10,23 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "enf")
+@JsonIgnoreProperties(ignoreUnknown = true) //Ignorer les Propriétés Inconnues : Si la propriété "img" n'est pas nécessaire dans la classe
 public class Enfant  implements Serializable {
 	@Id
 	private String id;
@@ -37,9 +43,9 @@ public class Enfant  implements Serializable {
 	private String sexe;
 
  
- @Transient 
-	@Lob
-	private String img;
+// @Transient 
+//	@Lob
+//	private String img;
 
 	@ManyToOne
 	private Nationalite nationalite;

@@ -5,6 +5,9 @@ package com.cgpr.mineur.service.Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.AffaireConverter;
+import com.cgpr.mineur.converter.TransfertConverter;
+import com.cgpr.mineur.dto.TransfertDto;
 import com.cgpr.mineur.models.Transfert;
 import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
@@ -31,34 +34,34 @@ public class TransfertServiceImpl implements TransfertService {
 	private DocumentRepository documentRepository;
 
 	@Override
-	public  Transfert  save(  Transfert transfert) {
+	public  TransfertDto  save(  TransfertDto transfertDto) {
 
-		System.out.println(transfert.toString());
+		System.out.println(transfertDto.toString());
 
-		System.out.println(transfert.getDocumentId().toString());
+		System.out.println(transfertDto.getDocumentId().toString());
 
-		if (transfert.getAffaire().getAffaireLien() != null) {
-			transfert.getAffaire().getAffaireLien().setStatut(2);
+		if (transfertDto.getAffaire().getAffaireLien() != null) {
+			transfertDto.getAffaire().getAffaireLien().setStatut(2);
 			System.out.println("=========================debut lien ==================================");
-			System.out.println(transfert.getAffaire().getAffaireLien().toString());
-			transfert.getAffaire().setNumOrdinalAffaireByAffaire(
-					transfert.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
+			System.out.println(transfertDto.getAffaire().getAffaireLien().toString());
+			transfertDto.getAffaire().setNumOrdinalAffaireByAffaire(
+					transfertDto.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
 
-			transfert.getAffaire().setTypeDocument("T");
-			transfert.getAffaire().setTypeAffaire(transfert.getAffaire().getAffaireLien().getTypeAffaire());
-			affaireRepository.save(transfert.getAffaire().getAffaireLien());
+			transfertDto.getAffaire().setTypeDocument("T");
+			transfertDto.getAffaire().setTypeAffaire(transfertDto.getAffaire().getAffaireLien().getTypeAffaire());
+			affaireRepository.save( AffaireConverter.dtoToEntity(transfertDto.getAffaire().getAffaireLien()));
 			System.out.println("============================fin lien===============================");
 		}
 		System.out.println("================================debut affaire ===========================");
-		System.out.println(transfert.getAffaire().toString());
-		transfert.getAffaire().setTypeDocument("T");
-		affaireRepository.save(transfert.getAffaire());
+		System.out.println(transfertDto.getAffaire().toString());
+		transfertDto.getAffaire().setTypeDocument("T");
+		affaireRepository.save(AffaireConverter.dtoToEntity(transfertDto.getAffaire()));
 		System.out.println("==================================fin affaire=========================");
 
-		transfert.setTypeAffaire(transfert.getAffaire().getTypeAffaire());
+		transfertDto.setTypeAffaire(transfertDto.getAffaire().getTypeAffaire());
 
-		System.out.println(transfert);
-		Transfert c = transfertRepository.save(transfert);
+		System.out.println(transfertDto);
+		Transfert c = transfertRepository.save(TransfertConverter.dtoToEntity(transfertDto)  );
 
 		try {
 			return   null ;

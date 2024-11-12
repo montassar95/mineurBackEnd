@@ -2,18 +2,23 @@ package com.cgpr.mineur.models;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.util.List;
 
 import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.Entity;
+
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -63,6 +68,10 @@ public class Residence implements Serializable{
 	
 	private String remarqueMutation;
 	private int nombreEchappes;
+	
+ 	@OneToMany(mappedBy = "residenceEchapper")
+     private List<Echappes> echappes; // Échappements liés à cette résidence
+	
 	
 	@Transient
 	private Date dateFin;

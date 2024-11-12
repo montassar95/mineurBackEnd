@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.TypeTribunalDto;
 import com.cgpr.mineur.models.ApiResponse;
- 
-import com.cgpr.mineur.models.TypeTribunal;
-import com.cgpr.mineur.repository.TypeTribunalRepository;
 import com.cgpr.mineur.service.TypeTribunalService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -29,25 +26,20 @@ public class TypeTribunalController {
 	private TypeTribunalService typeTribunalService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<TypeTribunal>> list() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				typeTribunalService.list());
+	public ApiResponse<List<TypeTribunalDto>> list() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", typeTribunalService.list());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<TypeTribunal> getById(@PathVariable("id") long id) {
-		 TypeTribunal  Data = typeTribunalService.getById(id);
-	 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<TypeTribunalDto> getById(@PathVariable("id") long id) {
+		TypeTribunalDto Data = typeTribunalService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
-	
-	
-	
-	 
 
 	@PostMapping("/add")
-	public ApiResponse<TypeTribunal> save(@RequestBody TypeTribunal causeDeces) {
+	public ApiResponse<TypeTribunalDto> save(@RequestBody TypeTribunalDto causeDeces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
@@ -58,7 +50,7 @@ public class TypeTribunalController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<TypeTribunal> update(@RequestBody TypeTribunal causeDeces) {
+	public ApiResponse<TypeTribunalDto> update(@RequestBody TypeTribunalDto causeDeces) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
@@ -78,6 +70,5 @@ public class TypeTribunalController {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
 		}
 	}
- 
 
 }

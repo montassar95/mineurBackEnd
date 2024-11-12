@@ -1,14 +1,25 @@
 package com.cgpr.mineur.models;
 
+import java.sql.Date;
+
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import lombok.Data;
-import javax.persistence.Entity;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+@SuperBuilder
 @Data
+ 
+@NoArgsConstructor // Ajouter ce constructeur
+@AllArgsConstructor 
 @Entity
 @Table(name = "chanLieu")
 @DiscriminatorValue("ChangementLieu")
@@ -19,7 +30,7 @@ public class ChangementLieu extends Document {
 
 	@ManyToOne
 	@JoinColumn(name = "etablissementMutationFK")
-	private Etablissement etablissementtMutation;
+	private Etablissement etablissementMutation;
 	
 	@ManyToOne
 	@JoinColumn(name = "EtabChangeManiereFK")
@@ -32,6 +43,7 @@ public class ChangementLieu extends Document {
 	
 	private String type;
 
+	 
 }
 
 

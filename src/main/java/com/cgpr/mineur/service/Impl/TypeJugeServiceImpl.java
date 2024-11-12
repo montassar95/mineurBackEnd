@@ -2,10 +2,15 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.TypeAffaireConverter;
+import com.cgpr.mineur.converter.TypeJugeConverter;
+import com.cgpr.mineur.dto.TypeJugeDto;
+import com.cgpr.mineur.models.TypeAffaire;
 import com.cgpr.mineur.models.TypeJuge;
 import com.cgpr.mineur.repository.TypeJugeRepository;
 import com.cgpr.mineur.service.TypeJugeService;
@@ -21,35 +26,39 @@ public class TypeJugeServiceImpl implements  TypeJugeService{
 	private TypeJugeRepository typeJugeRepository;
 
 	@Override
-	public List<TypeJuge> listTypeJuge() {
-		return typeJugeRepository.findAllByOrderByIdAsc();
+	public List<TypeJugeDto> listTypeJuge() {
+		
+		 List<TypeJuge > list =typeJugeRepository.findAllByOrderByIdAsc();
+			
+			return list. stream().map(TypeJugeConverter::entityToDto).collect(Collectors.toList());
+		 
 	}
 
 	@Override
-	public TypeJuge getTypeJugeById( long id) {
+	public TypeJugeDto getTypeJugeById( long id) {
 		Optional<TypeJuge> typeData = typeJugeRepository.findById(id);
 		if (typeData.isPresent()) {
-			return  typeData.get();
+			return TypeJugeConverter.entityToDto(typeData.get()) ;
 		} else {
 			return  null;
 		}
 	}
 
 	@Override
-	public TypeJuge save(TypeJuge typeJuge) {
+	public TypeJugeDto save(TypeJugeDto typeJugeDto) {
 
 		try {
-			return typeJugeRepository.save(typeJuge);
+			return TypeJugeConverter.entityToDto(typeJugeRepository.save( TypeJugeConverter.dtoToEntity(typeJugeDto))     );
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	@Override
-	public TypeJuge update(TypeJuge typeJuge) {
+	public TypeJugeDto update(TypeJugeDto typeJugeDto) {
 		try {
 
-			return typeJugeRepository.save(typeJuge);
+			return TypeJugeConverter.entityToDto(typeJugeRepository.save( TypeJugeConverter.dtoToEntity(typeJugeDto))     );
 		} catch (Exception e) {
 			return null;
 		}

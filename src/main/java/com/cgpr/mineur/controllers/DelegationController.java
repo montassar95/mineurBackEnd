@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,11 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.DelegationDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.CommentEchapper;
-import com.cgpr.mineur.models.Deces;
-import com.cgpr.mineur.models.Delegation;
-import com.cgpr.mineur.repository.DelegationRepository;
 import com.cgpr.mineur.service.DelegationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -30,33 +26,34 @@ public class DelegationController {
 	private DelegationService delegationService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<Delegation>> list() {
+	public ApiResponse<List<DelegationDto>> list() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", delegationService.list());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<Delegation> getById(@PathVariable("id") long id) {
-		 Delegation  Data = delegationService.getById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<DelegationDto> getById(@PathVariable("id") long id) {
+		DelegationDto Data = delegationService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
-	@GetMapping("/getDelegationByGouv/{id}")
-	public ApiResponse<List<Delegation>> getDelegationByGouv(@PathVariable("id") long id) {
+	@GetMapping("/trouverDelegationsParGouvernorat/{id}")
+	public ApiResponse<List<DelegationDto>> trouverDelegationsParGouvernorat(@PathVariable("id") long id) {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
 				delegationService.getDelegationByGouv(id));
 	}
 
-	@GetMapping("/findByGouvernorat/{idG}/{idD}")
-	public ApiResponse<Delegation> findByGouvernorat(@PathVariable("idG") long idG, @PathVariable("idD") long idD) {
+	@GetMapping("/trouverDelegationParIdDelegationEtIdGouvernorat/{idG}/{idD}")
+	public ApiResponse<DelegationDto> trouverDelegationParIdDelegationEtIdGouvernorat(@PathVariable("idG") long idG,
+			@PathVariable("idD") long idD) {
 
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
 				delegationService.findByGouvernorat(idG, idD));
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<Delegation> save(@RequestBody Delegation delegation) {
+	public ApiResponse<DelegationDto> save(@RequestBody DelegationDto delegation) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "delegation saved Successfully",
@@ -65,9 +62,9 @@ public class DelegationController {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "delegation not saved", null);
 		}
 	}
-	
+
 	@PutMapping("/update")
-	public ApiResponse<Delegation> update(@RequestBody Delegation causeDeces) {
+	public ApiResponse<DelegationDto> update(@RequestBody DelegationDto causeDeces) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",

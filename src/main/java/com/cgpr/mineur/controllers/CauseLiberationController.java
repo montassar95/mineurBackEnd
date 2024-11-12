@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.CauseLiberationDto;
 import com.cgpr.mineur.models.ApiResponse;
- 
-import com.cgpr.mineur.models.CauseLiberation;
-import com.cgpr.mineur.repository.CauseLiberationRepository;
 import com.cgpr.mineur.service.CauseLiberationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -29,49 +26,42 @@ public class CauseLiberationController {
 	@Autowired
 	private CauseLiberationService causeLiberationService;
 
-	 
-	 
-
 	@GetMapping("/all")
-	public ApiResponse<List<CauseLiberation>> listCauseLiberation() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", causeLiberationService.listCauseLiberation());
+	public ApiResponse<List<CauseLiberationDto>> listCauseLiberation() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
+				causeLiberationService.listCauseLiberation());
 	}
 
-
 	@GetMapping("/getone/{id}")
-	public ApiResponse<CauseLiberation> getTypeAffaireById(@PathVariable("id") long id) {
-		
-		 CauseLiberation  typeData =causeLiberationService.getTypeAffaireById(id);
-		 	return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
-		 
+	public ApiResponse<CauseLiberationDto> getTypeAffaireById(@PathVariable("id") long id) {
+
+		CauseLiberationDto typeData = causeLiberationService.getTypeAffaireById(id);
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<CauseLiberation> save(@RequestBody CauseLiberation causeDeces) {
+	public ApiResponse<CauseLiberationDto> save(@RequestBody CauseLiberationDto causeDeces) {
 
-		 	return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-		 			causeLiberationService.save(causeDeces));
-		 
+		return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
+				causeLiberationService.save(causeDeces));
+
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<CauseLiberation> update(@RequestBody CauseLiberation causeDeces) {
-		 
+	public ApiResponse<CauseLiberationDto> update(@RequestBody CauseLiberationDto causeDeces) {
 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					causeLiberationService.save(causeDeces));
-		 
+		return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
+				causeLiberationService.save(causeDeces));
 
 	}
 
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
-		 
-		  causeLiberationService.delete(id);
-			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
-		 
+
+		causeLiberationService.delete(id);
+		return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
+
 	}
- 
- 
- 
+
 }

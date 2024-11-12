@@ -2,10 +2,15 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.EtablissementConverter;
+import com.cgpr.mineur.converter.GouvernoratConverter;
+import com.cgpr.mineur.dto.GouvernoratDto;
+import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.Gouvernorat;
 import com.cgpr.mineur.repository.GouvernoratRepository;
 import com.cgpr.mineur.service.GouvernoratService;
@@ -21,15 +26,18 @@ public class GouvernoratServiceImpl implements  GouvernoratService {
 	private GouvernoratRepository gouvernoratRepository;
 
 	@Override
-	public List<Gouvernorat> list() {
-		return gouvernoratRepository.findAllByOrderByIdAsc();
+	public List<GouvernoratDto> list() {
+		
+		List<Gouvernorat> list =  gouvernoratRepository.findAllByOrderByIdAsc();
+		return  list. stream().map(GouvernoratConverter::entityToDto).collect(Collectors.toList())  ;
+	 
 	}
 
 	@Override
-	public Gouvernorat getById( long id) {
+	public GouvernoratDto getById( long id) {
 		Optional<Gouvernorat> Data = gouvernoratRepository.findById(id);
 		if (Data.isPresent()) {
-			return Data.get();
+			return GouvernoratConverter.entityToDto(Data.get()) ;
 		} else {
 			return  null;
 		}
@@ -39,20 +47,23 @@ public class GouvernoratServiceImpl implements  GouvernoratService {
 	
 	
 	@Override
-	public Gouvernorat save(Gouvernorat gouv) {
+	public GouvernoratDto save(GouvernoratDto gouvernoratDto) {
 
 		try {
-			return gouvernoratRepository.save(gouv);
+			
+			Gouvernorat  gouvernorat  = gouvernoratRepository.save( GouvernoratConverter.dtoToEntity(gouvernoratDto) );
+			return   GouvernoratConverter.entityToDto(gouvernorat)  ;
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	@Override
-	public Gouvernorat update( Gouvernorat gouv) {
-		try {
-
-			return gouvernoratRepository.save(gouv);
+	public GouvernoratDto update( GouvernoratDto gouvernoratDto) {
+try {
+			
+			Gouvernorat  gouvernorat  = gouvernoratRepository.save( GouvernoratConverter.dtoToEntity(gouvernoratDto) );
+			return   GouvernoratConverter.entityToDto(gouvernorat)  ;
 		} catch (Exception e) {
 			return null;
 		}

@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,11 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.MetierDto;
 import com.cgpr.mineur.models.ApiResponse;
-
-import com.cgpr.mineur.models.Metier;
-
-import com.cgpr.mineur.repository.MetierRepository;
 import com.cgpr.mineur.service.MetierService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -27,42 +23,36 @@ import com.cgpr.mineur.service.MetierService;
 @RequestMapping("/api/metier")
 public class MetierController {
 	@Autowired
-	private MetierService  metierService;
+	private MetierService metierService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<Metier>> list() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				metierService.list());
+	public ApiResponse<List<MetierDto>> list() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", metierService.list());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<Metier> getById(@PathVariable("id") long id) {
-		 Metier  Data = metierService.getById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<MetierDto> getById(@PathVariable("id") long id) {
+		MetierDto Data = metierService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
-	
-	
-	
 	@PostMapping("/add")
-	public ApiResponse<Metier> save(@RequestBody Metier gouv) {
+	public ApiResponse<MetierDto> save(@RequestBody MetierDto gouv) {
 
 		try {
-			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
-					metierService.save(gouv));
+			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully", metierService.save(gouv));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<Metier> update(@RequestBody Metier gouv) {
+	public ApiResponse<MetierDto> update(@RequestBody MetierDto gouv) {
 		try {
 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					metierService.save(gouv));
+			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.", metierService.save(gouv));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}
@@ -78,5 +68,5 @@ public class MetierController {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
 		}
 	}
- 
+
 }

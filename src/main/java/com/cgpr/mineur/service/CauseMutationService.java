@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.CauseMutation;
+import com.cgpr.mineur.dto.CauseMutationDto;
 
 
  
@@ -13,14 +11,14 @@ import com.cgpr.mineur.models.CauseMutation;
 public interface CauseMutationService   {
 
 	
-	public  List<CauseMutation>  listCauseMutation();
+	public  List<CauseMutationDto>  listCauseMutation();
 	
-	public  CauseMutation  getTypeAffaireById(  long id);
+	public  CauseMutationDto  getTypeAffaireById(  long id);
 
 	
-	public  CauseMutation  save( CauseMutation causeDeces) ;
+	public  CauseMutationDto  save( CauseMutationDto causeDecesDto) ;
 	
-	public  CauseMutation  update(  CauseMutation causeDeces);
+	public  CauseMutationDto  update(  CauseMutationDto causeDecesDto);
 
 	
 	public  Void  delete(  long id);

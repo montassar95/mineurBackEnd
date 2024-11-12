@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.EtabChangeManiere;
+import com.cgpr.mineur.dto.EtabChangeManiereDto;
 
  
  
@@ -13,16 +11,16 @@ import com.cgpr.mineur.models.EtabChangeManiere;
 public interface EtabChangeManiereService   {
 	 
 	
-	public List<EtabChangeManiere> listEtablissement() ;
+	public List<EtabChangeManiereDto> listEtablissement() ;
 	 
 	
-	public EtabChangeManiere getEtablissementById( String id);
+	public EtabChangeManiereDto getEtablissementById( String id);
 
 	
-	public EtabChangeManiere save( EtabChangeManiere etablissement);
+	public EtabChangeManiereDto save( EtabChangeManiereDto etablissementDto);
 
 	
-	public EtabChangeManiere update( EtabChangeManiere etablissement);
+	public EtabChangeManiereDto update( EtabChangeManiereDto etablissementDto);
 
 
 	public Void delete( String id) ;

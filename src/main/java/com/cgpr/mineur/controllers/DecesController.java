@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,13 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.DecesDto;
 import com.cgpr.mineur.models.ApiResponse;
- 
-import com.cgpr.mineur.models.Deces;
-import com.cgpr.mineur.models.Enfant;
-import com.cgpr.mineur.models.Gouvernorat;
-import com.cgpr.mineur.repository.DecesRepository;
-import com.cgpr.mineur.repository.GouvernoratRepository;
 import com.cgpr.mineur.service.DecesService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -32,21 +26,20 @@ public class DecesController {
 	private DecesService decesService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<Deces>> list() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				decesService.list());
+	public ApiResponse<List<DecesDto>> list() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", decesService.list());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<Deces> getById(@PathVariable("id") long id) {
-		 Deces  Data = decesService.getById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<DecesDto> getById(@PathVariable("id") long id) {
+		DecesDto Data = decesService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
-	
+
 	@PostMapping("/add")
-	public ApiResponse<Deces> save(@RequestBody Deces deces) {
+	public ApiResponse<DecesDto> save(@RequestBody DecesDto deces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "Enfant saved Successfully", decesService.save(deces));
@@ -54,19 +47,12 @@ public class DecesController {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "Enfant not saved", null);
 		}
 	}
-	
-	
-
-	 
-
-	 
 
 	@PutMapping("/update")
-	public ApiResponse<Deces> update(@RequestBody Deces causeDeces) {
+	public ApiResponse<DecesDto> update(@RequestBody DecesDto causeDeces) {
 		try {
 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
-					decesService.save(causeDeces));
+			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.", decesService.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "TypeAffaire not Saved", null);
 		}

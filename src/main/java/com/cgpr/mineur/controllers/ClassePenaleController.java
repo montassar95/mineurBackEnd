@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.ClassePenaleDto;
 import com.cgpr.mineur.models.ApiResponse;
- 
-import com.cgpr.mineur.models.ClassePenale;
-import com.cgpr.mineur.repository.ClassePenaleRepository;
 import com.cgpr.mineur.service.ClassePenaleService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -29,24 +26,20 @@ public class ClassePenaleController {
 	private ClassePenaleService classePenaleService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<ClassePenale>> list() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				classePenaleService.list());
+	public ApiResponse<List<ClassePenaleDto>> list() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", classePenaleService.list());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<ClassePenale> getById(@PathVariable("id") long id) {
-		ClassePenale Data = classePenaleService.getById(id);
-	
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		
+	public ApiResponse<ClassePenaleDto> getById(@PathVariable("id") long id) {
+		ClassePenaleDto Data = classePenaleService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
-	
-	
- 
 
 	@PostMapping("/add")
-	public ApiResponse<ClassePenale> save(@RequestBody ClassePenale causeDeces) {
+	public ApiResponse<ClassePenaleDto> save(@RequestBody ClassePenaleDto causeDeces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
@@ -57,7 +50,7 @@ public class ClassePenaleController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<ClassePenale> update(@RequestBody ClassePenale causeDeces) {
+	public ApiResponse<ClassePenaleDto> update(@RequestBody ClassePenaleDto causeDeces) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
@@ -77,6 +70,5 @@ public class ClassePenaleController {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
 		}
 	}
- 
 
 }

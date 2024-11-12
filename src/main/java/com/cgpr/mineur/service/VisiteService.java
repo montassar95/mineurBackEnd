@@ -1,8 +1,6 @@
 package com.cgpr.mineur.service;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Visite;
+import com.cgpr.mineur.dto.VisiteDto;
 
  
  
@@ -11,10 +9,10 @@ import com.cgpr.mineur.models.Visite;
 public interface VisiteService  {
 	 
 	
-	public Visite save(Visite visite);
+	public VisiteDto save(VisiteDto visite);
 	
 	public Void delete( long id);
 	
-	public Visite getVisite( String id, int anneeVisite,int moisVisite);
+	public VisiteDto getVisite( String id, int anneeVisite,int moisVisite);
 }
 

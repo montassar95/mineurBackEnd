@@ -25,6 +25,7 @@ import com.cgpr.mineur.models.Nationalite;
 import com.cgpr.mineur.models.NiveauEducatif;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.ResidenceId;
+import com.cgpr.mineur.models.ResidenceWithAffaires;
 import com.cgpr.mineur.models.SituationFamiliale;
 import com.cgpr.mineur.models.SituationSocial;
 import com.cgpr.mineur.models.TypeAffaire;
@@ -49,11 +50,7 @@ public interface ResidenceRepository extends CrudRepository<Residence, Residence
 	   @Query("SELECT a FROM Residence a WHERE a.residenceId.idEnfant = ?1  and a.statut = 2 and a.arrestation.arrestationId.numOrdinale  = ?2")
 	   Residence findByIdEnfantAndStatutEnCour (String idEnfant, long numOrdinale);
 	   
-	   @Query("SELECT a FROM Residence a WHERE a.residenceId.idEnfant = ?1  and a.arrestation.arrestationId.numOrdinale  = ?2"
-			   + "and a.residenceId.numOrdinaleResidence = (select max(a.residenceId.numOrdinaleResidence) from Residence a "
-				
-		+ "    where a.residenceId.idEnfant = ?1   and a.arrestation. arrestationId.numOrdinale  = ?2)")
-	   Residence findMaxResidence (String idEnfant, long numOrdinale);
+	  
 	   
 	   
 	   @Query("SELECT a FROM Residence a WHERE a.residenceId.idEnfant = ?1  and a.arrestation.arrestationId.numOrdinale  = ?2"
@@ -73,7 +70,7 @@ public interface ResidenceRepository extends CrudRepository<Residence, Residence
 	   List<Residence>findByEnfantAndArrestation(String idEnfant, long numOrdinale );
 	   
 	   
-	   @Query("select count(a) from Residence a where a.residenceId.idEnfant  = ?1 and  a.arrestation.arrestationId.numOrdinale = ?2 and a.etabChangeManiere = null")
+	   @Query("select count(a) from Residence a where a.residenceId.idEnfant  = ?1 and  a.arrestation.arrestationId.numOrdinale = ?2 and a.etablissementSortie is not null")
 	    int countTotaleRecidence(String idEnfant,long numOrdinaleArrestation);
 	   
 	   @Query("select count(a) from Residence a where a.residenceId.idEnfant  = ?1 and  a.arrestation.arrestationId.numOrdinale = ?2 and a.etabChangeManiere is not  null")
@@ -86,7 +83,11 @@ public interface ResidenceRepository extends CrudRepository<Residence, Residence
 		+ "    where a.residenceId.idEnfant = ?1   and a.arrestation. arrestationId.numOrdinale  = ?2 and a.etabChangeManiere is not  null)")
 	   Residence findMaxResidenceWithEtabChangeManiere (String idEnfant, long numOrdinale);
 	   
-	   
+	   @Query("SELECT a FROM Residence a WHERE a.residenceId.idEnfant = ?1  and a.arrestation.arrestationId.numOrdinale  = ?2"
+			   + "and a.residenceId.numOrdinaleResidence = (select max(a.residenceId.numOrdinaleResidence) from Residence a "
+				
+		+ "    where a.residenceId.idEnfant = ?1   and a.arrestation. arrestationId.numOrdinale  = ?2)")
+	   Residence findMaxResidence (String idEnfant, long numOrdinale);
 	   
 	   @Query("SELECT a FROM Residence a WHERE a.residenceId.idEnfant = ?1   and "
 	   
@@ -114,11 +115,11 @@ public interface ResidenceRepository extends CrudRepository<Residence, Residence
 	   @Query("SELECT a FROM Residence a WHERE "
 			   + CommonConditions.buildChildrenCriteria +" and "
 			   + "(((:dateDebutGlobale is null) and (:dateFinGlobale is null)) or (a.arrestation.enfant.dateNaissance between  :dateDebutGlobale and  :dateFinGlobale)) and "
-		   		+ "  a.statut = 0 and a.etablissement   = :etablissement and a.arrestation in "
+		   		+ "  a.statut = 0 and a.etablissement   IN :etablissements and a.arrestation in "
 		   		+ CommonConditions.buildDetentionCriteria  
 		   		 
 		   		+ "    order by a.arrestation.enfant.dateNaissance")
-		List<Residence> findByAllEnfantDevenuMajeur(@Param("classePenale") ClassePenale classePenale,
+		List<Residence> listDetenusMajeurs(@Param("classePenale") ClassePenale classePenale,
 		        @Param("niveauEducatif") NiveauEducatif niveauEducatif,
 		        @Param("gouvernorat") Gouvernorat gouvernorat,
 		        @Param("situationFamiliale") SituationFamiliale situationFamiliale,
@@ -138,7 +139,7 @@ public interface ResidenceRepository extends CrudRepository<Residence, Residence
 
 		        
 		        
-				  @Param("etablissement")Etablissement etablissement ,
+				  @Param("etablissements") List<Etablissement> etablissements ,
 				  @Param("dateDebutGlobale") @Temporal Date dateDebutGlobale,
 			      @Param("dateFinGlobale")@Temporal Date dateFinGlobale);
 	
@@ -199,10 +200,10 @@ public interface ResidenceRepository extends CrudRepository<Residence, Residence
 	   		 + CommonConditions.buildChildrenCriteria +" and "
 		   		+ "(((:dateDebutGlobale is null) and (:dateFinGlobale is null)) or (a.arrestation.date between  :dateDebutGlobale and  :dateFinGlobale)) and "
 		   		+ " a.residenceId.numOrdinaleResidence = 1  and  "
-		   		+ "  a.etablissement   = :etablissement and a.arrestation in "
+		   		+ "  a.etablissement   IN :etablissements and a.arrestation in "
 		   		+ CommonConditions.buildDetentionCriteria  
 		   		+ "  order by a.arrestation.date, a.numArrestation")
-List<Residence> findByAllEnfantEntreReelle(
+List<Residence> listDetenusEntreReelles(
 		@Param("classePenale") ClassePenale classePenale,
         @Param("niveauEducatif") NiveauEducatif niveauEducatif,
         @Param("gouvernorat") Gouvernorat gouvernorat,
@@ -223,7 +224,7 @@ List<Residence> findByAllEnfantEntreReelle(
 
         
         
-		  @Param("etablissement")Etablissement etablissement, 
+		  @Param("etablissements") List<Etablissement> etablissements, 
 		  @Param("dateDebutGlobale") @Temporal Date dateDebutGlobale,
 	      @Param("dateFinGlobale")@Temporal Date dateFinGlobale);
 
@@ -231,10 +232,10 @@ List<Residence> findByAllEnfantEntreReelle(
 	   @Query("SELECT a FROM Residence a WHERE    "
 			   + CommonConditions.buildChildrenCriteria +" and "
 			   + "(((:dateDebutGlobale is NULL ) and (:dateFinGlobale is NULL)) or (a.dateEntree between  :dateDebutGlobale and  :dateFinGlobale)) and "
-			   		+ "   a.etablissement   = :etablissement and "			   	
+			   		+ "   a.etablissement   IN :etablissements and "			   	
 			   		+ " a.etablissementEntree   != :etablissement "
-		   		+ "and a.arrestation IN  "+ CommonConditions.buildDetentionCriteria +" ORDER BY a.numArrestation ")
-		List<Residence> findByEntreeMutation( @Param("classePenale") ClassePenale classePenale,
+		   		+ "and a.arrestation IN  "+ CommonConditions.buildDetentionCriteria +" ORDER BY a.etablissement.id , a.numArrestation ")
+		List<Residence> listDetenusEntreMutations  ( @Param("classePenale") ClassePenale classePenale,
 		           @Param("niveauEducatif") NiveauEducatif niveauEducatif,
 		           @Param("gouvernorat") Gouvernorat gouvernorat,
 		           @Param("situationFamiliale") SituationFamiliale situationFamiliale,
@@ -254,7 +255,7 @@ List<Residence> findByAllEnfantEntreReelle(
 	  
 		           
 		           
-	    		  @Param("etablissement")Etablissement etablissement, 
+	    		  @Param("etablissements")List<Etablissement> etablissements, 
 				  @Param("dateDebutGlobale") @Temporal Date dateDebutGlobale,
 			      @Param("dateFinGlobale")@Temporal Date dateFinGlobale);
 	   
@@ -263,11 +264,11 @@ List<Residence> findByAllEnfantEntreReelle(
 	   @Query("SELECT a FROM Residence a WHERE    "
 			   + CommonConditions.buildChildrenCriteria +" and "
 			   + "(((:dateDebutGlobale is NULL ) and (:dateFinGlobale is NULL)) or (a.dateSortie between  :dateDebutGlobale and  :dateFinGlobale)) and "
-			   		+ "   a.etablissement   = :etablissement and "			   	
+			   		+ "   a.etablissement   IN :etablissements and "			   	
 			   		+ " a.etablissementSortie   != :etablissement "
-		   		+ "and a.arrestation IN  "+ CommonConditions.buildDetentionCriteria +" ORDER BY a.numArrestation ")
+		   		+ "and a.arrestation IN  "+ CommonConditions.buildDetentionCriteria +" ORDER BY a.etablissement.id , a.numArrestation ")
 	   
-      List<Residence> findBySortieMutation(
+      List<Residence> listDetenusSortieMutations(
     		  @Param("classePenale") ClassePenale classePenale,
 	           @Param("niveauEducatif") NiveauEducatif niveauEducatif,
 	           @Param("gouvernorat") Gouvernorat gouvernorat,
@@ -288,7 +289,7 @@ List<Residence> findByAllEnfantEntreReelle(
   
 	           
 	           
-    		  @Param("etablissement")Etablissement etablissement, 
+    		  @Param("etablissements")List<Etablissement> etablissements, 
 			  @Param("dateDebutGlobale") @Temporal Date dateDebutGlobale,
 		      @Param("dateFinGlobale")@Temporal Date dateFinGlobale);
 	   
@@ -316,16 +317,16 @@ List<Residence> findByAllEnfantEntreReelle(
 		   		+ "(((?12 = null) and (?13 = null)) or (a.arrestation.enfant.dateNaissance between  ?12 and  ?13)) and "
 		   		 
 		   		+ " a.residenceId.numOrdinaleResidence = 1  and  "
-		   		+ "  a.etablissement   = ?8 and a.arrestation in "
+		   		+ "  a.etablissement   IN ?8 and a.arrestation in "
 		   		+ "(SELECT aff.arrestation FROM Affaire aff where aff.statut = 0 and "
 		   		+ "(?9 = 0L or aff.tribunal.gouvernorat.id = ?9) "
 		   		+ "and (?10 = 0L or aff.tribunal.typeTribunal.id = ?10) "
 		   		+ "and (?11 = 0L or aff.typeAffaire.id = ?11) "
 		   		 
 			   		+ " )  order by a.arrestation.date, a.numArrestation")
-	List<Residence> findByAllEnfantAudience(long classePenale,  long niveauEducatif, long gouvernorat, 
+	List<Residence> listAudiences(long classePenale,  long niveauEducatif, long gouvernorat, 
 	long situationFamiliale, long situationSocial, long metier, 
-	long delegation, Etablissement etablissement, long gouvernoratTribunal  ,long typeTribunal  ,long typeAffaire ,
+	long delegation, List<Etablissement> etablissements, long gouvernoratTribunal  ,long typeTribunal  ,long typeAffaire ,
 	@Temporal Date start, @Temporal Date end ,@Temporal Date dateDebutGlobale, @Temporal Date dateFinGlobale,
 	String etranger , long nationalite );
 	   
@@ -334,12 +335,12 @@ List<Residence> findByAllEnfantEntreReelle(
 	   
 	   @Query("SELECT a FROM Residence a WHERE "
  
-		   		+ "  a.statut = 0 and a.etablissement   = :etablissement and a.arrestation not in "
+		   		+ "  a.statut = 0 and a.etablissement   IN :etablissements and a.arrestation not in "
 		   		+ "(SELECT aff.arrestation FROM Affaire aff"
 		   	 
 		   		 
 		   		+ " )  order by a.numArrestation")
-List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
+List<Residence> listDetenusSansAffaires(  List<Etablissement> etablissements  );
 
 	   
 	   
@@ -374,15 +375,15 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 	           + "(:foreign = true OR a.arrestation.enfant.nationalite.id != 1) AND "
 	           + "(:nationalite IS NULL OR a.arrestation.enfant.nationalite = :nationalite) AND "
 	           + "((:minAge = 0.0F OR :maxAge = 0.0F) OR (TRUNC(months_between(CURRENT_DATE,a.arrestation.enfant.dateNaissance)/12) BETWEEN :minAge AND :maxAge)) AND "
-	           + "a.statut = 0 AND a.etablissement = :etablissement AND a.arrestation IN "
+	           + "a.statut = 0 AND a.etablissement IN :etablissements AND a.arrestation IN "
 	           + "("
 	           + "    SELECT aff.arrestation FROM Affaire aff WHERE aff.statut = 0 AND "
 	           + "    (:gouvernoratTribunal IS NULL OR aff.tribunal.gouvernorat = :gouvernoratTribunal) AND "
 	           + "    (:typeTribunal IS NULL OR aff.tribunal.typeTribunal = :typeTribunal) AND "
 	           + "    (:typeAffaire IS NULL OR aff.typeAffaire = :typeAffaire)"
 	           + ") "
-	           + "ORDER BY a.numArrestation")
-	   List<Residence> findResidencesForExistingChildren(
+	           + "ORDER BY a.etablissement.id , a.numArrestation")
+	   List<Residence> listAllDetenus(
 	           @Param("classePenale") ClassePenale classePenale,
 	           @Param("niveauEducatif") NiveauEducatif niveauEducatif,
 	           @Param("gouvernorat") Gouvernorat gouvernorat,
@@ -390,7 +391,7 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 	           @Param("situationSocial") SituationSocial situationSocial,
 	           @Param("metier") Metier metier,
 	           @Param("delegation") Delegation delegation,
-	           @Param("etablissement") Etablissement etablissement,
+	           @Param("etablissements") List<Etablissement> etablissements,
 	           @Param("gouvernoratTribunal") Gouvernorat gouvernoratTribunal,
 	           @Param("typeTribunal") TypeTribunal typeTribunal,
 	           @Param("typeAffaire") TypeAffaire typeAffaire,
@@ -406,10 +407,10 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 			   		   		+ "(aff.typeDocument IN :documentTypes) and aff.statut = 0)"
 			   		   		+ "  and a.arrestation in (SELECT aff.arrestation FROM Affaire aff ) and "
                               + CommonConditions.buildChildrenCriteria +" and "
-			   	             + "a.statut = 0 AND a.etablissement = :etablissement AND a.arrestation IN  "+CommonConditions.buildDetentionCriteria
+			   	             + "a.statut = 0 AND a.etablissement IN :etablissements AND a.arrestation IN  "+CommonConditions.buildDetentionCriteria
 			   	           
-			   	           + "ORDER BY a.numArrestation")
-		   List<Residence> findByAllEnfantExistJuge (
+			   	           + "ORDER BY a.etablissement.id , a.numArrestation")
+		   List<Residence> listDetenusJuges (
 				   @Param("documentTypes") List<String> documentTypes,
 		           @Param("classePenale") ClassePenale classePenale,
 		           @Param("niveauEducatif") NiveauEducatif niveauEducatif,
@@ -429,26 +430,72 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 		           @Param("typeTribunal") TypeTribunal typeTribunal,
 		           @Param("typeAffaire") TypeAffaire typeAffaire,
 	   
-		           @Param("etablissement") Etablissement etablissement );
+		           @Param("etablissements") List<Etablissement> etablissements );
 		        
 	   
 	   
 	   
 	   
+//	   @Query("SELECT new com.cgpr.mineur.models.ResidenceWithAffaires(a, " +
+//		       "(SELECT   aff  FROM Affaire aff WHERE aff.arrestation.arrestationId = a.arrestation.arrestationId AND " +  
+//		       "aff.typeDocument IN :documentTypes AND aff.statut = 0)) " +  
+//		       "FROM Residence a WHERE "  
+//		       + "a.arrestation  in (SELECT aff.arrestation FROM Affaire aff where "
+//  		   		+ "(aff.typeDocument IN :documentTypes )"
+//  		   		+ " and aff.statut = 0) and"
+//  		   	+ CommonConditions.buildChildrenCriteria +" and "
+//  	             + "a.statut = 0 AND  (a.etablissement IN :etablissements )  AND  "
+//  	          + "(((:dateDebutGlobale is NULL ) and (:dateFinGlobale is NULL)) or (a.arrestation.date between  :dateDebutGlobale and  :dateFinGlobale)) and "
+//  	             + " a.arrestation IN " +CommonConditions.buildDetentionCriteria
+//  	         
+//  	           + "ORDER BY a.etablissement.id , a.numArrestation")
+//	   List<ResidenceWithAffaires> findByAllEnfantExistArretWithAffaire(
+//			   @Param("documentTypes") List<String> documentTypes,
+//	           @Param("classePenale") ClassePenale classePenale,
+//	           @Param("niveauEducatif") NiveauEducatif niveauEducatif,
+//	           @Param("gouvernorat") Gouvernorat gouvernorat,
+//	           @Param("situationFamiliale") SituationFamiliale situationFamiliale,
+//	           @Param("situationSocial") SituationSocial situationSocial,
+//	           @Param("metier") Metier metier,
+//	           @Param("delegation") Delegation delegation,
+//	           
+//	           @Param("minAge") float minAge,
+//	           @Param("maxAge") float maxAge,
+//	           @Param("foreign") boolean foreign,
+//	           @Param("nationalite") Nationalite nationalite,
+//   
+//	           
+//	           @Param("gouvernoratTribunal") Gouvernorat gouvernoratTribunal,
+//	           @Param("typeTribunal") TypeTribunal typeTribunal,
+//	           @Param("typeAffaire") TypeAffaire typeAffaire,
+//   
+//	           @Param("etablissements") List<Etablissement> etablissements ,
+//	           @Param("dateDebutGlobale")	@Temporal Date dateDebutGlobale,
+//	           @Param("dateFinGlobale")	@Temporal Date dateFinGlobale  );  
+//	   
 	   
 	   
 	   
 	   
+	   
+	   
+	   
+	   
+	   
+	   
+	   
+   //   a.arrestation.date <= :targetDate AND
 	   @Query("SELECT a FROM Residence a WHERE "
 			   + "a.arrestation  in (SELECT aff.arrestation FROM Affaire aff where "
 			   		   		+ "(aff.typeDocument IN :documentTypes )"
 			   		   		+ " and aff.statut = 0) and"
 			   		   	+ CommonConditions.buildChildrenCriteria +" and "
-			   	             + "a.statut = 0 AND a.etablissement = :etablissement AND"
+			   	             + "a.statut = 0 AND  (a.etablissement IN :etablissements )  AND  "
+			   	          + "(((:dateDebutGlobale is NULL ) and (:dateFinGlobale is NULL)) or (a.arrestation.date between  :dateDebutGlobale and  :dateFinGlobale)) and "
 			   	             + " a.arrestation IN " +CommonConditions.buildDetentionCriteria
 			   	         
-			   	           + "ORDER BY a.numArrestation")
-		   List<Residence> findByAllEnfantExistArret(
+			   	           + "ORDER BY a.etablissement.id , a.numArrestation")
+		   List<Residence> listDetenusArretes(
 				   @Param("documentTypes") List<String> documentTypes,
 		           @Param("classePenale") ClassePenale classePenale,
 		           @Param("niveauEducatif") NiveauEducatif niveauEducatif,
@@ -468,7 +515,9 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 		           @Param("typeTribunal") TypeTribunal typeTribunal,
 		           @Param("typeAffaire") TypeAffaire typeAffaire,
 	   
-		           @Param("etablissement") Etablissement etablissement );
+		           @Param("etablissements") List<Etablissement> etablissements ,
+		           @Param("dateDebutGlobale")	@Temporal Date dateDebutGlobale,
+		           @Param("dateFinGlobale")	@Temporal Date dateFinGlobale  ); // Ajoutez ce paramètre
 
 
 	   
@@ -480,13 +529,13 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 		   		+ "(((:dateDebutGlobale is NULL ) and (:dateFinGlobale is NULL)) or (a.arrestation.liberation.date between  :dateDebutGlobale and  :dateFinGlobale)) and "
 		   		
 		   		
-		   		+ "  a.statut = 1 and a.etablissement   = :etablissement and a.etablissementSortie = null "
+		   		+ "  a.statut = 1 and a.etablissement   IN :etablissements and a.etablissementSortie = null "
 		   		
 		   		+ "and a.arrestation in" +CommonConditions.buildDetentionCriteria  
 		   		+"order by a.arrestation.liberation.date , a.numArrestation")
 	   
 	   
-	List<Residence> findByAllEnfantLibere(
+	List<Residence> listDetenusLiberes(
 			 
 	           @Param("classePenale") ClassePenale classePenale,
 	           @Param("niveauEducatif") NiveauEducatif niveauEducatif,
@@ -506,7 +555,7 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 	           @Param("typeTribunal") TypeTribunal typeTribunal,
 	           @Param("typeAffaire") TypeAffaire typeAffaire,
 
-	           @Param("etablissement") Etablissement etablissement,
+	           @Param("etablissements") List<Etablissement> etablissements,
 	           
 	           
 	           @Param("dateDebutGlobale")	@Temporal Date dateDebutGlobale,
@@ -622,7 +671,7 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 		   		+ "and (?11 = 0L or aff.typeAffaire.id = ?11) "
 		   		+ " )" 
 		   		+ " order by a.numArrestation")
-		   List<Residence> findByAllEnfantExistJugeR(long classePenale,  long niveauEducatif, long gouvernorat, 
+		   List<Residence> listDetenusJugeRevus(long classePenale,  long niveauEducatif, long gouvernorat, 
 				   long situationFamiliale, long situationSocial, long metier, 
 				   long delegation  ,String etablissementId, long gouvernoratTribunal  ,
 				   long typeTribunal  ,long typeAffaire ,@Temporal Date start, @Temporal Date end,String etranger, long nationalite);
@@ -644,12 +693,12 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 		   		+ "a.arrestation in (SELECT aff.arrestation FROM Affaire aff ) and "
 		   		+ CommonConditions.buildChildrenCriteria +" and "
 		   		
-		   		+ " a.statut = 0 and a.etablissement   = :etablissement "
+		   		+ " a.statut = 0 and a.etablissement   IN :etablissements "
 		   		
 		   		+"and a.arrestation in "+CommonConditions.buildDetentionCriteria  
 		   		
 		   		+ " order by a.numArrestation")
-		   List<Residence> findByAllEnfantSeraLibere (
+		   List<Residence> listDetenusSeraLiberes (
 				   @Param("documentTypes") List<String> documentTypes,
 				   @Param("classePenale") ClassePenale classePenale,
 		           @Param("niveauEducatif") NiveauEducatif niveauEducatif,
@@ -669,7 +718,7 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 		           @Param("typeTribunal") TypeTribunal typeTribunal,
 		           @Param("typeAffaire") TypeAffaire typeAffaire,
 
-		           @Param("etablissement") Etablissement etablissement,
+		           @Param("etablissements") List<Etablissement> etablissements,
 		           
 		           
 		           @Param("dateDebutGlobale")	@Temporal Date dateDebutGlobale,
@@ -713,7 +762,7 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 	           "AND a.statut = 0 " +
 	           "AND a.etablissement.id = :etablissementId " +
 	           "AND a.arrestation IN (SELECT aff.arrestation FROM Affaire aff WHERE aff.statut = 0) and a.arrestation.date < :dateLimite " +
-	           "ORDER BY a.numArrestation")
+	           "ORDER BY a.etablissement.id , a.numArrestation")
 	   CompletableFuture<List<Residence>> findByAllEnfantExistJugeAsync(@Param("etablissementId") String etablissementId, @Param("dateLimite") java.sql.Date dateLimite);
 	   
 	   
@@ -733,7 +782,7 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 	           "AND a.statut = 0 " +
 	           "AND a.etablissement.id = :etablissementId " +
 	           "AND a.arrestation IN (SELECT aff.arrestation FROM Affaire aff WHERE aff.statut = 0) and a.arrestation.date < :dateLimite " +
-	           "ORDER BY a.numArrestation")
+	           "ORDER BY a.etablissement.id , a.numArrestation")
 	   CompletableFuture<List<Residence>> findByAllEnfantExistArretAsync(@Param("etablissementId") String etablissementId, @Param("dateLimite") java.sql.Date dateLimite);
 	   
 	   
@@ -763,6 +812,20 @@ List<Residence> findByAllEnfantNonExist(  Etablissement etablissement  );
 	long delegation, Etablissement etablissement, long gouvernoratTribunal  , 
 	long typeTribunal  ,long typeAffaire ,
 	@Temporal Date start, @Temporal Date end ,@Temporal Date dateDebutGlobale, @Temporal Date dateFinGlobale,String etranger);
+
+
+
+	   
+	   @Query("SELECT COUNT(a) FROM Residence a WHERE a.statut = 0 " 
+			   + "AND a.arrestation.liberation IS NULL "
+	           + "AND a.numArrestation = :numeroEcrou "
+	           + "AND a.etablissement.id = :etablissementId "
+		       )
+		long validerNumeroEcrou(@Param("numeroEcrou") String numeroEcrou,
+		                                 @Param("etablissementId") String etablissementId);
+
+
+	 
 	   
 	   
 	   

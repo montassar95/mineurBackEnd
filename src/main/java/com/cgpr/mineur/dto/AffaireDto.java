@@ -73,7 +73,7 @@ public class AffaireDto {
 	private TypeJugeDto typeJuge;
 
 	 
-	private Date dateEmission;
+ 	private Date dateEmission;
 
 	private Date dateDebutPunition;
 
@@ -81,6 +81,6 @@ public class AffaireDto {
 	private long daysDiffJuge;
 
 	 
-	private boolean affairePrincipale;
+    private boolean affairePrincipale;
 
 }

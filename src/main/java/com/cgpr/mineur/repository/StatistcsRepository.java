@@ -100,9 +100,18 @@ public interface StatistcsRepository  extends CrudRepository<Residence, Residenc
 			   		 
 			   		+ " ) ")
 				int calculTerorist( String Sexe ,long typeAffaire  );
+		   
+		   
+		   
+		   
 				
 	 	  
-	 	  
+		   @Query("SELECT count(a) FROM Residence a WHERE "
+		   		   + " a.arrestation.enfant.sexe  = ?1 and"
+			   	 
+			   	 
+			   		+ "  a.statut = 0  and a.arrestation.enfant.nationalite.id != 1 ")
+				int calculEtanger( String Sexe  );
 	 	  
 	 	  
 	 	  

@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.CommentEchapper;
+import com.cgpr.mineur.dto.CommentEchapperDto;
 
  
  
@@ -13,16 +11,16 @@ import com.cgpr.mineur.models.CommentEchapper;
 public interface CommentEchapperService   {
 	
  
-	public List<CommentEchapper> listCommentEchapper() ;
+	public List<CommentEchapperDto> listCommentEchapper() ;
 	
 	
-	public CommentEchapper getTypeAffaireById( long id) ;
+	public CommentEchapperDto getTypeAffaireById( long id) ;
 
 	
-	public CommentEchapper save( CommentEchapper causeDeces);
+	public CommentEchapperDto save( CommentEchapperDto causeDecesDto);
 
  
-	public CommentEchapper update( CommentEchapper causeDeces);
+	public CommentEchapperDto update( CommentEchapperDto causeDecesDto);
  
 	public Void delete( long id);
 	 

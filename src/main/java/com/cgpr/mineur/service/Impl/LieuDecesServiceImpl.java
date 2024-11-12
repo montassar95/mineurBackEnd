@@ -2,10 +2,14 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.LiberationConverter;
+import com.cgpr.mineur.converter.LieuDecesConverter;
+import com.cgpr.mineur.dto.LieuDecesDto;
 import com.cgpr.mineur.models.LieuDeces;
 import com.cgpr.mineur.repository.LieuDecesRepository;
 import com.cgpr.mineur.service.LieuDecesService;
@@ -22,35 +26,37 @@ public class LieuDecesServiceImpl implements LieuDecesService {
 	private LieuDecesRepository lieuDecesRepository;
 
 	@Override
-	public List<LieuDeces> listCauseMutation() {
-		return lieuDecesRepository.findAllByOrderByIdAsc();
+	public List<LieuDecesDto> listCauseMutation() {
+		 List<LieuDeces > list = lieuDecesRepository.findAllByOrderByIdAsc();
+		 
+		return list. stream().map(LieuDecesConverter::entityToDto).collect(Collectors.toList());  
 	}
 
 	@Override
-	public LieuDeces getById(long id) {
+	public LieuDecesDto getById(long id) {
 		Optional<LieuDeces> Data = lieuDecesRepository.findById(id);
 		if (Data.isPresent()) {
-			return  Data.get();
+			return  LieuDecesConverter.entityToDto(Data.get()) ;
 		} else {
 			return null;
 		}
 	}
 
 	@Override
-	public LieuDeces save( LieuDeces causeDeces) {
+	public LieuDecesDto save( LieuDecesDto lieuDecesDto) {
 
 		try {
-			return lieuDecesRepository.save(causeDeces);
+			return LieuDecesConverter.entityToDto(lieuDecesRepository.save(LieuDecesConverter.dtoToEntity(lieuDecesDto) ));
 		} catch (Exception e) {
 			return  null;
 		}
 	}
 
 	@Override
-	public LieuDeces update(LieuDeces causeDeces) {
+	public LieuDecesDto update(LieuDecesDto lieuDecesDto) {
 		try {
 
-			return lieuDecesRepository.save(causeDeces);
+			return LieuDecesConverter.entityToDto(lieuDecesRepository.save(LieuDecesConverter.dtoToEntity(lieuDecesDto) ));
 		} catch (Exception e) {
 			return null;
 		}

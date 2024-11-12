@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,7 @@ import com.cgpr.mineur.models.Enfant;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.TitreAccusation;
 import com.cgpr.mineur.resource.PDFListExistDTO;
-import com.cgpr.mineur.serviceReporting.EnfantService2;
+import com.cgpr.mineur.serviceReporting.GenererRapportPdfActuelService;
 import com.ibm.icu.text.ArabicShapingException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Element;
@@ -62,6 +63,10 @@ public class ToolsForReporting {
 	
 	
 	public static DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/uuuu");
+	
+	public static  SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	
+	
 	public static   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 	public static String getCurrentArabicMonth(int currentMonth) {
         String[] arabicMonths = { "جانفي", "فيفري", "مارس", "أفريل", "ماي", "جوان", "جويلية", "أوت", "سبتمبر", "أكتوبر",
@@ -121,25 +126,29 @@ public class ToolsForReporting {
 	
 	public static String determineStatus(Residence residence) {
 //		String status;
+		if(residence.getArrestation().getSituationJudiciaire()!=null) {
+			 switch (residence.getArrestation().getSituationJudiciaire().toString()) {
+	         case "juge":
+	        	 return"محكـــوم" ;
+	             
+	         case "arret":
+	        	 return "موقـــوف" ;
+	             
+	         case "libre":
+	        	 return "في حالـــة ســراح" ;
+	            
+	             
+	         case "pasInsertionLiberable":
+	        	 return "لم يتم إدراج السراح" ;
+	              
+	         default:
+	        	 return "...";
+	            
+	     }
+		};
+		return "vide";
 		
-		 switch (residence.getArrestation().getSituationJudiciaire().toString()) {
-         case "juge":
-        	 return"محكـــوم" ;
-             
-         case "arret":
-        	 return "موقـــوف" ;
-             
-         case "libre":
-        	 return "في حالـــة ســراح" ;
-            
-             
-         case "pasInsertinLiberable":
-        	 return "لم يتم إدراج السراح" ;
-              
-         default:
-        	 return "...";
-            
-     }
+		
  
 	}
 
@@ -339,8 +348,20 @@ public class ToolsForReporting {
 	}
 
 	public static void processTableTypeDocument(Phrase p1, PdfPCell c1, PdfPTable tableTypeDocument, Affaire affaire) {
-		addCellulHistorique(p1, c1, tableTypeDocument, affaire.getDateEmission().toString().trim());
+	
+		 
+		try {
+			addCellulHistorique(
+					p1, 
+					c1, 
+					tableTypeDocument, 
+					affaire.getDateEmission().toString().trim());
 
+		} catch (Exception e) {
+			 System.out.println("ici erreur : ");
+			 System.out.println(affaire.getAffaireId().toString());
+		}
+	
 		 
 		
 		
@@ -362,7 +383,7 @@ public class ToolsForReporting {
 
 			addCellulHistorique(p1, c1, tableTypeDocument, affaire.getDateEmissionDocument().toString().trim());
 
-			System.err.println(affaire.getAffaireId().getIdEnfant()+ " "+ affaire.getAffaireId().getNumAffaire());
+			 
 			 
 			
 			
@@ -556,7 +577,7 @@ public class ToolsForReporting {
 	}
 
 	public static Image getImage() throws Exception {
-		URL resource = EnfantService2.class.getResource("/images/cgpr.png");
+		URL resource = GenererRapportPdfActuelService.class.getResource("/images/cgpr.png");
 		Image image = Image.getInstance(resource);
 		image.scaleAbsolute(110f, 100f);
 		return image;
@@ -606,7 +627,7 @@ public class ToolsForReporting {
 	
 	
 	public static void addEmptyAffaireCell(PdfPTable tableAffaire) {
-	    Phrase emptyPhrase = new Phrase("لم يتم إدراج أي قضية ", ToolsForReporting.boldfontFamielle);
+	    Phrase emptyPhrase = new Phrase("  قضية ", ToolsForReporting.boldfontFamielle);
 	    PdfPCell emptyCell = ToolsForReporting.createPdfPCell(emptyPhrase, 60, Element.ALIGN_RIGHT, new BaseColor(240, 240, 240));
 	    tableAffaire.addCell(emptyCell);
 	  }
@@ -794,7 +815,10 @@ public class ToolsForReporting {
 
 		    Date dateDebut = residenceDTO.getArrestation().getDateDebut();
 		    if (dateDebut != null) {
-		      p1 = new Phrase(dateDebut + " " + "  تــاريخ بــداية العقــاب  ", ToolsForReporting.boldfontFamielle13);
+//		    	 Instant instant = dateDebut.toInstant();
+//		         LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+		         
+		      p1 = new Phrase( simpleDateFormat.format(dateDebut)  + " " + "  تــاريخ بــداية العقــاب  ", ToolsForReporting.boldfontFamielle13);
 
 		      c1 = ToolsForReporting.createPdfPCell(p1, 100, Element.ALIGN_CENTER,BaseColor.WHITE);
 
@@ -807,14 +831,16 @@ public class ToolsForReporting {
 
 		    Date dateFin = residenceDTO.getArrestation().getDateFin();
 		    if (dateFin != null) {
-		      p1 = new Phrase(dateFin + " " + "  تـــاريخ الســـــــــــراح  ", ToolsForReporting.boldfontFamielle13);
+//		    	 Instant instant = dateFin.toInstant();
+//		         LocalDate localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+
+		         
+		      p1 = new Phrase(simpleDateFormat.format(dateFin) + " " + "  تـــاريخ الســـــــــــراح  ", ToolsForReporting.boldfontFamielle13);
 
 		      c1 = ToolsForReporting.createPdfPCell(p1, 100, Element.ALIGN_CENTER,BaseColor.WHITE);
 		      c1.setBorder(0);
 
-		       
-
-		      tableIdentite.addCell(c1);
+		        tableIdentite.addCell(c1);
 		    }
 
 		    if (hasEntryMutationData(residenceDTO)) {
@@ -1078,12 +1104,12 @@ public class ToolsForReporting {
 	  }
 	
 	public static void processTablePrencipal(Residence residenceDTO, PdfPTable tableAffaire, String etatJuridiue, int i) {
-//		System.out.println(residenceDTO.getResidenceId().toString() + " Residence ");
+ 		 
 	    
 	    if (residenceDTO.getArrestation().getEnfant() != null) {
 
 	      List < Affaire > affaires = residenceDTO.getArrestation().getAffaires();
-	      if (affaires.size() != 0) {
+	      if (affaires  != null && affaires.size() != 0) {
 
 	        buildAffaireTables(affaires, tableAffaire);
 
@@ -1216,4 +1242,24 @@ public class ToolsForReporting {
         // Retourner l'âge en années
         return period.getYears();
     }
+    
+    public static java.sql.Date  getFirstDayOfNextMonth() {
+	    // Get the current date
+	    LocalDate currentDate = LocalDate.now();
+
+	    // Get the first day of the next month
+	    LocalDate firstDayOfNextMonth = currentDate.with(TemporalAdjusters.firstDayOfNextMonth());
+
+	    // Convert LocalDate to java.sql.Date
+	    return java.sql.Date.valueOf(firstDayOfNextMonth);
+	}
+    
+    public static Date getFirstDayOfMonth() {
+	    Calendar calendar = Calendar.getInstance();
+	    calendar.set(Calendar.DAY_OF_MONTH, 1);  
+		
+ 
+	    return calendar.getTime();
+	}
+	
 }

@@ -7,7 +7,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-@Builder
+import lombok.experimental.SuperBuilder;
+@SuperBuilder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -61,3 +62,4 @@ public  class DocumentDto   {
 	 
  
 }
+

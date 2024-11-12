@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.SituationFamilialeDto;
 import com.cgpr.mineur.models.ApiResponse;
-
-import com.cgpr.mineur.models.SituationFamiliale;
-import com.cgpr.mineur.repository.SituationFamilialeRepository;
 import com.cgpr.mineur.service.SituationFamilialeService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -29,21 +26,21 @@ public class SituationFamilialeController {
 	private SituationFamilialeService situationFamilialeService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<SituationFamiliale>> listNationalite() {
+	public ApiResponse<List<SituationFamilialeDto>> listNationalite() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
 				situationFamilialeService.listNationalite());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<SituationFamiliale> getById(@PathVariable("id") long id) {
-		 SituationFamiliale  Data = situationFamilialeService.getById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<SituationFamilialeDto> getById(@PathVariable("id") long id) {
+		SituationFamilialeDto Data = situationFamilialeService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<SituationFamiliale> save(@RequestBody SituationFamiliale situationFamiliale) {
+	public ApiResponse<SituationFamilialeDto> save(@RequestBody SituationFamilialeDto situationFamiliale) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully",
@@ -54,7 +51,7 @@ public class SituationFamilialeController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<SituationFamiliale> update(@RequestBody SituationFamiliale situationFamiliale) {
+	public ApiResponse<SituationFamilialeDto> update(@RequestBody SituationFamilialeDto situationFamiliale) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",

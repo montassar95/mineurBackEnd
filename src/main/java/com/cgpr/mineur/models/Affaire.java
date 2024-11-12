@@ -18,9 +18,11 @@ import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -33,7 +35,7 @@ public class Affaire  implements Serializable {
 
 	@ManyToOne
 	@JoinColumns({ @JoinColumn(name = "a_idEnf", referencedColumnName = "idEnf"),
-			@JoinColumn(name = "a_numOrd", referencedColumnName = "numOrd") })
+			      @JoinColumn(name = "a_numOrd", referencedColumnName = "numOrd") })
 	private Arrestation arrestation;
 
 	private long numOrdinalAffaire;

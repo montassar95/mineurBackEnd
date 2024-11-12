@@ -8,12 +8,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.CartePropagationDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.CartePropagation;
-import com.cgpr.mineur.repository.AffaireRepository;
-import com.cgpr.mineur.repository.ArrestationRepository;
-import com.cgpr.mineur.repository.CartePropagationRepository;
-import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.service.CartePropagationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -24,23 +20,11 @@ public class CartePropagationController {
 	@Autowired
 	private CartePropagationService cartePropagationService;
 
-	 
-	
-	 
-	
-	
-	
-	
 	@PostMapping("/add")
-	public ApiResponse<CartePropagation> save(@RequestBody CartePropagation cartePropagation) {
+	public ApiResponse<CartePropagationDto> save(@RequestBody CartePropagationDto cartePropagation) {
 
-		 
-		 
-		 
-		CartePropagation c = cartePropagationService.save(cartePropagation);
-		 
-		
- 
+		CartePropagationDto c = cartePropagationService.save(cartePropagation);
+
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully", c);
 		} catch (Exception e) {
@@ -49,7 +33,4 @@ public class CartePropagationController {
 
 	}
 
- 
-	
- 
 }

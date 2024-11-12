@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Delegation;
+import com.cgpr.mineur.dto.DelegationDto;
 
 
  
@@ -13,23 +11,23 @@ import com.cgpr.mineur.models.Delegation;
 public interface DelegationService {
 	 
 	
-	public List<Delegation> list() ;
+	public List<DelegationDto> list() ;
 
 
-	public Delegation getById(long id) ;
+	public DelegationDto getById(long id) ;
 
 
-	public List<Delegation> getDelegationByGouv( long id) ;
+	public List<DelegationDto> getDelegationByGouv( long id) ;
 
 
-	public Delegation findByGouvernorat(long idG,long idD) ;
+	public DelegationDto findByGouvernorat(long idG,long idD) ;
 
 
-	public Delegation save(Delegation delegation) ;
+	public DelegationDto save(DelegationDto delegationDto) ;
 
 	
 	
-	public Delegation update( Delegation causeDeces);
+	public DelegationDto update( DelegationDto causeDecesDto);
 
 	
 	public Void delete(long id) ;

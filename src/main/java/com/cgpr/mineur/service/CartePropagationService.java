@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 
  
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.CartePropagation;
+import com.cgpr.mineur.dto.CartePropagationDto;
  
  
  
@@ -13,7 +11,7 @@ public interface CartePropagationService  {
 	 
 	 
 	 
-	public  CartePropagation  save(CartePropagation cartePropagation);
+	public  CartePropagationDto  save(CartePropagationDto cartePropagationDto);
 
 	 
 	 

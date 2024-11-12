@@ -1,6 +1,7 @@
 package com.cgpr.mineur.dto;
 
 import java.sql.Date;
+import java.util.List;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.JoinColumn;
@@ -8,6 +9,8 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import com.cgpr.mineur.models.Echappes;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -62,7 +65,7 @@ public class ResidenceDto {
  
 	private EtabChangeManiereDto etabChangeManiere;
 
-
+	 private List<EchappesDto> echappes;
 
 	public ResidenceDto(ResidenceIdDto residenceId, String numArrestation, int statut) {
 		super();

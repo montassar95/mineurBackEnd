@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.GouvernoratDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.Gouvernorat;
- 
-import com.cgpr.mineur.repository.GouvernoratRepository;
 import com.cgpr.mineur.service.GouvernoratService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -29,24 +26,20 @@ public class GouvernoratController {
 	private GouvernoratService gouvernoratService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<Gouvernorat>> list() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				gouvernoratService.list());
+	public ApiResponse<List<GouvernoratDto>> list() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", gouvernoratService.list());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<Gouvernorat> getById(@PathVariable("id") long id) {
-		 Gouvernorat  Data = gouvernoratService.getById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<GouvernoratDto> getById(@PathVariable("id") long id) {
+		GouvernoratDto Data = gouvernoratService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
-	
-	
-	
 	@PostMapping("/add")
-	public ApiResponse<Gouvernorat> save(@RequestBody Gouvernorat gouv) {
+	public ApiResponse<GouvernoratDto> save(@RequestBody GouvernoratDto gouv) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
@@ -57,7 +50,7 @@ public class GouvernoratController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<Gouvernorat> update(@RequestBody Gouvernorat gouv) {
+	public ApiResponse<GouvernoratDto> update(@RequestBody GouvernoratDto gouv) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.", gouvernoratService.save(gouv));
@@ -76,5 +69,5 @@ public class GouvernoratController {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
 		}
 	}
- 
+
 }

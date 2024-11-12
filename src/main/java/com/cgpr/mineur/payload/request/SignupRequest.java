@@ -4,23 +4,30 @@ import java.util.Set;
 
 import javax.validation.constraints.*;
 
+import com.cgpr.mineur.dto.EtablissementDto;
 import com.cgpr.mineur.models.Personelle;
 
+import lombok.ToString;
 
- 
+
+ @ToString
 public class SignupRequest {
     @NotBlank
     @Size(min = 3, max = 20)
     private String username;
  
     private Personelle personelle;
-     
+    private String nom ;
+	private String prenom;
+	private String numAdministratif ;
     
     private Set<String> role;
     
     @NotBlank
     @Size(min = 6, max = 40)
     private String password;
+    
+    private EtablissementDto etablissement;
   
     
     
@@ -30,12 +37,43 @@ public class SignupRequest {
     
     
     public SignupRequest(@NotBlank @Size(min = 3, max = 20) String username, Personelle personelle, Set<String> role,
-			@NotBlank @Size(min = 6, max = 40) String password) {
+			@NotBlank @Size(min = 6, max = 40) String password,
+			   String nom ,
+				  String prenom,
+				  String numAdministratif , EtablissementDto etablissement) {
 		super();
 		this.username = username;
 		this.personelle = personelle;
 		this.role = role;
 		this.password = password;
+		this.nom= nom;
+		this.prenom= prenom;
+		this.numAdministratif= numAdministratif ;
+		this.etablissement = etablissement;
+	}
+
+	public String getNom() {
+		return nom;
+	}
+
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+	public String getPrenom() {
+		return prenom;
+	}
+
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+	public String getNumAdministratif() {
+		return numAdministratif;
+	}
+
+	public void setNumAdministratif(String numAdministratif) {
+		this.numAdministratif = numAdministratif;
 	}
 
 	public SignupRequest() {
@@ -77,11 +115,15 @@ public class SignupRequest {
 		this.personelle = personelle;
 	}
 
-	@Override
-	public String toString() {
-		return "SignupRequest [username=" + username + ", personelle=" + personelle + ", role=" + role + ", password="
-				+ password + "]";
+	public EtablissementDto getEtablissement() {
+		return etablissement;
 	}
+
+	public void setEtablissement(EtablissementDto etablissement) {
+		this.etablissement = etablissement;
+	}
+
+	 
     
     
 }

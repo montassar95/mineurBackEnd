@@ -2,13 +2,26 @@ package com.cgpr.mineur.service.Impl;
 
 
  
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.AccusationCarteDepotConverter;
+import com.cgpr.mineur.converter.AffaireConverter;
+import com.cgpr.mineur.converter.CarteDepotConverter;
+import com.cgpr.mineur.converter.DocumentConverter;
+import com.cgpr.mineur.converter.DocumentIdConverter;
+import com.cgpr.mineur.converter.TitreAccusationConverter;
+import com.cgpr.mineur.dto.CarteDepotDto;
+import com.cgpr.mineur.dto.DocumentDto;
+import com.cgpr.mineur.dto.TitreAccusationDto;
 import com.cgpr.mineur.models.AccusationCarteDepot;
+import com.cgpr.mineur.models.AccusationCarteDepotId;
+import com.cgpr.mineur.models.Affaire;
 import com.cgpr.mineur.models.CarteDepot;
+import com.cgpr.mineur.models.Document;
 import com.cgpr.mineur.repository.AccusationCarteDepotRepository;
 import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
@@ -48,28 +61,34 @@ public class CarteDepotServiceImpl implements CarteDepotService {
 	
 	
 	@Override
-	public  CarteDepot  save( CarteDepot carteDepot) {
-
+	public  CarteDepotDto  save( CarteDepotDto carteDepotDto) {
+		System.err.println("1 = "+carteDepotDto.toString());
 		 
-		if (carteDepot.getAffaire().getAffaireLien() != null) {
-			carteDepot.getAffaire().getAffaireLien().setStatut(1);
+		if (carteDepotDto.getAffaire().getAffaireLien() != null) {
+			carteDepotDto.getAffaire().getAffaireLien().setStatut(1);
 			System.out.println("=========================debut lien ==================================");
-			System.out.println(carteDepot.getAffaire().getAffaireLien().toString());
-			carteDepot.getAffaire().setNumOrdinalAffaireByAffaire(
-			carteDepot.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
-			carteDepot.getAffaire().setTypeDocument("CD");
-			affaireRepository.save(carteDepot.getAffaire().getAffaireLien());
+			System.out.println(carteDepotDto.getAffaire().getAffaireLien().toString());
+			carteDepotDto.getAffaire().setNumOrdinalAffaireByAffaire(
+			carteDepotDto.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
+			carteDepotDto.getAffaire().setTypeDocument("CD");
+			
+			Affaire affaireSaved = affaireRepository.save(AffaireConverter.dtoToEntity(carteDepotDto.getAffaire().getAffaireLien()));
+			affaireRepository.save(affaireSaved);
 			System.out.println("============================fin lien===============================");
 		}
 		System.out.println("================================debut affaire ===========================");
-		System.out.println(carteDepot.getAffaire().toString());
-		carteDepot.getAffaire().setTypeDocument("CD");
-		carteDepot.getAffaire().setTypeAffaire(carteDepot.getTypeAffaire());
-		affaireRepository.save(carteDepot.getAffaire());
+		System.out.println(carteDepotDto.getAffaire().toString());
+		carteDepotDto.getAffaire().setTypeDocument("CD");
+		carteDepotDto.getAffaire().setTypeAffaire(carteDepotDto.getTypeAffaire());
+		System.err.println("2 = "+ AffaireConverter.dtoToEntity(carteDepotDto.getAffaire() ).toString());
+		
+		Affaire affaireSaved = affaireRepository.save(AffaireConverter.dtoToEntity(carteDepotDto.getAffaire() ));
+		affaireRepository.save(affaireSaved);
+
 		System.out.println("==================================fin affaire=========================");
 		
 		
-		 List<AccusationCarteDepot> listacc =accusationCarteDepotRepository.findByCarteDepot( carteDepot.getDocumentId()  );
+		 List<AccusationCarteDepot> listacc =accusationCarteDepotRepository.findByCarteDepot(DocumentIdConverter.dtoToEntity( carteDepotDto.getDocumentId()   ) );
 		
 		 
 		 if(!listacc.isEmpty()) {
@@ -79,30 +98,51 @@ public class CarteDepotServiceImpl implements CarteDepotService {
 			 }
 			
 		 }
-		CarteDepot c = carteDepotRepository.save(carteDepot);
+		 DocumentDto d =(DocumentDto)carteDepotDto;
+		 System.err.println(d.getDocumentId().toString());
+		 System.err.println("2 = "+carteDepotDto.toString());
+		 System.err.println("3 = "+CarteDepotConverter.dtoToEntity(carteDepotDto).toString());
+		CarteDepot carteDepotSaved = carteDepotRepository.save(CarteDepotConverter.dtoToEntity(carteDepotDto));
 		 
-		
+		System.out.println("salut service "+ carteDepotSaved.toString());
 
-//		Arrestation ar = arrestationRepository.findByIdEnfantAndStatut0(c.getDocumentId().getIdEnfant());
-//		List<Affaire> aData = documentRepository.findStatutJurByArrestation(c.getDocumentId().getIdEnfant() );
-//	
-//		if (aData.isEmpty()) {
-//			ar.setEtatJuridique ("juge");
-//		} else {
-//			ar.setEtatJuridique( "arret");
-//		}
-//		 
-//		List<Affaire> affprincipale = affaireRepository.findAffairePrincipale(c.getDocumentId().getIdEnfant(),c.getDocumentId().getNumOrdinalArrestation(),PageRequest.of(0,1));
-// 		ar.setNumAffairePricipale(affprincipale.get(0).getAffaireId().getNumAffaire()); 
-// 		ar.setTribunalPricipale(affprincipale.get(0).getTribunal()); 
-// 		ar.setNumOrdinalAffairePricipale(affprincipale.get(0).getNumOrdinalAffaire());
-//		arrestationRepository.save(ar);
-		//Etat.etatJuridique 
+		
+		
+		
+	 
+		   List<AccusationCarteDepot> accusationCarteDepotSaved = new ArrayList<AccusationCarteDepot>();
+		
+		System.out.println(carteDepotDto.getTitreAccusations().size());
+		
+		for(TitreAccusationDto a: carteDepotDto.getTitreAccusations()) {
+			System.out.println("tohmaaaa");
+			System.out.println(a.toString());
+			 
+			AccusationCarteDepotId acdId = new AccusationCarteDepotId() ;
+			acdId.setIdEnfant(carteDepotSaved.getDocumentId().getIdEnfant());
+			 
+			acdId.setNumOrdinalAffaire(carteDepotSaved.getDocumentId().getNumOrdinalAffaire()); 
+			acdId.setNumOrdinalArrestation(carteDepotSaved.getDocumentId().getNumOrdinalAffaire());
+			acdId.setNumOrdinalDoc(carteDepotSaved.getDocumentId().getNumOrdinalDoc());
+			acdId.setNumOrdinalDocByAffaire(carteDepotSaved.getDocumentId().getNumOrdinalDocByAffaire());
+			acdId.setIdTitreAccusation(a.getId());
+			
+			AccusationCarteDepot acd =acd = new AccusationCarteDepot() ;
+			acd.setAccusationCarteDepotId(acdId);
+			acd.setCarteDepot(carteDepotSaved);
+			acd.setTitreAccusation( TitreAccusationConverter.dtoToEntity(a)  );
+			AccusationCarteDepot accusationCarteDepot=	accusationCarteDepotRepository.save(acd);
+			System.err.println("is"+accusationCarteDepot.toString());
+			accusationCarteDepotSaved.add(accusationCarteDepot);
+ 			
+		}
+		carteDepotSaved.setAccusationCarteDepots(accusationCarteDepotSaved) ;
+ 
 
 		try {
-			return  c ;
+			return  CarteDepotConverter.entityToDto(carteDepotSaved);
 		} catch (Exception e) {
-			return   null ;
+			return  CarteDepotConverter.entityToDto(carteDepotSaved);
 		}
 
 	}

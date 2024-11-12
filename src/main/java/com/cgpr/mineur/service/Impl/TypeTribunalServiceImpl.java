@@ -2,10 +2,14 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.TypeJugeConverter;
+import com.cgpr.mineur.converter.TypeTribunalConverter;
+import com.cgpr.mineur.dto.TypeTribunalDto;
 import com.cgpr.mineur.models.TypeTribunal;
 import com.cgpr.mineur.repository.TypeTribunalRepository;
 import com.cgpr.mineur.service.TypeTribunalService;
@@ -21,15 +25,19 @@ public class TypeTribunalServiceImpl implements TypeTribunalService{
 	private TypeTribunalRepository typeTribunalRepository;
 
 	@Override
-	public List<TypeTribunal> list() {
-		return typeTribunalRepository.findAllByOrderByIdAsc();
+	public List<TypeTribunalDto> list() {
+		 
+		List<TypeTribunal> list = typeTribunalRepository.findAllByOrderByIdAsc();
+		
+		return	list. stream().map(TypeTribunalConverter::entityToDto).collect(Collectors.toList());
+	 
 	}
 
 	@Override
-	public TypeTribunal getById( long id) {
+	public TypeTribunalDto getById( long id) {
 		Optional<TypeTribunal> Data = typeTribunalRepository.findById(id);
 		if (Data.isPresent()) {
-			return  Data.get();
+			return  TypeTribunalConverter.entityToDto(Data.get()) ;
 		} else {
 			return  null;
 		}
@@ -40,20 +48,20 @@ public class TypeTribunalServiceImpl implements TypeTribunalService{
 	 
 
 	@Override
-	public TypeTribunal save( TypeTribunal causeDeces) {
+	public TypeTribunalDto save( TypeTribunalDto typeTribunalDto) {
 
 		try {
-			return typeTribunalRepository.save(causeDeces);
+			return    TypeTribunalConverter.entityToDto(typeTribunalRepository.save(TypeTribunalConverter.dtoToEntity(typeTribunalDto))) ;
 		} catch (Exception e) {
 			return  null;
 		}
 	}
 
 	@Override
-	public TypeTribunal update(TypeTribunal causeDeces) {
+	public TypeTribunalDto update(TypeTribunalDto typeTribunalDto) {
 		try {
 
-			return typeTribunalRepository.save(causeDeces);
+			return    TypeTribunalConverter.entityToDto(typeTribunalRepository.save(TypeTribunalConverter.dtoToEntity(typeTribunalDto))) ;
 		} catch (Exception e) {
 			return  null;
 		}

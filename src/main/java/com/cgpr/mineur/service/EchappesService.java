@@ -4,9 +4,7 @@ package com.cgpr.mineur.service;
  
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Echappes;
+import com.cgpr.mineur.dto.EchappesDto;
 
 
  
@@ -15,16 +13,12 @@ public interface EchappesService  {
 	 
 	
  
-	public Echappes save(Echappes echappes) ;
+	public EchappesDto save(EchappesDto echappesDto) ;
+	public List<EchappesDto> trouverEchappesParIdDetenuEtNumDetention( String idEnfant, long numOrdinaleArrestation) ;
 	 
-	public Object countByEnfant(String idEnfant,long numOrdinaleArrestation) ;
-
-	 
-	public Object countTotaleEchappes( String idEnfant,long numOrdinaleArrestation) ;
-	 
-	public Echappes findByIdEnfantAndResidenceTrouverNull( String idEnfant);
+ 
 
  
-	public List<Echappes> findEchappesByIdEnfant( String idEnfant, long numOrdinaleArrestation) ;
+	
 }
 

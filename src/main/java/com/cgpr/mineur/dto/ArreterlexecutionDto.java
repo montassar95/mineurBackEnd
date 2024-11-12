@@ -6,8 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
  
- 
+ @SuperBuilder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,7 +19,7 @@ public class ArreterlexecutionDto extends DocumentDto {
 	 
 	private String typeFile;
 	 
-	private MotifArreterlexecution motifArreterlexecution;
+	private MotifArreterlexecutionDto motifArreterlexecution;
 	
 
 }

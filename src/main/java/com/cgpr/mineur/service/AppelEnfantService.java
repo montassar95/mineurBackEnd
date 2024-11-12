@@ -1,8 +1,6 @@
 package com.cgpr.mineur.service;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.AppelEnfant;
+import com.cgpr.mineur.dto.AppelEnfantDto;
 
 
  
@@ -11,6 +9,6 @@ import com.cgpr.mineur.models.AppelEnfant;
 public interface AppelEnfantService   {
 	 
 	 
-	public  AppelEnfant  save( AppelEnfant appelEnfant) ;
+	public  AppelEnfantDto  save( AppelEnfantDto appelEnfantDto) ;
 }
 

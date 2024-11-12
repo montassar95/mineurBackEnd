@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Nationalite;
+import com.cgpr.mineur.dto.NationaliteDto;
 
  
  
@@ -13,16 +11,16 @@ import com.cgpr.mineur.models.Nationalite;
 public interface NationaliteService {
 
 	
-	public List<Nationalite> listNationalite();
+	public List<NationaliteDto> listNationalite();
 
 	
-	public Nationalite getNationaliteById( long id);
+	public NationaliteDto getNationaliteById( long id);
 
 
-	public Nationalite save( Nationalite nationalite) ;
+	public NationaliteDto save( NationaliteDto nationalite) ;
 
 	
-	public Nationalite update(Nationalite nationalite);
+	public NationaliteDto update(NationaliteDto nationalite);
 
 	
 	public Void delete( long id) ;

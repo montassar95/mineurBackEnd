@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 
  
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.ChangementLieu;
+import com.cgpr.mineur.dto.ChangementLieuDto;
  
  
  
@@ -14,7 +12,7 @@ public interface ChangementLieuService {
 	 
 	 
 	 
-	public  ChangementLieu  save(  ChangementLieu changementLieu)  ;
+	public  ChangementLieuDto  save(  ChangementLieuDto changementLieuDto)  ;
 	 
 	 
 	

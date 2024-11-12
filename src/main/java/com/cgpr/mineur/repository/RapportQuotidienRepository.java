@@ -17,8 +17,13 @@ import com.cgpr.mineur.models.RapportQuotidien;
 @Repository
 public interface RapportQuotidienRepository  extends CrudRepository<RapportQuotidien, Long> {
 
-	 @Query("SELECT r FROM RapportQuotidien r WHERE DATE(r.dateSauvgarde) = :date")
-	    List<RapportQuotidien> findByDate(@Param("date") LocalDate date);
+	
+	  @Query("SELECT r FROM RapportQuotidien r  ORDER BY r.id DESC ")
+	  List<RapportQuotidien> findAllRapport();
+	  
+//	  
+//	    @Query("SELECT r FROM RapportQuotidien r WHERE DATE(r.dateSauvgarde) = :date")
+//	    List<RapportQuotidien> findByDate(@Param("date") LocalDate date);
 	 
 	 @Query("SELECT r FROM RapportQuotidien r WHERE TRUNC(r.dateSauvgarde) = TRUNC(:date) ORDER BY r.dateSauvgarde DESC")
 	    Optional<RapportQuotidien> findLatestByDate(@Param("date") LocalDate date);

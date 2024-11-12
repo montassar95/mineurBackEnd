@@ -6,15 +6,19 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "typTri")
 public class TypeTribunal  implements Serializable {
+	
+	
 	@Id 
 	private long id;
  

@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.MotifArreterlexecutionDto;
 import com.cgpr.mineur.models.ApiResponse;
-
-import com.cgpr.mineur.models.MotifArreterlexecution;
-import com.cgpr.mineur.repository.MotifArreterlexecutionRepository;
 import com.cgpr.mineur.service.MotifArreterlexecutionService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -30,21 +27,21 @@ public class MotifArreterlexecutionController {
 	private MotifArreterlexecutionService motifArreterlexecutionService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<MotifArreterlexecution>> listMotifArreterlexecution() {
+	public ApiResponse<List<MotifArreterlexecutionDto>> listMotifArreterlexecution() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
 				motifArreterlexecutionService.listMotifArreterlexecution());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<MotifArreterlexecution> getById(@PathVariable("id") long id) {
-		 MotifArreterlexecution  Data = motifArreterlexecutionService.getById(id);
-	 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		  
+	public ApiResponse<MotifArreterlexecutionDto> getById(@PathVariable("id") long id) {
+		MotifArreterlexecutionDto Data = motifArreterlexecutionService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<MotifArreterlexecution> save(@RequestBody MotifArreterlexecution causeDeces) {
+	public ApiResponse<MotifArreterlexecutionDto> save(@RequestBody MotifArreterlexecutionDto causeDeces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
@@ -55,7 +52,7 @@ public class MotifArreterlexecutionController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<MotifArreterlexecution> update(@RequestBody MotifArreterlexecution causeDeces) {
+	public ApiResponse<MotifArreterlexecutionDto> update(@RequestBody MotifArreterlexecutionDto causeDeces) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",

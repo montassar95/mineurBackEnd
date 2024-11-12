@@ -2,10 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Etablissement;
-import com.cgpr.mineur.models.NiveauEducatif;
+import com.cgpr.mineur.dto.NiveauEducatifDto;
 
  
  
@@ -14,16 +11,16 @@ import com.cgpr.mineur.models.NiveauEducatif;
 public interface NiveauEducatifService {
 
 	
-	public List<NiveauEducatif> listNiveauEducatif() ;
+	public List<NiveauEducatifDto> listNiveauEducatif() ;
 
 
-	public NiveauEducatif getNiveauEducatifById( long id) ;
-
-	
-	public NiveauEducatif save( NiveauEducatif niveauEducatif);
+	public NiveauEducatifDto getNiveauEducatifById( long id) ;
 
 	
-	public NiveauEducatif update(NiveauEducatif niveauEducatif) ;
+	public NiveauEducatifDto save( NiveauEducatifDto niveauEducatifDto);
+
+	
+	public NiveauEducatifDto update(NiveauEducatifDto niveauEducatifDto) ;
 
 	
 	public Void delete( long id) ;

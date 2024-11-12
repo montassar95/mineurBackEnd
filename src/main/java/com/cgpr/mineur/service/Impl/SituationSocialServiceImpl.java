@@ -2,10 +2,16 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.PersonelleConverter;
+import com.cgpr.mineur.converter.SituationFamilialeConverter;
+import com.cgpr.mineur.converter.SituationSocialConverter;
+import com.cgpr.mineur.dto.SituationSocialDto;
+import com.cgpr.mineur.models.SituationFamiliale;
 import com.cgpr.mineur.models.SituationSocial;
 import com.cgpr.mineur.repository.SituationSocialRepository;
 import com.cgpr.mineur.service.SituationSocialService;
@@ -21,35 +27,39 @@ public class SituationSocialServiceImpl implements SituationSocialService{
 	private SituationSocialRepository situationSocialRepository;
 
 	@Override
-	public List<SituationSocial> listNationalite() {
-		return  situationSocialRepository.findAllByOrderByIdAsc();
+	public List<SituationSocialDto> listNationalite() {
+		
+    List<SituationSocial> list = situationSocialRepository.findAllByOrderByIdAsc() ;
+		
+		return list. stream().map(SituationSocialConverter::entityToDto).collect(Collectors.toList()); 
+		 
 	}
 
 	@Override
-	public SituationSocial getById( long id) {
-		Optional<SituationSocial> Data = situationSocialRepository.findById(id);
+	public SituationSocialDto getById( long id) {
+		Optional<SituationSocial > Data = situationSocialRepository.findById(id);
 		if (Data.isPresent()) {
-			return  Data.get();
+			return SituationSocialConverter.entityToDto (Data.get()) ;
 		} else {
 			return  null;
 		}
 	}
 
 	@Override
-	public SituationSocial save( SituationSocial situationFamiliale) {
+	public SituationSocialDto save( SituationSocialDto situationSocialDto) {
 
 		try {
-			return situationSocialRepository.save(situationFamiliale);
+			return	SituationSocialConverter.entityToDto(situationSocialRepository.save(SituationSocialConverter.dtoToEntity(situationSocialDto) ))  ;
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	@Override
-	public SituationSocial update( SituationSocial situationFamiliale) {
+	public SituationSocialDto update( SituationSocialDto situationSocialDto) {
 		try {
-
-			return situationSocialRepository.save(situationFamiliale);
+			return	SituationSocialConverter.entityToDto(situationSocialRepository.save(SituationSocialConverter.dtoToEntity(situationSocialDto) ))  ;
+			 
 		} catch (Exception e) {
 			return null;
 		}

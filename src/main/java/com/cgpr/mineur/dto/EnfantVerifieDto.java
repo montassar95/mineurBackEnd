@@ -25,5 +25,10 @@ public class EnfantVerifieDto {
 	private String adultDate;
 	private List<Arrestation> arrestations;
  
-
+	private boolean allowNewAddArrestation;
+	private boolean allowNewCarte;
+	private boolean alerte;
+	private ResidenceDto residence;
+	private ResidenceDto residenceEncour;
+ 
 }

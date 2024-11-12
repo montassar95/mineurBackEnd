@@ -13,7 +13,7 @@ import lombok.ToString;
 public class AccusationCarteHeberDto {
 
 	 
-	private AccusationCarteDepotIdDto accusationCarteHeberId;
+	private AccusationCarteHeberIdDto accusationCarteHeberId;
                                    
 	
 	 

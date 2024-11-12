@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.cgpr.mineur.dto.CauseDecesDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.CauseDeces;
 import com.cgpr.mineur.service.CauseDecesService;
- 
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -26,27 +26,23 @@ public class CauseDecesController {
 	@Autowired
 	private CauseDecesService causeDecesService;
 
-	 
-	 
-
 	@GetMapping("/all")
-	public ApiResponse<List<CauseDeces>> listCauseMutation() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", causeDecesService.listCauseMutation());
+	public ApiResponse<List<CauseDecesDto>> listCauseMutation() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
+				causeDecesService.listCauseMutation());
 	}
 
- 
-
 	@GetMapping("/getone/{id}")
-	public ApiResponse<CauseDeces> getTypeAffaireById(@PathVariable("id") long id) {
-		
-		 CauseDeces  typeData = causeDecesService.getTypeAffaireById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
-		 
+	public ApiResponse<CauseDecesDto> getTypeAffaireById(@PathVariable("id") long id) {
+
+		CauseDecesDto typeData = causeDecesService.getTypeAffaireById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<CauseDeces> save(@RequestBody CauseDeces causeDeces) {
+	public ApiResponse<CauseDecesDto> save(@RequestBody CauseDecesDto causeDeces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
@@ -57,7 +53,7 @@ public class CauseDecesController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<CauseDeces> update(@RequestBody CauseDeces causeDeces) {
+	public ApiResponse<CauseDecesDto> update(@RequestBody CauseDecesDto causeDeces) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
@@ -77,6 +73,5 @@ public class CauseDecesController {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "cause not Deleted", null);
 		}
 	}
- 
- 
+
 }

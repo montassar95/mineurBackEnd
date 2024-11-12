@@ -3,52 +3,19 @@ package com.cgpr.mineur.service.Impl;
 
  
 import java.util.List;
-
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Affaire;
-import com.cgpr.mineur.models.Document;
-import com.cgpr.mineur.models.DocumentId;
-import com.cgpr.mineur.models.TitreAccusation;
-import com.cgpr.mineur.service.DocumentService;
-import com.cgpr.mineur.service.EchappesService;
-
-import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
-import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.Arrestation;
+import com.cgpr.mineur.converter.EchappesConverter;
+import com.cgpr.mineur.converter.ResidenceConverter;
+import com.cgpr.mineur.dto.EchappesDto;
 import com.cgpr.mineur.models.Echappes;
 import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.EchappesRepository;
 import com.cgpr.mineur.repository.ResidenceRepository;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.Arrestation;
-import com.cgpr.mineur.models.Echappes;
-import com.cgpr.mineur.repository.ArrestationRepository;
-import com.cgpr.mineur.repository.EchappesRepository;
-import com.cgpr.mineur.repository.ResidenceRepository; 
+import com.cgpr.mineur.service.EchappesService; 
 @Service
 public class EchappesServiceImpl implements EchappesService  {
 
@@ -59,100 +26,72 @@ public class EchappesServiceImpl implements EchappesService  {
 	@Autowired
 	private ResidenceRepository residenceRepository;
 
-	@Autowired
-	private ArrestationRepository arrestationRepository;
+ 
 
 	@Override
-	public Echappes save(Echappes echappes) {
+	public EchappesDto save(EchappesDto echappesDto) {
 
-		System.out.print(echappes.toString());
+		System.out.print(echappesDto.toString());
 
-		try {
+ 
 
 			Echappes eData = echappesRepository
-					.findByIdEnfantAndResidenceTrouverNull(echappes.getEchappesId().getIdEnfant());
+					.findByIdEnfantAndResidenceTrouverNull(echappesDto.getEchappesId().getIdEnfant());
 
 			if (eData == null) {
-				echappes.getResidenceEchapper()
-						.setNombreEchappes(echappes.getResidenceEchapper().getNombreEchappes() + 1);
-				residenceRepository.save(echappes.getResidenceEchapper());
+				
+				echappesDto.getResidenceEchapper()
+						.setNombreEchappes(echappesDto.getResidenceEchapper().getNombreEchappes() + 1);
+				
+				System.err.println("i'm here 1 : ");
+				System.err.println(ResidenceConverter.dtoToEntity(echappesDto.getResidenceEchapper()));
+				
+				residenceRepository.save(ResidenceConverter.dtoToEntity(echappesDto.getResidenceEchapper()));
 			}
 
 			else {
-				if (echappes.getResidenceTrouver() != null) {
-					if (!(echappes.getResidenceEchapper().getEtablissement().getId().toString().trim()
-							.equals(echappes.getResidenceTrouver().getEtablissement().getId().toString().trim()))) {
+				if (echappesDto.getResidenceTrouver() != null) {
+					if (!(echappesDto.getResidenceEchapper().getEtablissement().getId().toString().trim()
+							.equals(echappesDto.getResidenceTrouver().getEtablissement().getId().toString().trim()))) {
 
 						System.err.println(
 								"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
-						System.err.println(echappes.getResidenceEchapper().getEtablissement().getId());
-						System.err.println(echappes.getResidenceTrouver().getEtablissement().getId());
+						System.err.println(echappesDto.getResidenceEchapper().getEtablissement().getId());
+						System.err.println(echappesDto.getResidenceTrouver().getEtablissement().getId());
 						System.err.println(
 								"qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq");
-						echappes.getResidenceEchapper().setStatut(1);
-						echappes.getResidenceEchapper().setDateSortie(echappes.getDateTrouver());
-						residenceRepository.save(echappes.getResidenceEchapper());
-						echappes.getResidenceTrouver().setStatut(0);
-						echappes.getResidenceTrouver().setDateEntree(echappes.getDateTrouver());
-						echappes.getResidenceTrouver().setNombreEchappes(0);
-						echappes.getResidenceTrouver().getResidenceId().setNumOrdinaleResidence(
-								echappes.getResidenceEchapper().getResidenceId().getNumOrdinaleResidence() + 1);
-						residenceRepository.save(echappes.getResidenceTrouver());
+						echappesDto.getResidenceEchapper().setStatut(1);
+						echappesDto.getResidenceEchapper().setDateSortie(echappesDto.getDateTrouver());
+						residenceRepository.save(ResidenceConverter.dtoToEntity(echappesDto.getResidenceEchapper()));
+						echappesDto.getResidenceTrouver().setStatut(0);
+						echappesDto.getResidenceTrouver().setDateEntree(echappesDto.getDateTrouver());
+						echappesDto.getResidenceTrouver().setNombreEchappes(0);
+						echappesDto.getResidenceTrouver().getResidenceId().setNumOrdinaleResidence(
+						 echappesDto.getResidenceEchapper().getResidenceId().getNumOrdinaleResidence() + 1);
+						residenceRepository.save(ResidenceConverter.dtoToEntity(echappesDto.getResidenceTrouver()) );
 
 					}
 				}
 
 			}
+			System.err.println("i'm here 2 : ");
+			System.err.println(EchappesConverter.dtoToEntity(echappesDto));
+			Echappes e = echappesRepository.save(EchappesConverter.dtoToEntity( echappesDto));
 
-			Echappes e = echappesRepository.save(echappes);
+			return EchappesConverter.entityToDto(e) ;
 
-			return  e;
-
-		} catch (Exception e) {
-			return null;
-		}
+ 
 	}
 
-	@Override
-	public Object countByEnfant(String idEnfant, long numOrdinaleArrestation) {
-
-		Echappes eData = echappesRepository.findByIdEnfantAndResidenceTrouverNull(idEnfant);
-
-		if (eData == null) {
-			return (echappesRepository.countByEnfantAndArrestation(idEnfant, numOrdinaleArrestation) + 1);
-
-		} else {
-			return  eData.getEchappesId().getNumOrdinaleEchappes() ;
-
-		}
-
-	}
+ 
 
 	@Override
-	public Object countTotaleEchappes( String idEnfant, long numOrdinaleArrestation) {
+	public List<EchappesDto> trouverEchappesParIdDetenuEtNumDetention( String idEnfant, long numOrdinaleArrestation) {
 
-		return echappesRepository.countByEnfantAndArrestation(idEnfant, numOrdinaleArrestation);
-
-	}
-
-	@Override
-	public Echappes findByIdEnfantAndResidenceTrouverNull( String idEnfant) {
-
-		Echappes cData = echappesRepository.findByIdEnfantAndResidenceTrouverNull(idEnfant);
-		if (cData != null) {
-			return  cData;
-		} else {
-			return  null;
-		}
-	}
-
-	@Override
-	public List<Echappes> findEchappesByIdEnfant( String idEnfant, long numOrdinaleArrestation) {
-
-		List<Echappes> cData = echappesRepository.findEchappesByIdEnfantAndNumOrdinaleArrestation(idEnfant,
+		List<Echappes> echappes = echappesRepository.findEchappesByIdEnfantAndNumOrdinaleArrestation(idEnfant,
 				numOrdinaleArrestation);
-		if (cData != null) {
-			return  cData;
+		if (echappes != null) {
+			return   echappes.stream().map(EchappesConverter::entityToDto).collect(Collectors.toList())  ;
 		} else {
 			return  null;
 		}

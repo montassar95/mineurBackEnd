@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.TypeTribunal;
+import com.cgpr.mineur.dto.TypeTribunalDto;
 
 
  
@@ -13,20 +11,20 @@ import com.cgpr.mineur.models.TypeTribunal;
 public interface TypeTribunalService {
 	
 	
-	public List<TypeTribunal> list() ;
+	public List<TypeTribunalDto> list() ;
 
 
-	public TypeTribunal getById( long id) ;
+	public TypeTribunalDto getById( long id) ;
 	
 	
 	
 	 
 
 
-	public TypeTribunal save(TypeTribunal causeDeces);
+	public TypeTribunalDto save(TypeTribunalDto causeDeces);
 
 
-	public TypeTribunal update(TypeTribunal causeDeces);
+	public TypeTribunalDto update(TypeTribunalDto causeDeces);
 
 
 	

@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.EtabChangeManiereDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.EtabChangeManiere;
-import com.cgpr.mineur.repository.EtabChangeManiereRepository;
 import com.cgpr.mineur.service.EtabChangeManiereService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -28,23 +26,22 @@ public class EtabChangeManiereController {
 	private EtabChangeManiereService etabChangeManiereService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<EtabChangeManiere>> listEtablissement() {
-		
+	public ApiResponse<List<EtabChangeManiereDto>> listEtablissement() {
+
 		return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement List Fetched Successfully.",
 				etabChangeManiereService.listEtablissement());
 	}
-	 
+
 	@GetMapping("/getone/{id}")
-	public ApiResponse<EtabChangeManiere> getEtablissementById(@PathVariable("id") String id) {
-		 EtabChangeManiere  etablissementData = etabChangeManiereService.getEtablissementById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully",
-					etablissementData);
-		 
+	public ApiResponse<EtabChangeManiereDto> getEtablissementById(@PathVariable("id") String id) {
+		EtabChangeManiereDto etablissementData = etabChangeManiereService.getEtablissementById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully", etablissementData);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<EtabChangeManiere> save(@RequestBody EtabChangeManiere etablissement) {
+	public ApiResponse<EtabChangeManiereDto> save(@RequestBody EtabChangeManiereDto etablissement) {
 		System.out.print(etablissement.toString());
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement saved Successfully",
@@ -55,7 +52,7 @@ public class EtabChangeManiereController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<EtabChangeManiere> update(@RequestBody EtabChangeManiere etablissement) {
+	public ApiResponse<EtabChangeManiereDto> update(@RequestBody EtabChangeManiereDto etablissement) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "etablissement updated successfully.",

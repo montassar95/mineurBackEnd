@@ -30,7 +30,7 @@ public class AccusationCarteRecupDto {
 	
 	
 	 
-	private CarteRecupDto carteRecup;
+//	private CarteRecupDto carteRecup;
  
 	 
 	private TitreAccusationDto titreAccusation;

@@ -1,19 +1,12 @@
 package com.cgpr.mineur.dto;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Table;
-
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-
- 
+@SuperBuilder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

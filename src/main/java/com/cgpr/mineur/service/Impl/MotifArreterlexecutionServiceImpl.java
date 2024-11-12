@@ -2,10 +2,15 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.MetierConverter;
+import com.cgpr.mineur.converter.MotifArreterlexecutionConverter;
+import com.cgpr.mineur.dto.MotifArreterlexecutionDto;
+import com.cgpr.mineur.models.Metier;
 import com.cgpr.mineur.models.MotifArreterlexecution;
 import com.cgpr.mineur.repository.MotifArreterlexecutionRepository;
 import com.cgpr.mineur.service.MotifArreterlexecutionService;
@@ -19,36 +24,41 @@ public class MotifArreterlexecutionServiceImpl implements MotifArreterlexecution
 	private MotifArreterlexecutionRepository motifArreterlexecutionRepository;
 
 	@Override
-	public List<MotifArreterlexecution> listMotifArreterlexecution() {
-		return motifArreterlexecutionRepository.findAllByOrderByIdAsc();
+	public List<MotifArreterlexecutionDto> listMotifArreterlexecution() {
+		
+		 List<MotifArreterlexecution > list = motifArreterlexecutionRepository.findAllByOrderByIdAsc();
+		 
+			return list. stream().map(MotifArreterlexecutionConverter::entityToDto).collect(Collectors.toList()); 
+	 
 	}
 
 	@Override
-	public MotifArreterlexecution getById(long id) {
+	public MotifArreterlexecutionDto getById(long id) {
 		Optional<MotifArreterlexecution> Data = motifArreterlexecutionRepository.findById(id);
 		if (Data.isPresent()) {
-			return  Data.get();
+			return  MotifArreterlexecutionConverter .entityToDto(Data.get());
 		} else {
 			return  null;
 		}
 	}
 
 	@Override
-	public MotifArreterlexecution save( MotifArreterlexecution causeDeces) {
+	public MotifArreterlexecutionDto save( MotifArreterlexecutionDto motifArreterlexecutionDto) {
 
 		try {
-			return motifArreterlexecutionRepository.save(causeDeces);
+			return  MotifArreterlexecutionConverter.entityToDto(motifArreterlexecutionRepository.save(MotifArreterlexecutionConverter.dtoToEntity(motifArreterlexecutionDto) ))  ;
+			 
 		} catch (Exception e) {
 			return null;
 		}
 	}
 
 	@Override
-	public MotifArreterlexecution update(MotifArreterlexecution causeDeces) {
+	public MotifArreterlexecutionDto update(MotifArreterlexecutionDto motifArreterlexecutionDto) {
 		try {
 
-			return motifArreterlexecutionRepository.save(causeDeces);
-		} catch (Exception e) {
+			return  MotifArreterlexecutionConverter.entityToDto(motifArreterlexecutionRepository.save(MotifArreterlexecutionConverter.dtoToEntity(motifArreterlexecutionDto) ))  ;
+			} catch (Exception e) {
 			return null;
 		}
 

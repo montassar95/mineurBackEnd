@@ -20,21 +20,15 @@ public class StatistcsController {
 	@Autowired
 	private StatistcsService statistcsService;
 
-	 
+ 
 
-// 
+	@GetMapping("/calculerStatistiques/{id}")
+	public ApiResponse<StatisticsDTO> calculerStatistiques(@PathVariable("id") String id) {
 
-	@GetMapping("/getStatistcs/{id}")
-	public ApiResponse<StatisticsDTO> getStatistcs(@PathVariable("id") String id) {
-
-		 
 		StatisticsDTO sta = statistcsService.getStatistcs(id);
 
-		 
 		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", sta);
 
 	}
-
- 
 
 }

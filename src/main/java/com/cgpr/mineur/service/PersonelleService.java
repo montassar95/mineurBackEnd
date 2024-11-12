@@ -3,9 +3,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Personelle;
+import com.cgpr.mineur.dto.PersonelleDto;
  
  
 
@@ -13,8 +11,8 @@ public interface PersonelleService  {
 	 
 	
 
-	public List<Personelle> listPersonelle(); 
+	public List<PersonelleDto> listPersonelle(); 
 
 	
-	public Personelle save( Personelle personelle);
+	public PersonelleDto save( PersonelleDto personelleDto);
 }

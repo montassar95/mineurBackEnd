@@ -1,12 +1,18 @@
 package com.cgpr.mineur.models;
 
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
 import javax.persistence.Table;
 
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
-import javax.persistence.Entity;
+
+@SuperBuilder
 @Data
+@NoArgsConstructor
 @Entity
 @Table(name = "appPar")
 @DiscriminatorValue("AppelParquet")

@@ -2,10 +2,15 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.CommentTrouverConverter;
+import com.cgpr.mineur.converter.DecesConverter;
+import com.cgpr.mineur.dto.DecesDto;
+import com.cgpr.mineur.models.CommentTrouver;
 import com.cgpr.mineur.models.Deces;
 import com.cgpr.mineur.repository.DecesRepository;
 import com.cgpr.mineur.service.DecesService;
@@ -21,25 +26,29 @@ public class DecesServiceImpl implements DecesService{
 	private DecesRepository decesRepository;
 
 	@Override
-	public List<Deces> list() {
-		return (List<Deces>) decesRepository.findAll();
+	public List<DecesDto> list() {
+		
+		List<Deces> list = (List<Deces>) decesRepository.findAll();
+		return  list.stream().map(DecesConverter::entityToDto).collect(Collectors.toList())  ;
+		 
 	}
 
 	@Override
-	public Deces getById( long id) {
-		Optional<Deces> Data = decesRepository.findById(id);
-		if (Data.isPresent()) {
-			return Data.get();
+	public DecesDto getById( long id) {
+		Optional<Deces> deces = decesRepository.findById(id);
+		if (deces.isPresent()) {
+			return DecesConverter.entityToDto(deces.get()) ;
 		} else {
 			return  null;
 		}
 	}
 	
 	@Override
-	public Deces save( Deces deces) {
+	public DecesDto save( DecesDto decesDto) {
 
 		try {
-			return decesRepository.save(deces);
+			Deces deces  =  decesRepository.save(DecesConverter.dtoToEntity(decesDto)  );
+			return  DecesConverter.entityToDto(deces)   ;
 		} catch (Exception e) {
 			return  null;
 		}
@@ -52,10 +61,11 @@ public class DecesServiceImpl implements DecesService{
 	 
 
 	@Override
-	public Deces update(Deces causeDeces) {
+	public DecesDto update(DecesDto decesDto) {
 		try {
 
-			return decesRepository.save(causeDeces);
+			Deces deces  =  decesRepository.save(DecesConverter.dtoToEntity(decesDto)  );
+			return  DecesConverter.entityToDto(deces)   ;
 		} catch (Exception e) {
 			return  null;
 		}

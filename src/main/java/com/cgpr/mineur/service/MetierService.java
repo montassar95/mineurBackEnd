@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Metier;
+import com.cgpr.mineur.dto.MetierDto;
 
 
  
@@ -14,18 +12,18 @@ public interface MetierService {
 	
 	 
 
-	public List<Metier> list();
+	public List<MetierDto> list();
 
-	public Metier getById( long id) ;
+	public MetierDto getById( long id) ;
 
 	
 	
 	
 
-	public Metier save(Metier gouv);
+	public MetierDto save(MetierDto gouvDto);
 
 
-	public Metier update( Metier gouv);
+	public MetierDto update( MetierDto gouvDto);
 
 
 	public Void delete( long id) ;

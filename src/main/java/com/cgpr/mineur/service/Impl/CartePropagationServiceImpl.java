@@ -2,20 +2,13 @@ package com.cgpr.mineur.service.Impl;
 
 
  
-import java.sql.Date;
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
- 
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
-import com.cgpr.mineur.models.ArretProvisoire;
+import com.cgpr.mineur.converter.AffaireConverter;
+import com.cgpr.mineur.converter.CartePropagationConverter;
+import com.cgpr.mineur.dto.CartePropagationDto;
 import com.cgpr.mineur.models.CartePropagation;
-import com.cgpr.mineur.models.CarteRecup;
-import com.cgpr.mineur.models.DocumentId;
 import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.CartePropagationRepository;
@@ -49,26 +42,30 @@ public class CartePropagationServiceImpl  implements CartePropagationService {
 	
 	
 	@Override
-	public  CartePropagation  save(  CartePropagation cartePropagation) {
+	public  CartePropagationDto  save(  CartePropagationDto cartePropagationDto) {
 
 		 
 		 
 		System.out.println("================================debut affaire ===========================");
-		System.out.println(cartePropagation.getAffaire().toString());
-		cartePropagation.getAffaire().setTypeDocument("CP");
+		System.out.println(cartePropagationDto.getAffaire().toString());
+		cartePropagationDto.getAffaire().setTypeDocument("CP");
 //	 	 cartePropagation.getAffaire().setTypeAffaire(cartePropagation.getTypeAffaire());
 	 
-  	affaireRepository.save(cartePropagation.getAffaire());
+		
+		affaireRepository.save(AffaireConverter.dtoToEntity(cartePropagationDto.getAffaire()));
+		
+		
+  	 
 		System.out.println("==================================fin affaire=========================");
 		
 		
-		cartePropagation.setTypeAffaire(cartePropagation.getAffaire().getTypeAffaire());
-		CartePropagation c = cartePropagationRepository.save(cartePropagation);
+		cartePropagationDto.setTypeAffaire(cartePropagationDto.getAffaire().getTypeAffaire());
+		CartePropagation cartePropagation = cartePropagationRepository.save(CartePropagationConverter.dtoToEntity(cartePropagationDto));
 		 
 		
  
 		try {
-			return   c ;
+			return   CartePropagationConverter.entityToDto(cartePropagation );
 		} catch (Exception e) {
 			return   null ;
 		}

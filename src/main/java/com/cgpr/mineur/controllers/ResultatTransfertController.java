@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,34 +14,34 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.ResultatTransfertDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.ResultatTransfert;
-import com.cgpr.mineur.repository.ResultatTransfertRepository;
 import com.cgpr.mineur.service.ResultatTransfertService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/api/resultatTransfert")
-public class ResultatTransfertController{
+public class ResultatTransfertController {
 
 	@Autowired
 	private ResultatTransfertService resultatTransfertService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<ResultatTransfert>> listTypeJuge() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", resultatTransfertService.listTypeJuge());
+	public ApiResponse<List<ResultatTransfertDto>> listTypeJuge() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
+				resultatTransfertService.listTypeJuge());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<ResultatTransfert> getTypeJugeById(@PathVariable("id") long id) {
-		 ResultatTransfert  typeData = resultatTransfertService.getTypeJugeById(id);
-	 
-			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully", typeData);
-		 
+	public ApiResponse<ResultatTransfertDto> getTypeJugeById(@PathVariable("id") long id) {
+		ResultatTransfertDto typeData = resultatTransfertService.getTypeJugeById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully", typeData);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<ResultatTransfert> save(@RequestBody ResultatTransfert res) {
+	public ApiResponse<ResultatTransfertDto> save(@RequestBody ResultatTransfertDto res) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeJuge saved Successfully",
@@ -53,7 +52,7 @@ public class ResultatTransfertController{
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<ResultatTransfert> update(@RequestBody ResultatTransfert res) {
+	public ApiResponse<ResultatTransfertDto> update(@RequestBody ResultatTransfertDto res) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeJuge updated successfully.",

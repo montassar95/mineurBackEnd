@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.SituationSocial;
+import com.cgpr.mineur.dto.SituationSocialDto;
 
  
  
@@ -12,16 +10,16 @@ import com.cgpr.mineur.models.SituationSocial;
 public interface SituationSocialService {
 
 	
-	public List<SituationSocial> listNationalite();
+	public List<SituationSocialDto> listNationalite();
 
 	
-	public SituationSocial getById( long id) ;
+	public SituationSocialDto getById( long id) ;
 
 	
-	public SituationSocial save( SituationSocial situationFamiliale);
+	public SituationSocialDto save( SituationSocialDto situationFamiliale);
 
 	
-	public SituationSocial update( SituationSocial situationFamiliale);
+	public SituationSocialDto update( SituationSocialDto situationFamiliale);
 
 	
 	public Void delete( long id);

@@ -2,7 +2,7 @@ package com.cgpr.mineur.payload.response;
 
 import java.util.List;
 
-import com.cgpr.mineur.models.Personelle;
+import com.cgpr.mineur.dto.EtablissementDto;
 
 
 public class JwtResponse {
@@ -12,27 +12,60 @@ public class JwtResponse {
 	private String username;
  
 	private List<String> roles;
-	private Personelle personelle;
-	 
+	private EtablissementDto  etablissement ;
+	private String nom;
+    private String prenom;
+
+	public String getNom() {
+		return nom;
+	}
+
+
+
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+
+
+
+	public String getPrenom() {
+		return prenom;
+	}
+
+
+
+	public void setPrenom(String prenom) {
+		this.prenom = prenom;
+	}
+
+
 
 	public JwtResponse(String accessToken, Long id, String username,
-			  List<String> roles ,Personelle personelle ) {
+			  List<String> roles ,EtablissementDto etablissement, String nom,String prenom ) {
 		this.token = accessToken;
 		this.id = id;
 		this.username = username;
 		 
 		this.roles = roles;
-		this.personelle = personelle;
+		this.etablissement = etablissement;
+		this.nom=nom;
+		this.prenom=prenom;
 		
 	}
 
-	public Personelle getPersonelle() {
-		return personelle;
+	 
+
+	public EtablissementDto getEtablissement() {
+		return etablissement;
 	}
 
-	public void setPersonelle(Personelle personelle) {
-		this.personelle = personelle;
+
+
+	public void setEtablissement(EtablissementDto etablissement) {
+		this.etablissement = etablissement;
 	}
+
+
 
 	public String getAccessToken() {
 		return token;

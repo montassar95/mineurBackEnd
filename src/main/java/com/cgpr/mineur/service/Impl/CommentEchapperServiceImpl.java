@@ -2,10 +2,15 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.ClassePenaleConverter;
+import com.cgpr.mineur.converter.CommentEchapperConverter;
+import com.cgpr.mineur.dto.CommentEchapperDto;
+import com.cgpr.mineur.models.ClassePenale;
 import com.cgpr.mineur.models.CommentEchapper;
 import com.cgpr.mineur.repository.CommentEchapperRepository;
 import com.cgpr.mineur.service.CommentEchapperService;
@@ -23,35 +28,42 @@ public class CommentEchapperServiceImpl implements CommentEchapperService  {
 	
 	
 	@Override
-	public List<CommentEchapper> listCommentEchapper() {
-		return commentEchapperRepository.findAllByOrderByIdAsc();
+	public List<CommentEchapperDto> listCommentEchapper() {
+		List<CommentEchapper > list = commentEchapperRepository.findAllByOrderByIdAsc();
+		return  list.stream().map(CommentEchapperConverter::entityToDto).collect(Collectors.toList())  ;
+		 
 	}
 
 	@Override
-	public CommentEchapper getTypeAffaireById( long id) {
-		Optional<CommentEchapper> typeData = commentEchapperRepository.findById(id);
-		if (typeData.isPresent()) {
-			return  typeData.get();
+	public CommentEchapperDto getTypeAffaireById( long id) {
+		Optional<CommentEchapper> commentEchapper = commentEchapperRepository.findById(id);
+		if (commentEchapper.isPresent()) {
+			return CommentEchapperConverter.entityToDto(commentEchapper.get()) ;
 		} else {
 			return  null;
 		}
 	}
 
 	@Override
-	public CommentEchapper save(CommentEchapper causeDeces) {
+	public CommentEchapperDto save(CommentEchapperDto commentEchapperDto) {
 
 		try {
-			return commentEchapperRepository.save(causeDeces);
+			
+			CommentEchapper commentEchapper =commentEchapperRepository.save(CommentEchapperConverter.dtoToEntity(commentEchapperDto));
+			
+			return CommentEchapperConverter.entityToDto(commentEchapper);
 		} catch (Exception e) {
 			return  null;
 		}
 	}
 
 	@Override
-	public CommentEchapper update( CommentEchapper causeDeces) {
+	public CommentEchapperDto update( CommentEchapperDto commentEchapperDto) {
 		try {
 
-			return commentEchapperRepository.save(causeDeces);
+	   CommentEchapper commentEchapper =commentEchapperRepository.save(CommentEchapperConverter.dtoToEntity(commentEchapperDto));
+			
+			return CommentEchapperConverter.entityToDto(commentEchapper);
 		} catch (Exception e) {
 			return  null;
 		}

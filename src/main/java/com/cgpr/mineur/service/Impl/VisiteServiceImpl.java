@@ -5,6 +5,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.VisiteConverter;
+import com.cgpr.mineur.dto.VisiteDto;
 import com.cgpr.mineur.models.Visite;
 import com.cgpr.mineur.repository.VisiteRepository;
 import com.cgpr.mineur.service.VisiteService;
@@ -22,18 +24,18 @@ public class VisiteServiceImpl implements VisiteService{
 
 
 	@Override
-	public Visite save( Visite visite) {
-		System.out.println(visite.toString());
+	public VisiteDto save( VisiteDto visiteDto) {
+		System.out.println(visiteDto.toString());
 		try {
-			Optional<Visite> v = visiteRepository.findbyEnfantandDate(visite.getEnfant().getId(),
-					visite.getAnneeVisite(), visite.getMoisVisite());
+			Optional<Visite> v = visiteRepository.findbyEnfantandDate(visiteDto.getEnfant().getId(),
+					visiteDto.getAnneeVisite(), visiteDto.getMoisVisite());
 			if (v.isPresent()) {
 
 				Visite visiteUpdate = v.get();
-				if (visite.getNbrVisite() == 0) {
+				if (visiteDto.getNbrVisite() == 0) {
 					visiteRepository.deleteById(visiteUpdate.getEnfantIdVisite());
 				} else {
-					visiteUpdate.setNbrVisite(visite.getNbrVisite());
+					visiteUpdate.setNbrVisite(visiteDto.getNbrVisite());
 					visiteRepository.save(visiteUpdate);
 				}
 
@@ -41,8 +43,8 @@ public class VisiteServiceImpl implements VisiteService{
 			} else {
 				System.out.println("first");
 
-				if (visite.getNbrVisite() > 0) {
-					visiteRepository.save(visite);
+				if (visiteDto.getNbrVisite() > 0) {
+					visiteRepository.save( VisiteConverter.dtoToEntity(visiteDto)  );
 				}
 
 			}
@@ -65,11 +67,11 @@ public class VisiteServiceImpl implements VisiteService{
 	}
 
 	@Override
-	public Visite getVisite( String id,  int anneeVisite, int moisVisite) {
+	public VisiteDto getVisite( String id,  int anneeVisite, int moisVisite) {
 		Optional<Visite> v = visiteRepository.findbyEnfantandDate(id, anneeVisite, moisVisite);
 
 		if (v.isPresent()) {
-			return  v.get();
+			return VisiteConverter.entityToDto(v.get()) ;
 		} else {
 			return  null;
 		}

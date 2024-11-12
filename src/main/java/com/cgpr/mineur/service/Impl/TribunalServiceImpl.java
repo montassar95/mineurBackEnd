@@ -2,10 +2,14 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.TitreAccusationConverter;
+import com.cgpr.mineur.converter.TribunalConverter;
+import com.cgpr.mineur.dto.TribunalDto;
 import com.cgpr.mineur.models.Tribunal;
 import com.cgpr.mineur.repository.TribunalRepository;
 import com.cgpr.mineur.service.TribunalService;
@@ -20,22 +24,24 @@ public class TribunalServiceImpl implements  TribunalService {
 	private TribunalRepository tribunalRepository;
 
 	@Override
-	public List<Tribunal> listTribunal() {
-		return tribunalRepository.findAllByOrderByIdAsc();
+	public List<TribunalDto> listTribunal() {
+		List<Tribunal > list = tribunalRepository.findAllByOrderByIdAsc();
+		
+		return list. stream().map(TribunalConverter::entityToDto).collect(Collectors.toList());
 	}
 
 	@Override
-	public Tribunal getTribunalById( long id) {
+	public TribunalDto getTribunalById( long id) {
 		Optional<Tribunal> tribunalData = tribunalRepository.findById(id);
 		if (tribunalData.isPresent()) {
-			return tribunalData.get();
+			return TribunalConverter.entityToDto(tribunalData.get()) ;
 		} else {
 			return  null;
 		}
 	}
 	
 	@Override
-	public List<Tribunal> searchTribunal(long idGouv, long idType) {
+	public List<TribunalDto> searchTribunal(long idGouv, long idType) {
 		List<Tribunal> tribunalData;
 		if(idGouv>0 && idType==0) {
 			tribunalData = tribunalRepository.findByIdGouv(idGouv);
@@ -53,25 +59,25 @@ public class TribunalServiceImpl implements  TribunalService {
 			return null;
 		} else {
 			
-			return  tribunalData;
+			return  tribunalData. stream().map(TribunalConverter::entityToDto).collect(Collectors.toList()); 
 		}
 	}
 
 	@Override
-	public Tribunal save( Tribunal tribunal) {
+	public TribunalDto save( TribunalDto tribunalDto) {
 
 		try {
-			return tribunalRepository.save(tribunal);
+			return TribunalConverter.entityToDto(tribunalRepository.save(TribunalConverter.dtoToEntity(tribunalDto)  )) ;
 		} catch (Exception e) {
 			return  null ;
 		}
 	}
 
 	@Override
-	public  Tribunal  update( Tribunal tribunal) {
+	public  TribunalDto  update( TribunalDto tribunalDto) {
 		try {
 
-			return  tribunalRepository.save(tribunal);
+			return TribunalConverter.entityToDto(tribunalRepository.save(TribunalConverter.dtoToEntity(tribunalDto)  )) ;
 		} catch (Exception e) {
 			return   null ;
 		}

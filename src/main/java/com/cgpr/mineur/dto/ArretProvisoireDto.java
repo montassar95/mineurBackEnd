@@ -23,7 +23,7 @@ import javax.persistence.Entity;
 public class ArretProvisoireDto {
 
 	 
-	protected ArretProvisoireIdDto arretProvisoireId;
+//	protected ArretProvisoireIdDto arretProvisoireId;
 
 	
 	private int jour;
@@ -33,7 +33,7 @@ public class ArretProvisoireDto {
 	private Date dateDebut;
 	private Date dateFin;
  
-	private CarteRecupDto carteRecupDto;
+// private CarteRecupDto carteRecup;
 	
 	
 	private  long daysDiff ;

@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,12 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.LieuDecesDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.CauseMutation;
-
-import com.cgpr.mineur.models.LieuDeces;
-import com.cgpr.mineur.repository.CauseMutationRepository;
-import com.cgpr.mineur.repository.LieuDecesRepository;
 import com.cgpr.mineur.service.LieuDecesService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -32,21 +27,21 @@ public class LieuDecesController {
 	private LieuDecesService lieuDecesService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<LieuDeces>> listCauseMutation() {
+	public ApiResponse<List<LieuDecesDto>> listCauseMutation() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
 				lieuDecesService.listCauseMutation());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<LieuDeces> getById(@PathVariable("id") long id) {
-		 LieuDeces  Data = lieuDecesService.getById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<LieuDecesDto> getById(@PathVariable("id") long id) {
+		LieuDecesDto Data = lieuDecesService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<LieuDeces> save(@RequestBody LieuDeces causeDeces) {
+	public ApiResponse<LieuDecesDto> save(@RequestBody LieuDecesDto causeDeces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
@@ -57,7 +52,7 @@ public class LieuDecesController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<LieuDeces> update(@RequestBody LieuDeces causeDeces) {
+	public ApiResponse<LieuDecesDto> update(@RequestBody LieuDecesDto causeDeces) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",

@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Gouvernorat;
+import com.cgpr.mineur.dto.GouvernoratDto;
 
 
  
@@ -14,18 +12,18 @@ public interface GouvernoratService  {
 	
 
 	
-	public List<Gouvernorat> list();
+	public List<GouvernoratDto> list();
 	
-	public Gouvernorat getById( long id);
+	public GouvernoratDto getById( long id);
 
 	
 	
 	
 	
-	public Gouvernorat save( Gouvernorat gouv) ;
+	public GouvernoratDto save( GouvernoratDto gouvDto) ;
 
 	
-	public Gouvernorat update( Gouvernorat gouv);
+	public GouvernoratDto update( GouvernoratDto gouvDto);
 
 	
 	public Void delete( long id);

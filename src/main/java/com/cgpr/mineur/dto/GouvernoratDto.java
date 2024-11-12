@@ -1,7 +1,5 @@
 package com.cgpr.mineur.dto;
 
-import javax.persistence.Id;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,8 +14,6 @@ public class GouvernoratDto {
 
 	 
 	private long id;
-
- 
 
 	private String libelle_gouvernorat;
 

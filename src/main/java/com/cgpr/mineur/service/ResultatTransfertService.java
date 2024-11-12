@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.ResultatTransfert;
+import com.cgpr.mineur.dto.ResultatTransfertDto;
 
  
  
@@ -14,16 +12,16 @@ public interface ResultatTransfertService  {
 
 	
 	
-	public List<ResultatTransfert> listTypeJuge() ;
+	public List<ResultatTransfertDto> listTypeJuge() ;
 	
 
-	public ResultatTransfert getTypeJugeById( long id);
+	public ResultatTransfertDto getTypeJugeById( long id);
 
 
-	public ResultatTransfert save(ResultatTransfert res) ;
+	public ResultatTransfertDto save(ResultatTransfertDto res) ;
 
 
-	public ResultatTransfert update( ResultatTransfert res) ;
+	public ResultatTransfertDto update( ResultatTransfertDto res) ;
 	
 	public Void delete( long id) ;
 }

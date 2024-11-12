@@ -18,7 +18,7 @@ import javax.persistence.Entity;
 public class MotifArreterlexecutionDto {
 
 	
-	@Id
+ 
 	private long id;
 	
 

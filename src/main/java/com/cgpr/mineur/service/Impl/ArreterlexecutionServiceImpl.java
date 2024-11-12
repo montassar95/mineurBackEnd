@@ -3,6 +3,10 @@ package com.cgpr.mineur.service.Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.AffaireConverter;
+import com.cgpr.mineur.converter.ArreterlexecutionConverter;
+import com.cgpr.mineur.dto.ArreterlexecutionDto;
+import com.cgpr.mineur.models.Affaire;
 import com.cgpr.mineur.models.Arreterlexecution;
 import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
@@ -30,27 +34,30 @@ public class ArreterlexecutionServiceImpl implements ArreterlexecutionService {
 	
 	
 	@Override
-	public Arreterlexecution save(Arreterlexecution arreterlexecution) {
-		if (arreterlexecution.getAffaire().getAffaireLien() != null) {
-			arreterlexecution.getAffaire().getAffaireLien().setStatut(1);
+	public ArreterlexecutionDto save(ArreterlexecutionDto arreterlexecutionDto) {
+		
+		if (arreterlexecutionDto.getAffaire().getAffaireLien() != null) {
+			arreterlexecutionDto.getAffaire().getAffaireLien().setStatut(1);
 			System.out.println("=========================debut lien ==================================");
 
-			arreterlexecution.getAffaire().setNumOrdinalAffaireByAffaire(
-					arreterlexecution.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
+			arreterlexecutionDto.getAffaire().setNumOrdinalAffaireByAffaire(
+					arreterlexecutionDto.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
 
-			arreterlexecution.getAffaire().setTypeDocument("AEX");
-			arreterlexecution.getAffaire()
-					.setTypeAffaire(arreterlexecution.getAffaire().getAffaireLien().getTypeAffaire());
-			affaireRepository.save(arreterlexecution.getAffaire().getAffaireLien());
+			arreterlexecutionDto.getAffaire().setTypeDocument("AEX");
+			arreterlexecutionDto.getAffaire().setTypeAffaire(arreterlexecutionDto.getAffaire().getAffaireLien().getTypeAffaire());
+		
+			Affaire affaireSaved = affaireRepository.save(AffaireConverter.dtoToEntity(arreterlexecutionDto.getAffaire()));
+			affaireRepository.save(AffaireConverter.dtoToEntity(arreterlexecutionDto.getAffaire()));
 			System.out.println("============================fin lien===============================");
 		}
 		System.out.println("================================debut affaire ===========================");
-		System.out.println(arreterlexecution.getAffaire().toString());
-		arreterlexecution.getAffaire().setTypeDocument("AEX");
-		affaireRepository.save(arreterlexecution.getAffaire());
+		System.out.println(arreterlexecutionDto.getAffaire().toString());
+		arreterlexecutionDto.getAffaire().setTypeDocument("AEX");
+		System.out.println(AffaireConverter.dtoToEntity(arreterlexecutionDto.getAffaire()));
+		affaireRepository.save(AffaireConverter.dtoToEntity(arreterlexecutionDto.getAffaire()));
 		System.out.println("==================================fin affaire=========================");
-		arreterlexecution.setTypeAffaire(arreterlexecution.getAffaire().getTypeAffaire());
-		Arreterlexecution c = arreterlexecutionRepository.save(arreterlexecution);
+		arreterlexecutionDto.setTypeAffaire(arreterlexecutionDto.getAffaire().getTypeAffaire());
+		Arreterlexecution c = arreterlexecutionRepository.save(ArreterlexecutionConverter.dtoToEntity(arreterlexecutionDto));
 
 //		arrestationRepository.save(ar);
 

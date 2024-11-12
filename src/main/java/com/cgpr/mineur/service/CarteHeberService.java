@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 
  
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.CarteHeber;
+import com.cgpr.mineur.dto.CarteHeberDto;
  
  
  
@@ -14,6 +12,6 @@ public interface CarteHeberService   {
  
 
  
-	public  CarteHeber  save(  CarteHeber carteHeber) ;
+	public  CarteHeberDto  save(  CarteHeberDto carteHeberDto) ;
 	 
 }

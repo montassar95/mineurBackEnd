@@ -5,6 +5,9 @@ package com.cgpr.mineur.service.Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.AffaireConverter;
+import com.cgpr.mineur.converter.ChangementLieuConverter;
+import com.cgpr.mineur.dto.ChangementLieuDto;
 import com.cgpr.mineur.models.ChangementLieu;
 import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
@@ -34,23 +37,25 @@ public class ChangementLieuServiceImpl implements ChangementLieuService{
 
  
 	@Override
-	public  ChangementLieu  save( ChangementLieu changementLieu) {
+	public  ChangementLieuDto  save( ChangementLieuDto changementLieuDto) {
 
 		 
-	 
+	 System.err.println("hello ");
+	 System.out.println(changementLieuDto.toString());
 
-		if (changementLieu.getAffaire().getAffaireLien() != null) {
-			changementLieu.getAffaire().getAffaireLien().setStatut(1);
+		if (changementLieuDto.getAffaire().getAffaireLien() != null) {
+			changementLieuDto.getAffaire().getAffaireLien().setStatut(1);
 			System.out.println("=========================debut lien ==================================");
 		 
-			changementLieu.getAffaire().setNumOrdinalAffaireByAffaire(
-					changementLieu.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
+			changementLieuDto.getAffaire().setNumOrdinalAffaireByAffaire(
+			 changementLieuDto.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
 			
 		 	//changementLieu.getAffaire().setTypeDocument(changementLieu.getAffaire().getAffaireLien().getTypeDocument().toString());
-			changementLieu.setTypeDocumentActuelle("CHL");
+			changementLieuDto.setTypeDocumentActuelle("CHL");
 		 	
-			changementLieu.getAffaire().setTypeAffaire(changementLieu.getAffaire().getAffaireLien().getTypeAffaire());
-			affaireRepository.save(changementLieu.getAffaire().getAffaireLien());
+			changementLieuDto.getAffaire().setTypeAffaire(changementLieuDto.getAffaire().getAffaireLien().getTypeAffaire());
+			changementLieuDto.getAffaire().setTypeDocument(changementLieuDto.getTypeDocument());
+			affaireRepository.save(AffaireConverter.dtoToEntity( changementLieuDto.getAffaire().getAffaireLien()));
 			System.out.println("============================fin lien===============================");
 		}
 		
@@ -58,17 +63,20 @@ public class ChangementLieuServiceImpl implements ChangementLieuService{
 		
 		
 		System.out.println("================================debut affaire ===========================");
-		System.out.println(changementLieu.getAffaire().toString());
+		System.out.println(changementLieuDto.toString());
 		
-		 changementLieu.getAffaire().setTypeDocumentActuelle("CHL");
+		changementLieuDto.getAffaire().setTypeDocumentActuelle("CHL");
+		System.out.println(changementLieuDto.getAffaire().toString());
 		//affaireRepository.save(changementLieu.getAffaire());
 		System.out.println("==================================fin affaire=========================");
-	 changementLieu.setTypeAffaire(changementLieu.getAffaire().getTypeAffaire());
-		affaireRepository.save(changementLieu.getAffaire());
-		changementLieu.getAffaire().setTypeDocumentActuelle("CHL");
-		changementLieu.setTypeDocumentActuelle("CHL");
-		System.out.println(changementLieu.toString());
-		ChangementLieu c = changementLieuRepository.save(changementLieu);
+		changementLieuDto.setTypeAffaire(changementLieuDto.getAffaire().getTypeAffaire());
+		changementLieuDto.getAffaire().setTypeDocument(changementLieuDto.getTypeDocument());
+ 		affaireRepository.save(AffaireConverter.dtoToEntity(changementLieuDto.getAffaire()));
+ 		
+		changementLieuDto.getAffaire().setTypeDocumentActuelle("CHL");
+		changementLieuDto.setTypeDocumentActuelle("CHL");
+		System.out.println(changementLieuDto.toString());
+ 	ChangementLieu c = changementLieuRepository.save(ChangementLieuConverter.dtoToEntity(changementLieuDto));
 		
  
 //		arrestationRepository.save(ar);

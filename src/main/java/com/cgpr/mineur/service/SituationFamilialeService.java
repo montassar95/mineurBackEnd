@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.SituationFamiliale;
+import com.cgpr.mineur.dto.SituationFamilialeDto;
 
  
  
@@ -14,16 +12,16 @@ public interface SituationFamilialeService  {
 
 
 	
-	public List<SituationFamiliale> listNationalite() ;
+	public List<SituationFamilialeDto> listNationalite() ;
 
 
-	public SituationFamiliale getById(long id);
-
-	
-	public SituationFamiliale save( SituationFamiliale situationFamiliale) ;
+	public SituationFamilialeDto getById(long id);
 
 	
-	public SituationFamiliale update(SituationFamiliale situationFamiliale) ;
+	public SituationFamilialeDto save( SituationFamilialeDto situationFamiliale) ;
+
+	
+	public SituationFamilialeDto update(SituationFamilialeDto situationFamiliale) ;
 
 
 	public Void delete(long id) ;

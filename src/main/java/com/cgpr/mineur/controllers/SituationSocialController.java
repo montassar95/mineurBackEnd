@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.SituationSocialDto;
 import com.cgpr.mineur.models.ApiResponse;
-
-import com.cgpr.mineur.models.SituationSocial;
-import com.cgpr.mineur.repository.SituationSocialRepository;
 import com.cgpr.mineur.service.SituationSocialService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -29,21 +26,21 @@ public class SituationSocialController {
 	private SituationSocialService situationSocialService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<SituationSocial>> listNationalite() {
+	public ApiResponse<List<SituationSocialDto>> listNationalite() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
 				situationSocialService.listNationalite());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<SituationSocial> getById(@PathVariable("id") long id) {
-		 SituationSocial  Data = situationSocialService.getById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<SituationSocialDto> getById(@PathVariable("id") long id) {
+		SituationSocialDto Data = situationSocialService.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<SituationSocial> save(@RequestBody SituationSocial situationFamiliale) {
+	public ApiResponse<SituationSocialDto> save(@RequestBody SituationSocialDto situationFamiliale) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully",
@@ -54,7 +51,7 @@ public class SituationSocialController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<SituationSocial> update(@RequestBody SituationSocial situationFamiliale) {
+	public ApiResponse<SituationSocialDto> update(@RequestBody SituationSocialDto situationFamiliale) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",

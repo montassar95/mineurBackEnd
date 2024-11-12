@@ -1,15 +1,13 @@
 package com.cgpr.mineur.service;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Arreterlexecution;
+import com.cgpr.mineur.dto.ArreterlexecutionDto;
 
 
 
 
 public interface ArreterlexecutionService  {
 	 
-	public Arreterlexecution save( Arreterlexecution arreterlexecution) ;
+	public ArreterlexecutionDto save( ArreterlexecutionDto arreterlexecutionDto) ;
 
 		 
 }

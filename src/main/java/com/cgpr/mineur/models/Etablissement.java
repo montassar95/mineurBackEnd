@@ -10,32 +10,32 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "eta")
-public class Etablissement  implements Serializable {
+public class Etablissement implements Serializable {
 	@Id
 	private String id;
 
-	 
 	private String libelle_etablissement;
 
 	@ManyToOne
 	@JoinColumn(name = "code_gouv")
 	private Gouvernorat gouvernorat;
 
- @Column(columnDefinition = "integer default 0")
+	@Column(columnDefinition = "integer default 0")
 	private int statut;
 
-public Etablissement(String id) {
-	super();
-	this.id = id;
-}
- 
- 
- 
+	public Etablissement(String id) {
+		super();
+		this.id = id;
+	}
+
 }

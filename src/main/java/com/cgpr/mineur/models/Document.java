@@ -13,12 +13,19 @@ import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.cgpr.mineur.dto.DocumentIdDto;
+import com.cgpr.mineur.modelsSecurity.User;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
 import javax.persistence.Entity;
+
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -68,6 +75,9 @@ public  class Document implements Serializable {
 	@JoinColumn(name = "perFK")
 	private Personelle personelle;
 	
+	@ManyToOne
+	@JoinColumn(name = "userFK")
+	private User user;
 	
 	private Date dateInsertion;
  
@@ -79,13 +89,7 @@ public  class Document implements Serializable {
 	}
 
 
-	@Override
-	public String toString() {
-		return "Document [documentId=" + documentId + ", typeDocument=" + typeDocument + ", affaire=" + affaire
-				+ ", dateEmission=" + dateEmission + ", dateDepotCarte=" + dateDepotCarte + ", typeAffaire="
-				+ typeAffaire + ", numArrestation=" + numArrestation + ", etablissement=" + etablissement
-				+ ", personelle=" + personelle + ", dateInsertion=" + dateInsertion + "]";
-	}
+	 
 	
 	 
  

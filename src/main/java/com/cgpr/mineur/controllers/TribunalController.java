@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.TribunalDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.Tribunal;
-import com.cgpr.mineur.repository.TribunalRepository;
 import com.cgpr.mineur.service.TribunalService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -28,35 +26,32 @@ public class TribunalController {
 	private TribunalService tribunalService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<Tribunal>> listTribunal() {
+	public ApiResponse<List<TribunalDto>> listTribunal() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal List Fetched Successfully.",
 				tribunalService.listTribunal());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<Tribunal> getTribunalById(@PathVariable("id") long id) {
-		 Tribunal  tribunalData = tribunalService.getTribunalById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal fetched suucessfully", tribunalData);
-		 
+	public ApiResponse<TribunalDto> getTribunalById(@PathVariable("id") long id) {
+		TribunalDto tribunalData = tribunalService.getTribunalById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal fetched suucessfully", tribunalData);
+
 	}
-	
-	@GetMapping("/searchTribunal/{idGouv}/{idType}")
-	public ApiResponse<List<Tribunal>> searchTribunal(@PathVariable("idGouv") long idGouv,@PathVariable("idType") long idType) {
-		List<Tribunal> tribunalData;
-		 
-			tribunalData = tribunalService.searchTribunal(idGouv, idType);
-		 
-		 
-	  
-		 
-			
-			return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal fetched suucessfully", tribunalData);
-	 
+
+	@GetMapping("/chercherTribunalParGouvernoratEtTypeTribunal/{idGouv}/{idType}")
+	public ApiResponse<List<TribunalDto>> chercherTribunalParGouvernoratEtTypeTribunal(
+			@PathVariable("idGouv") long idGouv, @PathVariable("idType") long idType) {
+		List<TribunalDto> tribunalData;
+
+		tribunalData = tribunalService.searchTribunal(idGouv, idType);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal fetched suucessfully", tribunalData);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<Tribunal> save(@RequestBody Tribunal tribunal) {
+	public ApiResponse<TribunalDto> save(@RequestBody TribunalDto tribunal) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "Tribunal saved Successfully",
@@ -67,7 +62,7 @@ public class TribunalController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<Tribunal> update(@RequestBody Tribunal tribunal) {
+	public ApiResponse<TribunalDto> update(@RequestBody TribunalDto tribunal) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "tribunal updated successfully.",

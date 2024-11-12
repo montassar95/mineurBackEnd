@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.TitreAccusationDto;
 import com.cgpr.mineur.models.ApiResponse;
-
-import com.cgpr.mineur.models.TitreAccusation;
-import com.cgpr.mineur.repository.TitreAccusationRepository;
 import com.cgpr.mineur.service.TitreAccusationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -28,9 +25,9 @@ public class TitreAccusationController {
 	@Autowired
 	private TitreAccusationService titreAccusationServicey;
 
-	@GetMapping("/findTitreAccusationByIdTypeAffaire/{id}")
-	public ApiResponse<List<TitreAccusation>> findTitreAccusationByIdTypeAffaire(@PathVariable("id") long id) {
-		List<TitreAccusation> accusationData = titreAccusationServicey.findTitreAccusationByIdTypeAffaire(id);
+	@GetMapping("/trouverTitresAccusationsParIdTypeAffaire/{id}")
+	public ApiResponse<List<TitreAccusationDto>> findTitreAccusationByIdTypeAffaire(@PathVariable("id") long id) {
+		List<TitreAccusationDto> accusationData = titreAccusationServicey.findTitreAccusationByIdTypeAffaire(id);
 		if (accusationData != null) {
 			return new ApiResponse<>(HttpStatus.OK.value(), "accusationData fetched suucessfully", accusationData);
 		} else {
@@ -39,31 +36,31 @@ public class TitreAccusationController {
 	}
 
 	@GetMapping("/all")
-	public ApiResponse<List<TitreAccusation>> list() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
-				titreAccusationServicey.list());
+	public ApiResponse<List<TitreAccusationDto>> list() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", titreAccusationServicey.list());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<TitreAccusation> getById(@PathVariable("id") long id) {
-		 TitreAccusation  Data = titreAccusationServicey.getById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<TitreAccusationDto> getById(@PathVariable("id") long id) {
+		TitreAccusationDto Data = titreAccusationServicey.getById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<TitreAccusation> save(@RequestBody TitreAccusation causeDeces) {
+	public ApiResponse<TitreAccusationDto> save(@RequestBody TitreAccusationDto causeDeces) {
 
 		try {
-			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully", titreAccusationServicey.save(causeDeces));
+			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
+					titreAccusationServicey.save(causeDeces));
 		} catch (Exception e) {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not saved", null);
 		}
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<TitreAccusation> update(@RequestBody TitreAccusation causeDeces) {
+	public ApiResponse<TitreAccusationDto> update(@RequestBody TitreAccusationDto causeDeces) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",

@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.ClassePenale;
+import com.cgpr.mineur.dto.ClassePenaleDto;
 
 
  
@@ -16,19 +14,19 @@ public interface ClassePenaleService  {
 		 
 
 	 
-		public List<ClassePenale>  list() ;
+		public List<ClassePenaleDto>  list() ;
 
 		 
-		public  ClassePenale  getById(  long id);
+		public  ClassePenaleDto  getById(  long id);
 		
 		
 	 
 
 		 
-		public  ClassePenale  save(  ClassePenale causeDeces) ;
+		public  ClassePenaleDto  save(  ClassePenaleDto causeDecesDto) ;
 
 		 
-		public ClassePenale update(ClassePenale causeDeces);
+		public ClassePenaleDto update(ClassePenaleDto causeDecesDto);
 
 		 
 		public  Void  delete(long id)  ;

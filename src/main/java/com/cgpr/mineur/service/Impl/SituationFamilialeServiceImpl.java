@@ -2,10 +2,15 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.NiveauEducatifConverter;
+import com.cgpr.mineur.converter.ResidenceConverter;
+import com.cgpr.mineur.converter.SituationFamilialeConverter;
+import com.cgpr.mineur.dto.SituationFamilialeDto;
 import com.cgpr.mineur.models.SituationFamiliale;
 import com.cgpr.mineur.repository.SituationFamilialeRepository;
 import com.cgpr.mineur.service.SituationFamilialeService;
@@ -21,35 +26,40 @@ public class SituationFamilialeServiceImpl  implements SituationFamilialeService
 	private SituationFamilialeRepository situationFamilialeRepository;
 
 	@Override
-	public List<SituationFamiliale> listNationalite() {
-		return situationFamilialeRepository.findAllByOrderByIdAsc();
+	public List<SituationFamilialeDto> listNationalite() {
+		List<SituationFamiliale> list = situationFamilialeRepository.findAllByOrderByIdAsc();
+		
+		return list. stream().map(SituationFamilialeConverter::entityToDto).collect(Collectors.toList()); 
 	}
 
 	@Override
-	public SituationFamiliale getById( long id) {
+	public SituationFamilialeDto getById( long id) {
 		Optional<SituationFamiliale> Data = situationFamilialeRepository.findById(id);
 		if (Data.isPresent()) {
-			return  Data.get();
+			return  SituationFamilialeConverter.entityToDto(Data.get()) ;
 		} else {
 			return  null;
 		}
 	}
 
 	@Override
-	public SituationFamiliale save(SituationFamiliale situationFamiliale) {
+	public SituationFamilialeDto save(SituationFamilialeDto situationFamilialeDto) {
 
 		try {
-			return situationFamilialeRepository.save(situationFamiliale);
+			
+			return SituationFamilialeConverter.entityToDto(situationFamilialeRepository.save(SituationFamilialeConverter.dtoToEntity(situationFamilialeDto) ))  ;
+		 
 		} catch (Exception e) {
 			return  null;
 		}
 	}
 
 	@Override
-	public SituationFamiliale update( SituationFamiliale situationFamiliale) {
+	public SituationFamilialeDto update( SituationFamilialeDto situationFamilialeDto) {
 		try {
 
-			return situationFamilialeRepository.save(situationFamiliale);
+			return SituationFamilialeConverter.entityToDto(situationFamilialeRepository.save(SituationFamilialeConverter.dtoToEntity(situationFamilialeDto) ))  ;
+			 
 		} catch (Exception e) {
 			return  null;
 		}

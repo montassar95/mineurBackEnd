@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.CauseDeces;
+import com.cgpr.mineur.dto.CauseDecesDto;
 
 
  
@@ -16,18 +14,18 @@ public interface CauseDecesService  {
 
 
  
-	public  List<CauseDeces>  listCauseMutation() ;
+	public  List<CauseDecesDto>  listCauseMutation() ;
 
  
 
 	 
-	public  CauseDeces  getTypeAffaireById(  long id) ;
+	public  CauseDecesDto  getTypeAffaireById(  long id) ;
 
  
-	public  CauseDeces  save(  CauseDeces causeDeces)  ;
+	public  CauseDecesDto  save(  CauseDecesDto causeDecesDto)  ;
 
 	 
-	public CauseDeces  update(  CauseDeces causeDeces);
+	public CauseDecesDto  update(  CauseDecesDto causeDecesDto);
 
 	 
 	public  Void delete(  long id);

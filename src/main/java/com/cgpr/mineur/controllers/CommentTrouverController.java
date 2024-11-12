@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,11 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.CommentTrouverDto;
 import com.cgpr.mineur.models.ApiResponse;
- 
-import com.cgpr.mineur.models.CommentTrouver;
-import com.cgpr.mineur.repository.CommentEchapperRepository;
-import com.cgpr.mineur.repository.CommentTrouverRepository;
 import com.cgpr.mineur.service.CommentTrouverService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -30,21 +26,21 @@ public class CommentTrouverController {
 	private CommentTrouverService commentTrouverService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<CommentTrouver>> listTrouver() {
+	public ApiResponse<List<CommentTrouverDto>> listTrouver() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
 				commentTrouverService.listTrouver());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<CommentTrouver> getTypeAffaireById(@PathVariable("id") long id) {
-		 CommentTrouver  typeData = commentTrouverService.getTypeAffaireById(id);
+	public ApiResponse<CommentTrouverDto> getTypeAffaireById(@PathVariable("id") long id) {
+		 CommentTrouverDto  typeData = commentTrouverService.getTypeAffaireById(id);
 		 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
 		 
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<CommentTrouver> save(@RequestBody CommentTrouver causeDeces) {
+	public ApiResponse<CommentTrouverDto> save(@RequestBody CommentTrouverDto causeDeces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
@@ -55,7 +51,7 @@ public class CommentTrouverController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<CommentTrouver> update(@RequestBody CommentTrouver causeDeces) {
+	public ApiResponse<CommentTrouverDto> update(@RequestBody CommentTrouverDto causeDeces) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",

@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.TypeAffaireDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.Etablissement;
-import com.cgpr.mineur.models.TypeAffaire;
-import com.cgpr.mineur.repository.TypeAffaireRepository;
 import com.cgpr.mineur.service.TypeAffaireService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -30,21 +27,21 @@ public class TypeAffaireController {
 	private TypeAffaireService typeAffaireService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<TypeAffaire>> listTypeAffaire() {
+	public ApiResponse<List<TypeAffaireDto>> listTypeAffaire() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement List Fetched Successfully.",
 				typeAffaireService.listTypeAffaire());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<TypeAffaire> getTypeAffaireById(@PathVariable("id") long id) {
-		 TypeAffaire  typeData = typeAffaireService.getTypeAffaireById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully", typeData);
-		 
+	public ApiResponse<TypeAffaireDto> getTypeAffaireById(@PathVariable("id") long id) {
+		TypeAffaireDto typeData = typeAffaireService.getTypeAffaireById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "Etablissement fetched suucessfully", typeData);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<TypeAffaire> save(@RequestBody TypeAffaire typeAffaire) {
+	public ApiResponse<TypeAffaireDto> save(@RequestBody TypeAffaireDto typeAffaire) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
@@ -55,7 +52,7 @@ public class TypeAffaireController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<TypeAffaire> update(@RequestBody TypeAffaire typeAffaire) {
+	public ApiResponse<TypeAffaireDto> update(@RequestBody TypeAffaireDto typeAffaire) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire updated successfully.",
@@ -69,16 +66,14 @@ public class TypeAffaireController {
 	@DeleteMapping("/delete/{id}")
 	public ApiResponse<Void> delete(@PathVariable("id") long id) {
 		try {
-			
+
 			typeAffaireService.delete(id);
 			return new ApiResponse<>(HttpStatus.NO_CONTENT.value(), "TypeAffaire  Deleted", null);
 		} catch (Exception e) {
-			System.err.println(e.toString());		
-			
+			System.err.println(e.toString());
+
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
 		}
 	}
-	
-	
- 
+
 }

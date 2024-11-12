@@ -2,10 +2,15 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.NationaliteConverter;
+import com.cgpr.mineur.converter.NiveauEducatifConverter;
+import com.cgpr.mineur.dto.NiveauEducatifDto;
+import com.cgpr.mineur.models.Nationalite;
 import com.cgpr.mineur.models.NiveauEducatif;
 import com.cgpr.mineur.repository.NiveauEducatifRepository;
 import com.cgpr.mineur.service.NiveauEducatifService;
@@ -20,35 +25,38 @@ public class NiveauEducatifServiceImpl implements NiveauEducatifService{
 	private NiveauEducatifRepository niveauEducatifRepository;
 
 	@Override
-	public  List<NiveauEducatif>  listNiveauEducatif() {
-		return  niveauEducatifRepository.findAllByOrderByIdAsc();
+	public  List<NiveauEducatifDto>  listNiveauEducatif() {
+		 List<NiveauEducatif > list =niveauEducatifRepository.findAllByOrderByIdAsc();
+		 
+			return list. stream().map(NiveauEducatifConverter::entityToDto).collect(Collectors.toList()); 
+	 
 	}
 
 	@Override
-	public  NiveauEducatif  getNiveauEducatifById(long id) {
+	public  NiveauEducatifDto  getNiveauEducatifById(long id) {
 		Optional<NiveauEducatif> Data = niveauEducatifRepository.findById(id);
 		if (Data.isPresent()) {
-			return  Data.get();
+			return NiveauEducatifConverter.entityToDto( Data.get());
 		} else {
 			return  null ;
 		}
 	}
 
 	@Override
-	public  NiveauEducatif  save( NiveauEducatif niveauEducatif) {
+	public  NiveauEducatifDto  save( NiveauEducatifDto niveauEducatifDto) {
 
 		try {
-			return niveauEducatifRepository.save(niveauEducatif );
+			return NiveauEducatifConverter.entityToDto(niveauEducatifRepository.save(NiveauEducatifConverter.dtoToEntity(niveauEducatifDto) ))  ;
 		} catch (Exception e) {
 			return  null ;
 		}
 	}
 
 	@Override
-	public   NiveauEducatif   update(  NiveauEducatif niveauEducatif) {
+	public   NiveauEducatifDto   update(  NiveauEducatifDto niveauEducatifDto) {
 		try {
-
-			return  niveauEducatifRepository.save(niveauEducatif);
+			return NiveauEducatifConverter.entityToDto(niveauEducatifRepository.save(NiveauEducatifConverter.dtoToEntity(niveauEducatifDto) ))  ;
+		 
 		} catch (Exception e) {
 			return   null ;
 		}

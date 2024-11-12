@@ -1,20 +1,19 @@
 package com.cgpr.mineur.dto;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Table;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import javax.persistence.Entity;
+import lombok.experimental.SuperBuilder;
  
+
+@SuperBuilder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class RevueDto extends DocumentDto {
 
 	 

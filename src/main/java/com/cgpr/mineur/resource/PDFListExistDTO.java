@@ -2,6 +2,8 @@ package com.cgpr.mineur.resource;
  
 
  
+import java.util.List;
+
 import com.cgpr.mineur.models.CauseLiberation;
 import com.cgpr.mineur.models.ClassePenale;
 import com.cgpr.mineur.models.Delegation;
@@ -28,6 +30,7 @@ import lombok.NoArgsConstructor;
 public class PDFListExistDTO {
 
  private Etablissement etablissement;
+ private List<Etablissement> etablissements;
  private String etatJuridiue;
   
  

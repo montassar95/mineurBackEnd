@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.4.2</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.cgpr.mineur</groupId>
 	<artifactId>mineur</artifactId>
@@ -18,7 +19,15 @@
 		<java.version>1.8</java.version>
 	</properties>
 	<dependencies>
-	 <dependency>
+
+		<dependency>
+			<groupId>org.jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.5.3</version> <!-- La dernière version disponible -->
+		</dependency>
+
+
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
@@ -32,7 +41,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-redis</artifactId>
@@ -42,59 +51,63 @@
 			<artifactId>jedis</artifactId>
 			<type>jar</type>
 		</dependency>
-		
-<!-- <dependency> -->
-<!--     <groupId>org.springframework.boot</groupId> -->
-<!--     <artifactId>spring-boot-starter-cache</artifactId> -->
-<!-- </dependency> -->
-<!-- <dependency> -->
-<!--     <groupId>com.google.guava</groupId> -->
-<!--     <artifactId>guava</artifactId> -->
-<!--     <version>30.1-jre</version> -->
-<!-- </dependency> -->
-<dependency>
-    <groupId>com.github.ben-manes.caffeine</groupId>
-    <artifactId>caffeine</artifactId>
-   <version>2.8.8</version>
-</dependency>
- 
- 
-<!--  <dependency> -->
-<!--     <groupId>com.fasterxml.jackson.core</groupId> -->
-<!--     <artifactId>jackson-databind</artifactId> -->
-<!--     <version>2.13.0</version> -->
-<!-- </dependency>  -->
-<!-- 		<dependency> -->
-<!-- 		  <groupId>mysql</groupId> -->
-<!-- 		  <artifactId>mysql-connector-java</artifactId> -->
-<!-- 		  <scope>runtime</scope> -->
-<!--        </dependency> -->
- 
-<!-- <dependency>
-        <groupId>com.oracle</groupId>
-        <artifactId>ojdbc6</artifactId>
-        <version>11.2.0.0</version>
-      </dependency>-->
-<!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8 -->
-<dependency>
-    <groupId>com.oracle.database.jdbc</groupId>
-    <artifactId>ojdbc8</artifactId>
-    <version>19.3.0.0</version>
-</dependency>
-<!-- https://mvnrepository.com/artifact/com.oracle.ojdbc/orai18n -->
-<dependency>
-    <groupId>com.oracle.ojdbc</groupId>
-    <artifactId>orai18n</artifactId>
-    <version>19.3.0.0</version>
-</dependency>
-      
-      
- 	<dependency>   
+
+		<dependency>
+			<groupId>net.sf.jasperreports</groupId>
+			<artifactId>jasperreports</artifactId>
+			<version>6.21.0</version>
+		</dependency>
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>org.springframework.boot</groupId> -->
+		<!-- <artifactId>spring-boot-starter-cache</artifactId> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>com.google.guava</groupId> -->
+		<!-- <artifactId>guava</artifactId> -->
+		<!-- <version>30.1-jre</version> -->
+		<!-- </dependency> -->
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>2.8.8</version>
+		</dependency>
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>com.fasterxml.jackson.core</groupId> -->
+		<!-- <artifactId>jackson-databind</artifactId> -->
+		<!-- <version>2.13.0</version> -->
+		<!-- </dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>mysql</groupId> -->
+		<!-- <artifactId>mysql-connector-java</artifactId> -->
+		<!-- <scope>runtime</scope> -->
+		<!-- </dependency> -->
+
+		<!-- <dependency> <groupId>com.oracle</groupId> <artifactId>ojdbc6</artifactId> 
+			<version>11.2.0.0</version> </dependency> -->
+		<!-- https://mvnrepository.com/artifact/com.oracle.database.jdbc/ojdbc8 -->
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc8</artifactId>
+			<version>19.3.0.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.oracle.ojdbc/orai18n -->
+		<dependency>
+			<groupId>com.oracle.ojdbc</groupId>
+			<artifactId>orai18n</artifactId>
+			<version>19.3.0.0</version>
+		</dependency>
+
+
+		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
@@ -106,107 +119,87 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-    <groupId>javax.validation</groupId>
-    <artifactId>validation-api</artifactId>
-    <version>2.0.0.Final</version>
-     </dependency>
-     
-<!--      <dependency> -->
-<!-- 	<groupId>com.itextpdf</groupId> -->
-<!-- 	<artifactId>layout</artifactId> -->
- 
-<!-- </dependency> -->
-     
-<!--      <dependency> -->
-<!--     <groupId>com.lowagie</groupId> -->
-<!--     <artifactId>itext</artifactId> -->
-<!--     <version>2.1.7</version> -->
-<!-- </dependency> -->
-<dependency>
-    <groupId>com.ibm.icu</groupId>
-    <artifactId>icu4j</artifactId>
-    <version>3.4.4</version>
-</dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+			<version>2.0.0.Final</version>
+		</dependency>
 
- 
-<!--  <dependency> -->
-<!--     <groupId>com.itextpdf</groupId> -->
-<!--     <artifactId>typography</artifactId> -->
-<!--     <version>2.0.8</version> -->
-<!-- </dependency> -->
-<dependency>
-    <groupId>com.itextpdf</groupId>
-    <artifactId>kernel</artifactId>
-    <version>7.1.14</version>
-</dependency>
-<dependency>
-    <groupId>com.itextpdf</groupId>
-    <artifactId>layout</artifactId>
-    <version>7.1.14</version>
-</dependency>
-<dependency>
-    <groupId>com.itextpdf</groupId>
-    <artifactId>itextpdf</artifactId>
-    <version>5.5.13.1</version>
-</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>com.itextpdf</groupId> -->
+		<!-- <artifactId>layout</artifactId> -->
+
+		<!-- </dependency> -->
+
+		<!-- <dependency> -->
+		<!-- <groupId>com.lowagie</groupId> -->
+		<!-- <artifactId>itext</artifactId> -->
+		<!-- <version>2.1.7</version> -->
+		<!-- </dependency> -->
+		<dependency>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>3.4.4</version>
+		</dependency>
+
+
+		<!-- <dependency> -->
+		<!-- <groupId>com.itextpdf</groupId> -->
+		<!-- <artifactId>typography</artifactId> -->
+		<!-- <version>2.0.8</version> -->
+		<!-- </dependency> -->
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>kernel</artifactId>
+			<version>7.1.14</version>
+		</dependency>
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>layout</artifactId>
+			<version>7.1.14</version>
+		</dependency>
+		<dependency>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itextpdf</artifactId>
+			<version>5.5.13.1</version>
+		</dependency>
 
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 		</dependency>
-		
-		 <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-websocket</artifactId>
-        </dependency>
-		
+
 		<dependency>
-<groupId>org.springframework.boot</groupId>
-<artifactId>spring-boot-starter-tomcat</artifactId>
-<scope>provided</scope>
-</dependency> 
-
-<dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-databind</artifactId>
-    <version>2.11.4</version>
-</dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
 
 
-<!-- 	<dependency> -->
-<!-- 	    <groupId>org.apache.poi</groupId> -->
-<!-- 	    <artifactId>poi-ooxml</artifactId> -->
-<!-- 	    <version>4.1.2</version> -->
-<!-- 	</dependency> -->
-<!-- 	<dependency> -->
-<!-- 	    <groupId>org.apache.poi</groupId> -->
-<!-- 	    <artifactId>poi-scratchpad</artifactId> -->
-<!-- 	    <version>4.1.2</version> -->
-<!-- 	</dependency> -->
-<!-- 	<dependency> -->
-<!-- 	    <groupId>org.apache.poi</groupId> -->
-<!-- 	    <artifactId>poi-examples</artifactId> -->
-<!-- 	    <version>4.1.2</version> -->
-<!-- 	    <scope>provided</scope> -->
-<!-- 	</dependency> -->
-<!-- 	<dependency> -->
-<!-- 	    <groupId>org.apache.poi</groupId> -->
-<!-- 	    <artifactId>ooxml-schemas</artifactId> -->
-<!-- 	    <version>1.4</version> -->
-<!-- 	</dependency> -->
-<!-- 	<dependency> -->
-<!--     <groupId>org.apache.pdfbox</groupId> -->
-<!--     <artifactId>pdfbox</artifactId> -->
-<!--     <version>2.0.27</version> -->
-<!--         </dependency> -->
+
+
+
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.11.4</version>
+		</dependency>
+
+
+
 
 	</dependencies>
 
@@ -218,5 +211,5 @@
 			</plugin>
 		</plugins>
 	</build>
-<packaging>war</packaging>
+	<packaging>war</packaging>
 </project>

@@ -10,7 +10,7 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString 
 public class AccusationCarteDepotDto {
 
 	private AccusationCarteDepotIdDto accusationCarteDepotId;

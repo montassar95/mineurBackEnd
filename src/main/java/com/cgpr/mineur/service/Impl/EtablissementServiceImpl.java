@@ -2,10 +2,14 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.EtabChangeManiereConverter;
+import com.cgpr.mineur.converter.EtablissementConverter;
+import com.cgpr.mineur.dto.EtablissementDto;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.repository.EtablissementRepository;
 import com.cgpr.mineur.service.EtablissementService;
@@ -21,41 +25,41 @@ public class EtablissementServiceImpl  implements  EtablissementService {
 	private EtablissementRepository etablissementRepository;
 
 	@Override
-	public  List<Etablissement>   listEtablissement() {
-		
-		return  (List<Etablissement>) etablissementRepository.findAll();
+	public  List<EtablissementDto>   listEtablissement() {
+		List<Etablissement> list = (List<Etablissement>) etablissementRepository.findAll();
+		return  list. stream().map(EtablissementConverter::entityToDto).collect(Collectors.toList())  ;
 	}
 	@Override
-	public List<Etablissement> listEtablissementCentre() {
+	public List<EtablissementDto> listEtablissementCentre() {
 		
 		List<Etablissement> allCentre =  etablissementRepository.listEtablissementCentre();
-		return allCentre;
+		return allCentre. stream().map(EtablissementConverter::entityToDto).collect(Collectors.toList()) ;
 	}
 	@Override
-	public Etablissement getEtablissementById(String id) {
+	public EtablissementDto getEtablissementById(String id) {
 		Optional<Etablissement> etablissementData = etablissementRepository.findById(id);
 		if (etablissementData.isPresent()) {
-			return etablissementRepository.findById(id).get();
+			return  EtablissementConverter .entityToDto(etablissementRepository.findById(id).get()) ;
 		} else {
 			return  null;
 		}
 	}
 
 	@Override
-	public Etablissement save(Etablissement etablissement) {
-		System.out.print(etablissement.toString());
+	public EtablissementDto save(EtablissementDto etablissementDto) {
+		System.out.print(etablissementDto.toString());
 		try {
-			return etablissementRepository.save(etablissement);
+			return EtablissementConverter .entityToDto(etablissementRepository.save(EtablissementConverter .dtoToEntity(etablissementDto)));
 		} catch (Exception e) {
 			return  null;
 		}
 	}
 
 	@Override
-	public Etablissement update( Etablissement etablissement) {
+	public EtablissementDto update( EtablissementDto etablissementDto) {
 		try {
 
-			return etablissementRepository.save(etablissement);
+			return EtablissementConverter .entityToDto(etablissementRepository.save(EtablissementConverter .dtoToEntity(etablissementDto)));
 		} catch (Exception e) {
 			return   null;
 		}

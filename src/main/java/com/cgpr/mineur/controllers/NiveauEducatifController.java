@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.NiveauEducatifDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.Etablissement;
-import com.cgpr.mineur.models.NiveauEducatif;
-import com.cgpr.mineur.repository.NiveauEducatifRepository;
 import com.cgpr.mineur.service.NiveauEducatifService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -29,21 +26,21 @@ public class NiveauEducatifController {
 	private NiveauEducatifService niveauEducatifService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<NiveauEducatif>> listNiveauEducatif() {
+	public ApiResponse<List<NiveauEducatifDto>> listNiveauEducatif() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
 				niveauEducatifService.listNiveauEducatif());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<NiveauEducatif> getNiveauEducatifById(@PathVariable("id") long id) {
-		 NiveauEducatif Data = niveauEducatifService.getNiveauEducatifById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<NiveauEducatifDto> getNiveauEducatifById(@PathVariable("id") long id) {
+		NiveauEducatifDto Data = niveauEducatifService.getNiveauEducatifById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<NiveauEducatif> save(@RequestBody NiveauEducatif niveauEducatif) {
+	public ApiResponse<NiveauEducatifDto> save(@RequestBody NiveauEducatifDto niveauEducatif) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully",
@@ -54,7 +51,7 @@ public class NiveauEducatifController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<NiveauEducatif> update(@RequestBody NiveauEducatif niveauEducatif) {
+	public ApiResponse<NiveauEducatifDto> update(@RequestBody NiveauEducatifDto niveauEducatif) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",

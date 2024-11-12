@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,10 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.CauseMutationDto;
 import com.cgpr.mineur.models.ApiResponse;
- 
-import com.cgpr.mineur.models.CauseMutation;
-import com.cgpr.mineur.repository.CauseMutationRepository;
 import com.cgpr.mineur.service.CauseMutationService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -27,26 +24,24 @@ import com.cgpr.mineur.service.CauseMutationService;
 public class CauseMutationController {
 
 	@Autowired
-	private CauseMutationService  causeMutationService;
-
-	 
-	 
+	private CauseMutationService causeMutationService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<CauseMutation>> listCauseMutation() {
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", causeMutationService.listCauseMutation());
+	public ApiResponse<List<CauseMutationDto>> listCauseMutation() {
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
+				causeMutationService.listCauseMutation());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<CauseMutation> getTypeAffaireById(@PathVariable("id") long id) {
-		 CauseMutation  typeData = causeMutationService.getTypeAffaireById(id);
-		 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
-		 
+	public ApiResponse<CauseMutationDto> getTypeAffaireById(@PathVariable("id") long id) {
+		CauseMutationDto typeData = causeMutationService.getTypeAffaireById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", typeData);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<CauseMutation> save(@RequestBody CauseMutation causeDeces) {
+	public ApiResponse<CauseMutationDto> save(@RequestBody CauseMutationDto causeDeces) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "TypeAffaire saved Successfully",
@@ -57,7 +52,7 @@ public class CauseMutationController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<CauseMutation> update(@RequestBody CauseMutation causeDeces) {
+	public ApiResponse<CauseMutationDto> update(@RequestBody CauseMutationDto causeDeces) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",
@@ -77,7 +72,5 @@ public class CauseMutationController {
 			return new ApiResponse<>(HttpStatus.EXPECTATION_FAILED.value(), "TypeAffaire not Deleted", null);
 		}
 	}
- 
- 
- 
+
 }

@@ -2,10 +2,13 @@ package com.cgpr.mineur.service.Impl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.CommentTrouverConverter;
+import com.cgpr.mineur.dto.CommentTrouverDto;
 import com.cgpr.mineur.models.CommentTrouver;
 import com.cgpr.mineur.repository.CommentTrouverRepository;
 import com.cgpr.mineur.service.CommentTrouverService;
@@ -21,37 +24,44 @@ public class CommentTrouverServiceImpl implements CommentTrouverService  {
 	private CommentTrouverRepository commentTrouverRepository;
 
 	@Override
-	public List<CommentTrouver> listTrouver() {
-		return commentTrouverRepository.findAllByOrderByIdAsc();
+	public List<CommentTrouverDto> listTrouver() {
+		List<CommentTrouver > list = commentTrouverRepository.findAllByOrderByIdAsc();
+		return  list.stream().map(CommentTrouverConverter::entityToDto).collect(Collectors.toList())  ;
+		 
 	}
 
 	@Override
-	public CommentTrouver getTypeAffaireById( long id) {
-		Optional<CommentTrouver> typeData = commentTrouverRepository.findById(id);
-		if (typeData.isPresent()) {
-			return typeData.get();
+	public CommentTrouverDto getTypeAffaireById( long id) {
+		Optional<CommentTrouver> commentTrouver = commentTrouverRepository.findById(id);
+		if (commentTrouver.isPresent()) {
+			return CommentTrouverConverter.entityToDto(commentTrouver.get()) ;
 		} else {
-			return null;
+			return  null;
 		}
 	}
 
 	@Override
-	public CommentTrouver save(CommentTrouver causeDeces) {
+	public CommentTrouverDto save(CommentTrouverDto commentTrouverDto) {
 
 		try {
-			return commentTrouverRepository.save(causeDeces);
+			
+			CommentTrouver commentTrouver =commentTrouverRepository.save(CommentTrouverConverter.dtoToEntity(commentTrouverDto));
+			
+			return CommentTrouverConverter.entityToDto(commentTrouver);
 		} catch (Exception e) {
 			return  null;
 		}
 	}
 
 	@Override
-	public CommentTrouver update( CommentTrouver causeDeces) {
+	public CommentTrouverDto update( CommentTrouverDto commentTrouverDto) {
 		try {
 
-			return commentTrouverRepository.save(causeDeces);
+	   CommentTrouver commentTrouver =commentTrouverRepository.save(CommentTrouverConverter.dtoToEntity(commentTrouverDto));
+			
+			return CommentTrouverConverter.entityToDto(commentTrouver);
 		} catch (Exception e) {
-			return null;
+			return  null;
 		}
 
 	}
@@ -62,10 +72,9 @@ public class CommentTrouverServiceImpl implements CommentTrouverService  {
 			commentTrouverRepository.deleteById(id);
 			return  null;
 		} catch (Exception e) {
-			return  null;
+			return null;
 		}
 	}
-	
  
 	
 	 

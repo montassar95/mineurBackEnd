@@ -1,7 +1,6 @@
 package com.cgpr.mineur.controllers;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cgpr.mineur.dto.NationaliteDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.models.Nationalite;
-import com.cgpr.mineur.repository.NationaliteRepository;
 import com.cgpr.mineur.service.NationaliteService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -28,21 +26,21 @@ public class NationaliteController {
 	private NationaliteService nationaliteService;
 
 	@GetMapping("/all")
-	public ApiResponse<List<Nationalite>> listNationalite() {
+	public ApiResponse<List<NationaliteDto>> listNationalite() {
 		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.",
 				nationaliteService.listNationalite());
 	}
 
 	@GetMapping("/getone/{id}")
-	public ApiResponse<Nationalite> getNationaliteById(@PathVariable("id") long id) {
-		 Nationalite  Data = nationaliteService.getNationaliteById(id);
-	 
-			return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
-		 
+	public ApiResponse<NationaliteDto> getNationaliteById(@PathVariable("id") long id) {
+		NationaliteDto Data = nationaliteService.getNationaliteById(id);
+
+		return new ApiResponse<>(HttpStatus.OK.value(), "  fetched suucessfully", Data);
+
 	}
 
 	@PostMapping("/add")
-	public ApiResponse<Nationalite> save(@RequestBody Nationalite nationalite) {
+	public ApiResponse<NationaliteDto> save(@RequestBody NationaliteDto nationalite) {
 
 		try {
 			return new ApiResponse<>(HttpStatus.OK.value(), "  saved Successfully",
@@ -53,7 +51,7 @@ public class NationaliteController {
 	}
 
 	@PutMapping("/update")
-	public ApiResponse<Nationalite> update(@RequestBody Nationalite nationalite) {
+	public ApiResponse<NationaliteDto> update(@RequestBody NationaliteDto nationalite) {
 		try {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "  updated successfully.",

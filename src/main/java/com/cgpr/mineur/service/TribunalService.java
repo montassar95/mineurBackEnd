@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.Tribunal;
+import com.cgpr.mineur.dto.TribunalDto;
 
  
  
@@ -13,19 +11,19 @@ import com.cgpr.mineur.models.Tribunal;
 public interface TribunalService  {
 	
 	
-	public List<Tribunal> listTribunal() ;
+	public List<TribunalDto> listTribunal() ;
 
 	
-	public Tribunal getTribunalById( long id);
+	public TribunalDto getTribunalById( long id);
 	
 	
-	public List<Tribunal> searchTribunal(long idGouv, long idType) ;
+	public List<TribunalDto> searchTribunal(long idGouv, long idType) ;
 
 	
-	public Tribunal save(Tribunal tribunal) ;
+	public TribunalDto save(TribunalDto tribunal) ;
 
 	
-	public Tribunal update( Tribunal tribunal);
+	public TribunalDto update( TribunalDto tribunal);
 
 	
 	public Void delete( long id) ;

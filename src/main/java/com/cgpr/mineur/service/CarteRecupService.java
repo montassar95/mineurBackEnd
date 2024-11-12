@@ -4,9 +4,7 @@ package com.cgpr.mineur.service;
  
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.CarteRecup;
+import com.cgpr.mineur.dto.CarteRecupDto;
  
  
  
@@ -16,14 +14,14 @@ public interface CarteRecupService   {
 	  
 	 
 	
-	public  List<CarteRecup>  listEtablissement() ;
+	public  List<CarteRecupDto>  listEtablissement() ;
 
  
 
-	public  CarteRecup  save(  CarteRecup carteRecup) ;
+	public  CarteRecupDto  save(  CarteRecupDto carteRecupDto) ;
 
 	 
-	public CarteRecup update(CarteRecup carteRecup) ;
+	public CarteRecupDto update(CarteRecupDto carteRecupDto) ;
 	 
 	
 }

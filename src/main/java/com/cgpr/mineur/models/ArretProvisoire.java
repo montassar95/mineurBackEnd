@@ -4,13 +4,16 @@ import java.io.Serializable;
 import java.sql.Date;
 
 import javax.persistence.EmbeddedId;
+import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import javax.persistence.Entity;
+
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -28,6 +31,7 @@ public class ArretProvisoire  implements Serializable {
 	
 	private Date dateDebut;
 	private Date dateFin;
+	
 	@ManyToOne
 	private CarteRecup carteRecup;
 	

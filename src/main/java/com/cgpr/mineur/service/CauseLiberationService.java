@@ -2,9 +2,7 @@ package com.cgpr.mineur.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
-import com.cgpr.mineur.models.CauseLiberation;
+import com.cgpr.mineur.dto.CauseLiberationDto;
 
 
  
@@ -16,15 +14,15 @@ public interface CauseLiberationService   {
 	 
 
 	 
-		public List<CauseLiberation> listCauseLiberation() ;
+		public List<CauseLiberationDto> listCauseLiberation() ;
 
 		 
-		public CauseLiberation getTypeAffaireById( long id);
+		public CauseLiberationDto getTypeAffaireById( long id);
 
 		 
-		public CauseLiberation save( CauseLiberation causeDeces) ;
+		public CauseLiberationDto save( CauseLiberationDto causeDecesDto) ;
 		
-		public CauseLiberation update(CauseLiberation causeDeces) ;
+		public CauseLiberationDto update(CauseLiberationDto causeDecesDto) ;
 
 	 
 		public Void delete( long id) ;
