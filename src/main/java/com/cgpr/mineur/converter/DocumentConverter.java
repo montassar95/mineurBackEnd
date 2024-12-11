@@ -55,7 +55,7 @@ public  class DocumentConverter   {
 	                                .orElse(null))
 	            .numArrestation(entity.getNumArrestation())
 	            .etablissement(EtablissementConverter.entityToDto(entity.getEtablissement()))
-	            .personelle(PersonelleConverter.entityToDto(entity.getPersonelle()))
+//	            .user(UserConverter.entityToDto(entity.getUser()))
 	            .dateInsertion(entity.getDateInsertion())
 	            .build();
         }
@@ -93,7 +93,8 @@ public  class DocumentConverter   {
 	        
 	        document.setNumArrestation(dto.getNumArrestation());
 	        document.setEtablissement(EtablissementConverter.dtoToEntity(dto.getEtablissement()));
-	        document.setPersonelle(PersonelleConverter.dtoToEntity(dto.getPersonelle()));
+//	        document.setPersonelle(PersonelleConverter.dtoToEntity(dto.getPersonelle()));
+//	        document.setUser(UserConverter.dtoToEntity(dto.getUser()));
 	        document.setDateInsertion(dto.getDateInsertion());
 	        return document;
 	    }

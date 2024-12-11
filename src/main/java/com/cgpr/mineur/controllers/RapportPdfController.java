@@ -48,6 +48,13 @@ public class RapportPdfController {
 		return response;
 
 	}
+	@PostMapping("/genererStatistiquePdfMensuel")
+	public ResponseEntity<InputStreamResource> genererStatistiquePdfMensuel(@RequestBody PDFListExistDTO pDFListExistDTO) {
+		 
+		ResponseEntity<InputStreamResource> response = rapportPdfService.genererStatistiquePdfMensuel(pDFListExistDTO);
+		return response;
+
+	}
 	
 	@PostMapping("/genererRapportPdfActuel")
 	public ResponseEntity<InputStreamResource> genererRapportPdfActuel(@RequestBody PDFListExistDTO pDFListExistDTO) {

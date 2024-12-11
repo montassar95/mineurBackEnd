@@ -16,7 +16,7 @@ public class SignupRequest {
     @Size(min = 3, max = 20)
     private String username;
  
-    private Personelle personelle;
+ 
     private String nom ;
 	private String prenom;
 	private String numAdministratif ;
@@ -36,14 +36,14 @@ public class SignupRequest {
     
     
     
-    public SignupRequest(@NotBlank @Size(min = 3, max = 20) String username, Personelle personelle, Set<String> role,
+    public SignupRequest(@NotBlank @Size(min = 3, max = 20) String username,  Set<String> role,
 			@NotBlank @Size(min = 6, max = 40) String password,
 			   String nom ,
 				  String prenom,
 				  String numAdministratif , EtablissementDto etablissement) {
 		super();
 		this.username = username;
-		this.personelle = personelle;
+		 
 		this.role = role;
 		this.password = password;
 		this.nom= nom;
@@ -107,13 +107,7 @@ public class SignupRequest {
       this.role = role;
     }
 
-	public Personelle getPersonelle() {
-		return personelle;
-	}
-
-	public void setPersonelle(Personelle personelle) {
-		this.personelle = personelle;
-	}
+ 
 
 	public EtablissementDto getEtablissement() {
 		return etablissement;

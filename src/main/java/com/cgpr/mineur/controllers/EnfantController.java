@@ -19,7 +19,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cgpr.mineur.dto.EnfantDto;
 import com.cgpr.mineur.dto.EnfantVerifieDto;
+import com.cgpr.mineur.dto.PrisonerDto;
 import com.cgpr.mineur.dto.ResidenceDto;
+import com.cgpr.mineur.dto.SearchDetenuDto;
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.repository.RapportEnfantQuotidienRepository;
 import com.cgpr.mineur.resource.EnfantAddDTO;
@@ -27,6 +29,7 @@ import com.cgpr.mineur.resource.EnfantDTO;
 import com.cgpr.mineur.resource.PDFListExistDTO;
 import com.cgpr.mineur.resource.PDFPenaleDTO;
 import com.cgpr.mineur.service.EnfantService;
+import com.cgpr.mineur.service.PrisonerPenalService;
 import com.cgpr.mineur.serviceReporting.ChargeAllEnfantService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -36,6 +39,7 @@ public class EnfantController {
 	@Autowired
 	private EnfantService enfantService;
 
+	
  
  
 	
@@ -45,18 +49,36 @@ public class EnfantController {
 	
 	
 	@PostMapping("/trouverResidencesParCriteresDetenu")
-	public ApiResponse<List<ResidenceDto>> trouverResidencesParCriteresDetenu(@RequestBody EnfantDTO enfantDTO) {
-
-		List<ResidenceDto> enfantData = enfantService.trouverResidencesParCriteresDetenu(enfantDTO);
-
+	public ApiResponse<List<SearchDetenuDto>> trouverResidencesParCriteresDetenu(@RequestBody EnfantDTO enfantDTO) {
+		 
+		List<SearchDetenuDto> enfantData = enfantService.trouverResidencesParCriteresDetenu(enfantDTO);
+	
 		if (enfantData != null) {
 
 			return new ApiResponse<>(HttpStatus.OK.value(), "enfantData fetched suucessfully", enfantData);
 		} else {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "enfantData Not FOund", null);
 		}
+		
+		
 	}
 
+	
+	
+	@PostMapping("/trouverDetenusParCriteresDansPrisons")
+	public ApiResponse<List<SearchDetenuDto>> trouverDetenusParCriteresDansPrisons(@RequestBody EnfantDTO enfantDTO) {
+		 
+		List<SearchDetenuDto> enfantData = enfantService.trouverDetenusParCriteresDansPrisons(enfantDTO);
+	
+		if (enfantData != null) {
+
+			return new ApiResponse<>(HttpStatus.OK.value(), "enfantData fetched suucessfully", enfantData);
+		} else {
+			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "enfantData Not FOund", null);
+		}
+		
+		
+	}
 	
 
 	
@@ -64,6 +86,7 @@ public class EnfantController {
 	@GetMapping("/getone/{id}")
 	public ApiResponse<EnfantDto> getEnfantById(@PathVariable("id") String id) {
 		EnfantDto enfanttData = enfantService.getEnfantById(id);
+		
 		return new ApiResponse<>(HttpStatus.OK.value(), "Enfant fetched suucessfully", enfanttData);
 	}
 
@@ -76,10 +99,12 @@ public class EnfantController {
 	}
 
 	@GetMapping("/trouverDerniereResidenceParIdDetenu/{id}")
-	public ApiResponse<ResidenceDto> trouverDerniereResidenceParIdDetenu(@PathVariable("id") String id) {
+	public ApiResponse<SearchDetenuDto> trouverDerniereResidenceParIdDetenu(@PathVariable("id") String id) {
 
-		ResidenceDto enfantData = enfantService.trouverDerniereResidenceParIdDetenu(id);
+		SearchDetenuDto enfantData = enfantService.trouverDerniereResidenceParIdDetenu(id);
+		
 
+		
 		return new ApiResponse<>(HttpStatus.OK.value(), "Enfant fetched suucessfully", enfantData);
 
 	}

@@ -4,6 +4,7 @@ package com.cgpr.mineur.resource;
  
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,11 +22,14 @@ public class EnfantDTO {
 
 	private String nomPere;
 	private String nomGrandPere;
-	private String nomMere;
-	private String prenomMere;
 
- 	private Date dateNaissance;
+
+ 	private LocalDate  dateNaissance;
  
 	private String sexe;
+	
+	
+	private String nomMere;
+	private String prenomMere;
 
 }

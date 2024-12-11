@@ -214,7 +214,7 @@ public final class AffaireUtils {
 	        return "vide";
 	    }
 
-	    List<String> typesDocumentsCibles = Arrays.asList("CD", "CH", "T", "CJA", "AP", "CP", "AE");
+	    List<String> typesDocumentsCibles = Arrays.asList("CD", "CH", "T", "CJA", "AP", "CP", "AE","OPP");
 	    
 	    if (arrestation.getLiberation() == null) {
 	        List<AffaireDto> affaireArret = affaires.stream()
@@ -288,7 +288,7 @@ public final class AffaireUtils {
                            return typeDocument != null && (typeDocument.equals("AP") || typeDocument.equals("CD")
                                    || typeDocument.equals("CH") || typeDocument.equals("CJA")
                                    || typeDocument.equals("T") || typeDocument.equals("AE")
-                                   || typeDocument.equals("CP"));
+                                   || typeDocument.equals("CP")|| typeDocument.equals("OPP"));
                        } catch (NullPointerException e) {
                            throw new RuntimeException("typeDocument is null " + x.getArrestation().getEnfant().getId());
                        }
@@ -332,7 +332,7 @@ public final class AffaireUtils {
                         return typeDocument != null && (typeDocument.equals("AP") || typeDocument.equals("CD")
                                 || typeDocument.equals("CH") || typeDocument.equals("CJA")
                                 || typeDocument.equals("T") || typeDocument.equals("AE")
-                                || typeDocument.equals("CP"));
+                                || typeDocument.equals("CP")|| typeDocument.equals("OPP"));
                     } catch (NullPointerException e) {
                         throw new RuntimeException("typeDocument is null " + x.getArrestation().getEnfant().getId());
                     }

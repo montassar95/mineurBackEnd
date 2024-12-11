@@ -25,7 +25,7 @@ import com.cgpr.mineur.models.Nationalite;
 import com.cgpr.mineur.models.NiveauEducatif;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.ResidenceId;
-import com.cgpr.mineur.models.ResidenceWithAffaires;
+
 import com.cgpr.mineur.models.SituationFamiliale;
 import com.cgpr.mineur.models.SituationSocial;
 import com.cgpr.mineur.models.TypeAffaire;
@@ -140,8 +140,8 @@ public interface ResidenceRepository extends CrudRepository<Residence, Residence
 		        
 		        
 				  @Param("etablissements") List<Etablissement> etablissements ,
-				  @Param("dateDebutGlobale") @Temporal Date dateDebutGlobale,
-			      @Param("dateFinGlobale")@Temporal Date dateFinGlobale);
+				  @Param("dateDebutGlobale")   LocalDate dateDebutGlobale,
+			      @Param("dateFinGlobale")  LocalDate dateFinGlobale);
 	
 	   
 	   

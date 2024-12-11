@@ -38,7 +38,7 @@ public class AppelParquetConverter extends DocumentConverter {
       .typeAffaire(document.getTypeAffaire())
       .numArrestation(document.getNumArrestation())
       .etablissement(document.getEtablissement())
-      .personelle(document.getPersonelle())
+//      .user(document.getUser())
       .dateInsertion(document.getDateInsertion()) .build();
       // Ajouter les attributs spécifiques à  AppelEnfant
     }

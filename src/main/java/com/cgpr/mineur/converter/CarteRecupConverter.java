@@ -31,7 +31,7 @@ public class CarteRecupConverter extends DocumentConverter {
 	                                .orElse(null))
 	            .numArrestation(entity.getNumArrestation())
 	            .etablissement(EtablissementConverter.entityToDto(entity.getEtablissement()))
-	            .personelle(PersonelleConverter.entityToDto(entity.getPersonelle()))
+//	            .user(UserConverter.entityToDto(entity.getUser()))
 	            .dateInsertion(entity.getDateInsertion())
 	            
 	            
@@ -86,7 +86,7 @@ public class CarteRecupConverter extends DocumentConverter {
                 .typeAffaire(document.getTypeAffaire())
                 .numArrestation(document.getNumArrestation())
                 .etablissement(document.getEtablissement())
-                .personelle(document.getPersonelle())
+//                .user(document.getUser())
                 .dateInsertion(document.getDateInsertion())
                 // Ajouter les attributs spécifiques à CarteDepot
                 .textJugement(dto.getTextJugement())

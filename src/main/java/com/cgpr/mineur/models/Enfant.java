@@ -2,11 +2,16 @@ package com.cgpr.mineur.models;
 
 import java.io.Serializable;
 import java.sql.Date;
+import java.time.LocalDate;
+import java.util.Calendar;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -17,6 +22,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -38,15 +44,18 @@ public class Enfant  implements Serializable {
 	private String nomMere;
 	private String prenomMere;
 
-	private Date dateNaissance;
+	@Column(name = "DATE_NAISSANCE")
+	private LocalDate  dateNaissance;
 	private String lieuNaissance;
 	private String sexe;
 
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "simplifier_criteria_id") // nom de la colonne de la référence
+	private SimplifierCriteria simplifierCriteria;
+	
+	
  
-// @Transient 
-//	@Lob
-//	private String img;
-
 	@ManyToOne
 	private Nationalite nationalite;
 
@@ -86,5 +95,22 @@ public class Enfant  implements Serializable {
 	
 	private int nbrEnfant;
 	
-	
+//	@PrePersist
+//    public void prePersist() {
+//        if (dateNaissance != null) {
+//        	 // Réinitialiser l'heure à 00:00:00
+//		    Calendar calendar = Calendar.getInstance();
+//		    calendar.setTime(dateNaissance); // dateNaissance est de type java.sql.Date
+//
+//		    // Réinitialiser l'heure à 00:00:00, et garantir que les millisecondes sont à zéro
+//		    calendar.set(Calendar.HOUR_OF_DAY, 0);
+//		    calendar.set(Calendar.MINUTE, 0);
+//		    calendar.set(Calendar.SECOND, 0);
+//		    calendar.set(Calendar.MILLISECOND, 0);
+//
+//		    // Recréer l'objet java.sql.Date sans l'heure
+//		    dateNaissance = new java.sql.Date(calendar.getTimeInMillis());
+//		    
+//            }
+//    }
 }

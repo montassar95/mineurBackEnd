@@ -44,7 +44,7 @@ public  class DocumentDto   {
 	
 	
 	 
-	private PersonelleDto personelle;
+	private UserDto user;
 	
 	
 	private Date dateInsertion;

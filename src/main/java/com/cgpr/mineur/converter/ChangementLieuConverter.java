@@ -33,7 +33,7 @@ public class ChangementLieuConverter extends DocumentConverter {
 	                                .orElse(null))
 	            .numArrestation(entity.getNumArrestation())
 	            .etablissement(EtablissementConverter.entityToDto(entity.getEtablissement()))
-	            .personelle(PersonelleConverter.entityToDto(entity.getPersonelle()))
+//	            .user(UserConverter.entityToDto(entity.getUser()))
 	            .dateInsertion(entity.getDateInsertion())
             	.etablissementMutation(Optional.ofNullable(entity.getEtablissementMutation())
                         .map(EtablissementConverter::entityToDto)
@@ -70,7 +70,7 @@ public class ChangementLieuConverter extends DocumentConverter {
                 .typeAffaire(document.getTypeAffaire())
                 .numArrestation(document.getNumArrestation())
                 .etablissement(document.getEtablissement())
-                .personelle(document.getPersonelle())
+//                .user(document.getUser())
                 .dateInsertion(document.getDateInsertion())
        
         		.etablissementMutation(Optional.ofNullable(dto.getEtablissementMutation())

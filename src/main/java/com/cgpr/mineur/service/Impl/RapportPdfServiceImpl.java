@@ -16,6 +16,7 @@ import com.cgpr.mineur.service.RapportPdfService;
 import com.cgpr.mineur.serviceReporting.GenererFicheDeDetentionPdfService;
 import com.cgpr.mineur.serviceReporting.GenererRapportPdfActuelService;
 import com.cgpr.mineur.serviceReporting.GenererRapportPdfMensuelService;
+import com.cgpr.mineur.serviceReporting.GenererStatistiquePdfMensuelService;
 import com.ibm.icu.text.ArabicShapingException;
 import com.itextpdf.text.DocumentException;
 
@@ -25,15 +26,18 @@ public class RapportPdfServiceImpl implements RapportPdfService {
     private final GenererFicheDeDetentionPdfService genererFicheDeDetentionPdfService;
     private final GenererRapportPdfActuelService genererRapportPdfActuelService;
     private final GenererRapportPdfMensuelService genererRapportPdfMensuelService;
+    private final GenererStatistiquePdfMensuelService genererStatistiquePdfMensuelService;
 
     @Autowired
     public RapportPdfServiceImpl(
             GenererFicheDeDetentionPdfService genererFicheDeDetentionPdfService,
             GenererRapportPdfActuelService genererRapportPdfActuelService,
-            GenererRapportPdfMensuelService genererRapportPdfMensuelService) {
+            GenererRapportPdfMensuelService genererRapportPdfMensuelService,
+            GenererStatistiquePdfMensuelService genererStatistiquePdfMensuelService) {
         this.genererFicheDeDetentionPdfService = genererFicheDeDetentionPdfService;
         this.genererRapportPdfActuelService = genererRapportPdfActuelService;
         this.genererRapportPdfMensuelService = genererRapportPdfMensuelService;
+        this.genererStatistiquePdfMensuelService= genererStatistiquePdfMensuelService;
     }
 
     @Override
@@ -41,6 +45,17 @@ public class RapportPdfServiceImpl implements RapportPdfService {
         try {
         	ByteArrayInputStream pdfBytes = genererRapportPdfMensuelService.genererRapportPdfMensuel(pDFListExistDTO);
             return createPdfResponse(pdfBytes, "rapport_mensuel.pdf");
+        } catch (IOException | DocumentException | ArabicShapingException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build(); // Erreur serveur
+        }
+    }
+    
+    @Override
+    public ResponseEntity<InputStreamResource> genererStatistiquePdfMensuel(PDFListExistDTO pDFListExistDTO) {
+        try {
+        	ByteArrayInputStream pdfBytes = genererStatistiquePdfMensuelService.genererStatistiquePdfMensuel(pDFListExistDTO);
+            return createPdfResponse(pdfBytes, "statistique_mensuel.pdf");
         } catch (IOException | DocumentException | ArabicShapingException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).build(); // Erreur serveur

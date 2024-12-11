@@ -19,6 +19,12 @@ import lombok.ToString;
 @ToString
 public class EtablissementDto {
 	 
+	public EtablissementDto(String id, String libelle_etablissement) {
+		super();
+		this.id = id;
+		this.libelle_etablissement = libelle_etablissement;
+	}
+
 	private String id;
 
 	 

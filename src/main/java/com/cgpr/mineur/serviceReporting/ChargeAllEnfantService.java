@@ -1,8 +1,8 @@
 package com.cgpr.mineur.serviceReporting;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -10,41 +10,34 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.cgpr.mineur.converter.ResidenceConverter;
 import com.cgpr.mineur.dto.DocumentSearchCriteriaDto;
-import com.cgpr.mineur.dto.SimpleTuple;
-import com.cgpr.mineur.dto.TitreAccusationDto;
 import com.cgpr.mineur.models.Affaire;
-import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.models.Arrestation;
-import com.cgpr.mineur.models.Arreterlexecution;
 import com.cgpr.mineur.models.CarteDepot;
 import com.cgpr.mineur.models.CarteHeber;
 import com.cgpr.mineur.models.CarteRecup;
 import com.cgpr.mineur.models.Document;
 import com.cgpr.mineur.models.Echappes;
 import com.cgpr.mineur.models.Etablissement;
+import com.cgpr.mineur.models.RapportEnfantQuotidien;
 import com.cgpr.mineur.models.RapportQuotidien;
 import com.cgpr.mineur.models.Residence;
-import com.cgpr.mineur.models.ResidenceWithAffaires;
 import com.cgpr.mineur.models.TitreAccusation;
-import com.cgpr.mineur.models.Transfert;
 import com.cgpr.mineur.models.Visite;
 import com.cgpr.mineur.repository.AccusationCarteDepotRepository;
 import com.cgpr.mineur.repository.AccusationCarteHeberRepository;
@@ -53,6 +46,7 @@ import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.repository.EchappesRepository;
 import com.cgpr.mineur.repository.EtablissementRepository;
+import com.cgpr.mineur.repository.RapportEnfantQuotidienRepository;
 import com.cgpr.mineur.repository.RapportQuotidienRepository;
 import com.cgpr.mineur.repository.ResidenceRepository;
 import com.cgpr.mineur.repository.StatistcsRepository;
@@ -89,10 +83,13 @@ public class ChargeAllEnfantService   {
 	
 	private final RapportQuotidienRepository rapportQuotidienRepository;
 	
-	
+	private final RapportEnfantQuotidienRepository rapportEnfantQuotidienRepository;
 //	public int masculinEtranger=0;
 //	public  int femininEtranger=0;
 	
+	 @PersistenceContext
+	    private EntityManager entityManager;  // Injection automatique de l'EntityManager
+	 
 	@Autowired
 	public ChargeAllEnfantService(
 			AffaireRepository affaireRepository, 
@@ -105,7 +102,7 @@ public class ChargeAllEnfantService   {
 			EtablissementRepository etablissementRepository,
 			StatistcsRepository statistcsRepository,
 			 RapportQuotidienRepository rapportQuotidienRepository,
-			 VisiteRepository  visiteRepository ) {
+			 VisiteRepository  visiteRepository , RapportEnfantQuotidienRepository rapportEnfantQuotidienRepository) {
 		this.affaireRepository = affaireRepository;
 
 		this.documentRepository = documentRepository;
@@ -124,21 +121,35 @@ public class ChargeAllEnfantService   {
 		this.statistcsRepository = statistcsRepository;
 		this.rapportQuotidienRepository =rapportQuotidienRepository;
 		this.visiteRepository= visiteRepository;
+		this.rapportEnfantQuotidienRepository=rapportEnfantQuotidienRepository;
 	}
 	
 	
+	private List<CompletableFuture<List<Residence>>> getAllResidencesAsync(List<Etablissement> allCentre, Date premierJourDuMois, Date dateActuelle ) {
+	    return allCentre.stream()
+	            .flatMap(e -> Stream.of(
+ 	                       residenceRepository.findByAllEnfantExistJugeAsync(e.getId(),ToolsForReporting.getFirstDayOfNextMonth())
+                           ,residenceRepository.findByAllEnfantExistArretAsync(e.getId(),ToolsForReporting.getFirstDayOfNextMonth())
+	                      , residenceRepository.findByAllEnfantLibereAsync(
+	                            0, 0, 0, 0, 0, 0, 0, e, 0, 0, 0, null, null, premierJourDuMois, dateActuelle, null)
+	            ))
+	            .collect(Collectors.toList());
+	}
 	
-	
-	
+	 
 	public List<List<Residence>> chargeList() {
 	    List<List<Residence>> enfantAffiches = new ArrayList<>();
 
 	    try {
-	        Date premierJourDuMois = ToolsForReporting.getFirstDayOfMonth();
+ 	         Date premierJourDuMois = ToolsForReporting.getFirstDayOfMonth();
+ 	         Date dateActuelle = new Date();
+	    	 
+	            
+	            
 	        System.err.println(premierJourDuMois.toString()+"-------------------------------- ");
 	        List<Etablissement> allCentre = etablissementRepository.listEtablissementCentre();
 
-	        List<CompletableFuture<List<Residence>>> futures = getAllResidencesAsync(allCentre, premierJourDuMois);
+	        List<CompletableFuture<List<Residence>>> futures = getAllResidencesAsync(allCentre, premierJourDuMois,dateActuelle);
 
 	        enfantAffiches = CompletableFuture.allOf(futures.toArray(new CompletableFuture[futures.size()]))
 	                .thenApply(v -> futures.stream()
@@ -160,18 +171,14 @@ public class ChargeAllEnfantService   {
 
 	
       
-	private List<CompletableFuture<List<Residence>>> getAllResidencesAsync(List<Etablissement> allCentre, Date premierJourDuMois) {
-	    return allCentre.stream()
-	            .flatMap(e -> Stream.of(
- 	                       residenceRepository.findByAllEnfantExistJugeAsync(e.getId(),ToolsForReporting.getFirstDayOfNextMonth())
-                           ,residenceRepository.findByAllEnfantExistArretAsync(e.getId(),ToolsForReporting.getFirstDayOfNextMonth())
-	                      , residenceRepository.findByAllEnfantLibereAsync(
-	                            0, 0, 0, 0, 0, 0, 0, e, 0, 0, 0, null, null, premierJourDuMois, new Date(), null)
-	            ))
-	            .collect(Collectors.toList());
-	}
+	
 
 	private void updateResidences(List<List<Residence>> enfantAffiches) {
+		for (int i = 0; i < enfantAffiches.size(); i++) {
+            List<Residence> subList = enfantAffiches.get(i);
+            System.out.println("Taille de la sous-liste castt  " + i + ": " + subList.size());
+        }
+
 	    enfantAffiches.forEach(enfantAfficheCentre -> {
 	        enfantAfficheCentre.forEach(residence -> {
 	            try {
@@ -225,9 +232,7 @@ public class ChargeAllEnfantService   {
 	}
 
 
-	private boolean isValidResidence(Residence residence) {
-	    return residence.getArrestation() != null && residence.getArrestation().getEnfant() != null;
-	}
+	
 	private void updateAffairePrincipale(List<Affaire> lesAffaires) {
 	    boolean isAffairePrincipaleMiseAJour = false;
 
@@ -238,7 +243,7 @@ public class ChargeAllEnfantService   {
 	                || affaire.getTypeDocument().equals("CJA")
 	                || affaire.getTypeDocument().equals("T")
 	                || affaire.getTypeDocument().equals("AE")
-	                || affaire.getTypeDocument().equals("CP"))) {
+	                || affaire.getTypeDocument().equals("CP")|| affaire.getTypeDocument().equals("OPP"))) {
 	            affaire.setAffairePrincipale(true);
 	            isAffairePrincipaleMiseAJour = true;
 	            break; // Sortir de la boucle après la première mise à jour
@@ -361,7 +366,10 @@ public class ChargeAllEnfantService   {
 	
 	//JsonProcessingException
 	private List<Affaire> filterLesAffaires(List<Affaire> lesAffaires) {
+		System.out.println("debgage");
+		// entityManager.clear();  // Détache toutes les entités de la session Hibernate
 	    return lesAffaires.stream().map(a -> {
+	    	   entityManager.detach(a);  // Détache l'entité 'a' du contexte de persistance
 	    	 a.setArrestation(null);
 	        if (a.getAffaireLien() != null) {
 	            a.getAffaireLien().setArrestation(null);
@@ -465,8 +473,8 @@ public class ChargeAllEnfantService   {
         return maxDate.orElse(null); // Retourner null si aucune date ne correspond
     }
     
-	public List<List<Residence>> chargeListByDate(LocalDate date) {
-		System.out.println("base "+date.toString());
+    public List<List<Residence>> chargeListByDate(LocalDate date) {
+		System.out.println(date.toString());
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    List<List<Residence>> residences = new ArrayList<>(); // Créez une liste vide pour stocker les résidences
 	    
@@ -530,7 +538,9 @@ public class ChargeAllEnfantService   {
 	
 	
 	
-	
+	private boolean isValidResidence(Residence residence) {
+	    return residence.getArrestation() != null && residence.getArrestation().getEnfant() != null;
+	}
 	
 	
 	
@@ -542,7 +552,7 @@ public class ChargeAllEnfantService   {
 	
 	
 	List<String> DEFAULT_DOCUMENT_TYPES = Arrays.asList("CH", "CD", "CJA", "T", "CP", "AP", "AE");
-	List<String> Sera_Libre_DOCUMENT_TYPES = Arrays.asList("CH", "CD", "CJA", "T", "CP", "AP" );
+	List<String> Sera_Libre_DOCUMENT_TYPES = Arrays.asList("CH", "CD", "CJA", "T", "CP", "AP", "OPP" );
 	List<String> APPEL_PARQUET_DOCUMENT_TYPES = Arrays.asList(  "AP" );
 	List<String> APPEL_ENFANT_DOCUMENT_TYPES = Arrays.asList(  "AE" );
 	List<String> TRANFERT_DOCUMENT_TYPES = Arrays.asList(  "T" );
@@ -747,21 +757,18 @@ public class ChargeAllEnfantService   {
 
 		case "devenuMajeur":
 
-			if (dateDebutGlobale == null && dateFinGlobale == null) {
+			// Declare the variables
+	        LocalDate dateDebutGlobaleD = null;
+	        LocalDate dateFinGlobaleD = null;
 
-				dateDebutGlobale = new Date();
-				dateFinGlobale = new Date();
-				dateDebutGlobale.setYear(dateDebutGlobale.getYear() - 18);
-				dateFinGlobale.setYear(dateFinGlobale.getYear() - 18);
-				dateFinGlobale.setMonth(dateFinGlobale.getMonth() + 1);
-				
-			} else {
-
-				dateDebutGlobale.setYear(dateDebutGlobale.getYear() - 18);
-				dateFinGlobale.setYear(dateFinGlobale.getYear() - 18);
-				 
-
-			}
+	        // Conditional logic
+	        if (dateDebutGlobaleD == null && dateFinGlobaleD == null) {
+	            dateDebutGlobaleD = LocalDate.now().minusYears(18);
+	            dateFinGlobaleD = dateDebutGlobaleD.plusMonths(1);
+	        } else {
+	            dateDebutGlobaleD = dateDebutGlobaleD.minusYears(18);
+	            dateFinGlobaleD = dateFinGlobaleD.minusYears(18);
+	        }
 			
 		 
 
@@ -781,7 +788,7 @@ public class ChargeAllEnfantService   {
 					pDFListExistDTO.getTypeTribunal(), 
 					pDFListExistDTO.getTypeAffaire(),
 					pDFListExistDTO.getEtablissements() ,
-					dateDebutGlobale, dateFinGlobale);
+					dateDebutGlobaleD, dateFinGlobaleD);
 
 			break;
 		case "entreReelle":
@@ -974,57 +981,131 @@ public class ChargeAllEnfantService   {
 	}
 	
 	
-	public List<Residence> processAndUpdateResidences(List<Residence> enfantAffiche) {
+	public List<Residence> processAndUpdateResidences(List<Residence> listResidences , PDFListExistDTO pDFListExistDTO) {
 	    // Étape 1 : Collecte des identifiants nécessaires pour la récupération des affaires
-	    Set<String> idsEnfant = enfantAffiche.stream()
-	        .map(residence -> {
-	            Arrestation arrestation = residence.getArrestation();
-	            return (arrestation != null && arrestation.getArrestationId() != null)
-	                ? arrestation.getArrestationId().getIdEnfant()
-	                : null;
-	        })
-	        .filter(Objects::nonNull) // Filtrer les valeurs nulles
-	        .collect(Collectors.toSet());
+		Set<String> idsEnfant = listResidences.stream()
+			    .map(residence -> {
+			        Arrestation arrestation = residence.getArrestation();
+			        return (arrestation != null && arrestation.getArrestationId() != null) 
+			            ? arrestation.getArrestationId().getIdEnfant() 
+			            : null;
+			    })
+			    .filter(Objects::nonNull) // Filtrer les valeurs nulles
+			    .collect(Collectors.toSet());
 
-	    Set<Long> numOrdinales = enfantAffiche.stream()
-	        .map(residence -> {
-	            Arrestation arrestation = residence.getArrestation();
-	            return (arrestation != null && arrestation.getArrestationId() != null)
-	                ? arrestation.getArrestationId().getNumOrdinale()
-	                : null;
-	        })
-	        .filter(Objects::nonNull) // Filtrer les valeurs nulles
-	        .collect(Collectors.toSet());
+			Set<Long> numOrdinales = listResidences.stream()
+			    .map(residence -> {
+			        Arrestation arrestation = residence.getArrestation();
+			        return (arrestation != null && arrestation.getArrestationId() != null) 
+			            ? arrestation.getArrestationId().getNumOrdinale() 
+			            : null;
+			    })
+			    .filter(Objects::nonNull) // Filtrer les valeurs nulles
+			    .collect(Collectors.toSet());
 
-	    // Étape 2 : Récupération de toutes les affaires en une seule requête
-	    List<Affaire> affaires = affaireRepository.findAffairesPrincipales(
-	        new ArrayList<>(idsEnfant),
-	        new ArrayList<>(numOrdinales)
-	    );
+			// Étape 3 : Récupération de toutes les affaires en une seule requête
+			List<Affaire> affaires = affaireRepository.findAffairesPrincipales(
+			    new ArrayList<>(idsEnfant), 
+			    new ArrayList<>(numOrdinales)
+			);
 
-	    // Étape 3 : Mappage des affaires aux résidences
-	    Map<String, List<Affaire>> affairesMap = affaires.stream()
-	        .collect(Collectors.groupingBy(affaire ->
-	            affaire.getAffaireId().getIdEnfant() + "-" +
-	            affaire.getAffaireId().getNumOrdinaleArrestation()
-	        ));
+			// Étape 4 : Mappage des affaires aux résidences
+			Map<String, List<Affaire>> affairesMap = affaires.stream()
+			    .collect(Collectors.groupingBy(affaire -> 
+			        affaire.getAffaireId().getIdEnfant() + "-" + 
+			        affaire.getAffaireId().getNumOrdinaleArrestation()
+			    ));
 
-	    // Étape 4 : Traitement des résidences avec un stream parallèle
-	    return enfantAffiche.parallelStream()
-	        .map(residence -> {
-	            Arrestation arrestation = residence.getArrestation();
-	            if (arrestation != null) {
-	                String key = arrestation.getArrestationId().getIdEnfant() + "-" +
-	                             arrestation.getArrestationId().getNumOrdinale();
-	                List<Affaire> lesAffaires = affairesMap.getOrDefault(key, Collections.emptyList());
-	                
-	                // Mettez à jour la résidence avec les affaires
-	                updateResidence(residence, lesAffaires);
-	            }
-	            return residence;
-	        })
-	        .collect(Collectors.toList());
+			return listResidences = listResidences.parallelStream()
+			    .map(residence -> {
+			        Arrestation arrestation = residence.getArrestation();
+			        if (arrestation != null) {
+			            String key = arrestation.getArrestationId().getIdEnfant() + "-" +
+			                         arrestation.getArrestationId().getNumOrdinale();
+			            List<Affaire> lesAffaires = affairesMap.getOrDefault(key, Collections.emptyList());
+			            
+			            // Mettez à jour la résidence avec les affaires
+			            updateResidence(residence, lesAffaires);
+			        }
+			        return residence;
+			    })
+			    .filter(residence -> pDFListExistDTO.getTypeJuge() == null || 
+			        residence.getArrestation() != null && 
+			        residence.getArrestation().getAffaires().stream()
+			            .anyMatch(ToolsForReporting.isTypeJugeMatch(pDFListExistDTO.getTypeJuge().getId())))
+			    .collect(Collectors.toList());
+		 
+	}
+	
+	
+	
+	public List<List<Residence>> getResidencesGroupedByEtablissementAndStatutPenal(
+	        LocalDate date, 
+	        List<String> etablissementIds, 
+	        List<String> statutPenals) {
+
+	    // Appel à la méthode de repository pour récupérer les rapports filtrés
+	    List<RapportEnfantQuotidien> rapports = rapportEnfantQuotidienRepository
+	        .findByDateAndStatutPenalAndEtablissements(date, statutPenals, etablissementIds);
+	    
+	    System.err.println(rapports.size()); // Affiche le nombre de rapports récupérés
+
+	    // Créer une carte pour stocker les résultats groupés par la combinaison etablissementId+statutPenal
+	    Map<String, List<Residence>> grouped = new HashMap<>();
+
+	    // Traiter chaque rapport
+	    for (RapportEnfantQuotidien rapport : rapports) {
+	        String etablissementId = rapport.getEtablissement().getId();
+	        String statutPenal = rapport.getStatutPenal();
+
+	        // Créer une clé unique de la forme "etablissementId+statutPenal"
+	        String key = etablissementId + "+" + statutPenal;
+
+	        // Transformer le rapport en une instance de Residence
+	        Residence residence = convertToResidence(rapport);
+
+	        // Ajouter la résidence dans la liste appropriée pour cette clé
+	        grouped.putIfAbsent(key, new ArrayList<>());
+	        grouped.get(key).add(residence);
+	    }
+
+	    // Transformer la carte en une liste de listes
+	    List<List<Residence>> result = new ArrayList<>();
+
+	    // Remplir la liste de listes avec les résidences groupées
+	    for (String etablissementId : etablissementIds) {
+	        for (String statutPenal : statutPenals) {
+	            // Créer la clé unique pour la combinaison de etablissementId et statutPenal
+	            String key = etablissementId + "+" + statutPenal;
+
+	            // Ajouter les résidences de cette clé à la liste de résultats
+	            List<Residence> residencesStatut = grouped.getOrDefault(key, new ArrayList<>());
+	            result.add(residencesStatut);
+	        }
+	    }
+
+	    return result;
 	}
 
-}
+		
+		//Méthode de conversion de RapportEnfantQuotidien en Residence
+		private Residence convertToResidence(RapportEnfantQuotidien rapport) {
+		ObjectMapper objectMapper = new ObjectMapper();
+		Residence residence = new Residence();
+		
+		
+		String jsonString = rapport.getResidance();
+		
+		//Log du contenu JSON pour inspection
+		System.out.println("Données JSON de la résidence : " + jsonString);
+		
+		try {
+		residence = objectMapper.readValue(jsonString, Residence.class);
+		} catch (JsonProcessingException e) {
+		System.err.println("Erreur de désérialisation pour la chaîne JSON : " + e.getMessage());
+		e.printStackTrace();
+		}
+		return residence;
+		}
+		}
 

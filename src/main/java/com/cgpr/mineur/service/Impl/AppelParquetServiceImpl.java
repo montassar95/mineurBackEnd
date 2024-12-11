@@ -30,7 +30,8 @@ public class AppelParquetServiceImpl implements AppelParquetService {
 
 		appelParquetDto.getAffaire().setTypeDocument("AP");
 		appelParquetDto.getAffaire().setTypeAffaire(appelParquetDto.getAffaire().getTypeAffaire());
-
+		System.out.println("---------- AP ----------");
+System.out.println(AffaireConverter.dtoToEntity(appelParquetDto.getAffaire()));
 		Affaire affaireSaved = affaireRepository.save(AffaireConverter.dtoToEntity(appelParquetDto.getAffaire()));
 
 		appelParquetDto.getAffaire().setNumOrdinalAffaireByAffaire(affaireSaved.getNumOrdinalAffaireByAffaire());

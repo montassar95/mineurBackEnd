@@ -131,7 +131,7 @@ public class DocumentServiceImpl implements DocumentService{
 		Affaire a = aData.stream().peek(num -> System.out.println("will filter " + num.getTypeDocument()))
 				.filter(x -> x.getTypeDocument().equals("CD") || x.getTypeDocument().equals("CH")
 						|| x.getTypeDocument().equals("T") || x.getTypeDocument().equals("AP")
-						|| x.getTypeDocument().equals("AE"))
+						|| x.getTypeDocument().equals("AE") || x.getTypeDocument().equals("OPP"))
 				.findFirst().orElse(null);
 		System.out.println(a);
 		if (a == null) {

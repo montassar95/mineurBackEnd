@@ -30,7 +30,7 @@ public class TransfertConverter extends DocumentConverter {
 		                                .orElse(null))
 		            .numArrestation(entity.getNumArrestation())
 		            .etablissement(EtablissementConverter.entityToDto(entity.getEtablissement()))
-		            .personelle(PersonelleConverter.entityToDto(entity.getPersonelle()))
+//		            .personelle(PersonelleConverter.entityToDto(entity.getPersonelle()))
 		            .dateInsertion(entity.getDateInsertion())
 		            
 	                .typeFile(entity.getTypeFile())
@@ -54,7 +54,7 @@ public class TransfertConverter extends DocumentConverter {
           .typeAffaire(document.getTypeAffaire())
           .numArrestation(document.getNumArrestation())
           .etablissement(document.getEtablissement())
-          .personelle(document.getPersonelle())
+//          .user(document.getUser())
           .dateInsertion(document.getDateInsertion())
           // Ajouter les attributs spécifiques à CarteDepot
 	        

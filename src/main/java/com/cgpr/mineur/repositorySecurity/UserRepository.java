@@ -15,8 +15,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	Optional<User> findByUsername(String username);
 
 	Boolean existsByUsername(String username);
-	@Query("SELECT u.personelle FROM User u ")
-	List<Personelle> allUsers ( );
+//	@Query("SELECT u.personelle FROM User u ")
+//	List<Personelle> allUsers ( );
 	
 	
 	// Méthode personnalisée pour vérifier si un nom d'utilisateur est déjà utilisé, en excluant l'utilisateur actuel

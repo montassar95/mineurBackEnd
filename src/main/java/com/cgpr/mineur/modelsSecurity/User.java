@@ -1,20 +1,28 @@
 package com.cgpr.mineur.modelsSecurity;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-import lombok.AllArgsConstructor;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
 import com.cgpr.mineur.models.Etablissement;
-import com.cgpr.mineur.models.Personelle;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+ 
  @Getter
  @Setter
  @ToString
@@ -46,7 +54,7 @@ public class User {
     private String numAdministratif;
     
     
-//    (fetch = FetchType.LAZY)
+ 
     @ManyToOne
     @JoinColumn(name = "etaFK")
     private Etablissement etablissement;
@@ -59,18 +67,11 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "personelle_userFK")
-    private Personelle personelle;
-
+ 
     public User() {
 	}
 
 	 
  
-
-    // Les getters et setters sont générés par Lombok grâce à @Data
-
-    // Si vous avez des exigences supplémentaires pour l'égalité ou le hachage, 
-    // vous pouvez implémenter equals() et hashCode() ici.
+ 
 }

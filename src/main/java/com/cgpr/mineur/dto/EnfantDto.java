@@ -1,22 +1,12 @@
 package com.cgpr.mineur.dto;
 
-import java.sql.Date;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
 @Builder
 @Data
 @NoArgsConstructor
@@ -33,7 +23,7 @@ public class EnfantDto {
 	private String nomMere;
 	private String prenomMere;
 
-	private Date dateNaissance;
+	private LocalDate  dateNaissance;
 	private String lieuNaissance;
 	private String sexe;
 

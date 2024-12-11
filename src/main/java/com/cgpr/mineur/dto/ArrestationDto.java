@@ -104,7 +104,7 @@ public class ArrestationDto {
 	   private   java.util.Date dateFin;
 	   
   
-	   private EchappesDto echappeDto ;
+	   private EchappesDto echappe  ;
 	   
 	   
   

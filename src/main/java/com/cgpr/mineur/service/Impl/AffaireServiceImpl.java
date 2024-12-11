@@ -556,7 +556,7 @@ public class AffaireServiceImpl implements AffaireService {
 				if (lastDocument instanceof Transfert) {
 
 					Transfert t = (Transfert) lastDocument;
-
+                    s.setDateEmission(t.getDateEmission());
 					s.setTypeFile(t.getTypeFile());
 
 				}

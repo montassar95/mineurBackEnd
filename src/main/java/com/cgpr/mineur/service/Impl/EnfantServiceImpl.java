@@ -1,21 +1,29 @@
 package com.cgpr.mineur.service.Impl;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.config.ArabicTextSimplifier;
+import com.cgpr.mineur.config.Simplification;
 import com.cgpr.mineur.converter.ArrestationConverter;
 import com.cgpr.mineur.converter.EnfantConverter;
 import com.cgpr.mineur.converter.ResidenceConverter;
 import com.cgpr.mineur.dto.ArrestationDto;
 import com.cgpr.mineur.dto.EnfantDto;
 import com.cgpr.mineur.dto.EnfantVerifieDto;
+import com.cgpr.mineur.dto.PrisonerDto;
 import com.cgpr.mineur.dto.ResidenceDto;
+import com.cgpr.mineur.dto.SearchDetenuDto;
 import com.cgpr.mineur.models.Affaire;
 import com.cgpr.mineur.models.Arrestation;
 import com.cgpr.mineur.models.ArrestationId;
@@ -42,6 +50,7 @@ import com.cgpr.mineur.resource.EnfantDTO;
 import com.cgpr.mineur.service.ArrestationService;
 import com.cgpr.mineur.service.EnfantService;
 import com.cgpr.mineur.service.PhotoService;
+import com.cgpr.mineur.service.PrisonerPenalService;
 import com.cgpr.mineur.service.ResidenceService;
 import com.cgpr.mineur.serviceReporting.ChargeAllEnfantService;
 import com.cgpr.mineur.serviceReporting.GenererRapportPdfMensuelService;
@@ -56,7 +65,8 @@ public class EnfantServiceImpl implements EnfantService {
 
 	 
 
- 
+	@Autowired
+	private PrisonerPenalService prisonerPenalService;
 
   
 	@Autowired
@@ -92,40 +102,121 @@ public class EnfantServiceImpl implements EnfantService {
 	private ArrestationService arrestationService;
 	@Autowired
 	private ResidenceService residenceService;
-
+	
+	 Simplification simplifier = new Simplification();
 	 
 
- 
- 
+//	public static Example<Enfant> createExample(String nom, String prenom, String nomPere, String nomGrandPere, 
+//		            String nomMere, String prenomMere, LocalDate  dateNaissance, String sexe) {
+//		
+//		// Créer un objet Enfant avec les critères de recherche
+//		Enfant enfant = new Enfant();
+//		enfant.setNomSimplifie(ArabicTextSimplifier.simplifyArabicWord(nom));
+//		enfant.setPrenomSimplifie(ArabicTextSimplifier.simplifyArabicWord(prenom));
+//		enfant.setNomPereSimplifie(ArabicTextSimplifier.simplifyArabicWord(nomPere));
+//		enfant.setNomGrandPereSimplifie(ArabicTextSimplifier.simplifyArabicWord(nomGrandPere));
+//		enfant.setNomMereSimplifie(ArabicTextSimplifier.simplifyArabicWord(nomMere));
+//		enfant.setPrenomMereSimplifie(ArabicTextSimplifier.simplifyArabicWord(prenomMere));
+//		
+//		enfant.setSexe(sexe);
+//		  if (dateNaissance != null) {
+//			   System.out.println(dateNaissance);
+//		        // Ici, nous utilisons LocalDate directement
+////		        enfant.setDateNaissance(dateNaissance);
+//			   enfant.setDateNaissance(LocalDate.of(2005, 9, 29));
+//		    }
+//
+//		 
+//		 
+//		
+//		 
+//		// Créer un exemple matcher, en ignorant les champs null
+//		ExampleMatcher matcher = ExampleMatcher.matching()
+//		.withIgnoreNullValues();  // Ignore les propriétés null
+////		.withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING)  // Utiliser LIKE pour les chaînes
+////		.withIgnoreCase();  // Ignorer la casse pour les chaînes
+//		
+//		// Retourner un example basé sur l'entité Enfant
+//		return Example.of(enfant, matcher);
+//		}
+		 
 
-  
-	@Override
-	public List<ResidenceDto> trouverResidencesParCriteresDetenu(EnfantDTO enfantDTO) {
-
-		List<Residence> residences = null;
-		if (enfantDTO != null) {
-			if (enfantDTO.getDateNaissance() != null) {
-				residences = enfantRepository.search(enfantDTO.getNom().trim(), enfantDTO.getPrenom().trim(),
-						enfantDTO.getNomPere().trim(), enfantDTO.getNomGrandPere().trim(),
-						enfantDTO.getNomMere().trim(), enfantDTO.getPrenomMere().trim(), enfantDTO.getDateNaissance(),
-						enfantDTO.getSexe().trim());
-			} else {
-				residences = enfantRepository.searchSansDate(enfantDTO.getNom().trim().toString(),
-						enfantDTO.getPrenom().trim().toString(), enfantDTO.getNomPere().trim().toString(),
-						enfantDTO.getNomGrandPere().trim().toString(), enfantDTO.getNomMere().trim().toString(),
-						enfantDTO.getPrenomMere().trim().toString(),
-
-						enfantDTO.getSexe().trim().toString());
-
-			}
+	 private String simplifyOrNull(String value) {
+		    String simplified =  value != null ? value.trim() : "" ;
+		    return simplified.isEmpty() ? null : simplified;
 		}
 
-		if (residences != null) {
+	@Override
+	public List<SearchDetenuDto> trouverResidencesParCriteresDetenu(EnfantDTO enfantDTO) {
+		System.out.println(enfantDTO.toString());
+	 
 
-			return residences.stream().map(ResidenceConverter::entityToDto).collect(Collectors.toList());
+//	   Example<Enfant> example =  createExample(
+//			   enfantDTO.getNom(), 
+//			   enfantDTO.getPrenom(), 
+//			   enfantDTO.getNomPere(), 
+//			   enfantDTO.getNomGrandPere(), 
+//			   enfantDTO.getNomMere(), 
+//			   enfantDTO.getPrenomMere(), 
+//			   enfantDTO.getDateNaissance(), 
+//			   enfantDTO.getSexe());
+//       System.out.println(example.toString());
+       
+		  String nom = simplifier.simplify(enfantDTO.getNom().trim());
+		   String prenom = simplifier.simplify(enfantDTO.getPrenom().trim());
+		   String  nomPere = simplifier.simplify(enfantDTO.getNomPere().trim());
+		   String nomGrandPere = simplifier.simplify(enfantDTO.getNomGrandPere().trim());
+		   String nomMere = simplifier.simplify(enfantDTO.getNomMere().trim());
+		   String prenomMere = simplifier.simplify(enfantDTO.getPrenomMere().trim());
+		   String sexe = null;
+				   if ("ذكر".equals(enfantDTO.getSexe())) {
+		        sexe = "1";
+		    } else if ("أنثى".equals(enfantDTO.getSexe())) {
+		        sexe = "0";
+		    } else {
+		        sexe = null; // Sexe inconnu ou non fourni
+		    }
+		   
+		     nom = simplifyOrNull(nom);
+		     prenom = simplifyOrNull(prenom);
+		     nomPere =  simplifyOrNull(nomPere);
+		     nomGrandPere = simplifyOrNull(nomGrandPere);
+		     nomMere = simplifyOrNull(nomMere);
+		     prenomMere = simplifyOrNull(prenomMere);
+
+		   
+		  // Option 2: Affichage ligne par ligne
+		     System.out.println("Nom: " + nom);
+		     System.out.println("Prénom: " + prenom);
+		     System.out.println("Nom du père: " + nomPere);
+		     System.out.println("Nom du grand-père: " + nomGrandPere);
+		     System.out.println("Nom de la mère: " + nomMere);
+		     System.out.println("Prénom de la mère: " + prenomMere);
+		     System.out.println("Date de naissance: " + enfantDTO.getDateNaissance());
+		     System.out.println("Sexe: " + sexe);
+		   
+ 	   List<SearchDetenuDto> detenus =enfantRepository.searchSimplified(
+ 			   nom,
+ 			   prenom,
+ 			   nomPere,
+ 			   nomGrandPere,
+  			   nomMere,
+  			   prenomMere, 
+  			   enfantDTO.getDateNaissance(), 
+  			   sexe
+ 			    );
+	
+ 	  if (detenus != null) {
+for(SearchDetenuDto res :detenus) {
+	System.out.println(res.toString());
+}
+ 
+			return detenus;
 		} else {
+			
 			return null;
 		}
+ 
 	}
 
  
@@ -169,13 +260,13 @@ public class EnfantServiceImpl implements EnfantService {
 	}
 
 	@Override
-	public ResidenceDto trouverDerniereResidenceParIdDetenu(String id) {
+	public SearchDetenuDto trouverDerniereResidenceParIdDetenu(String id) {
 		System.out.println(id);
-		Optional<Residence> residence = enfantRepository.getoneInResidence(id);
-		System.out.println("getoneInResidence");
+		Optional<SearchDetenuDto> residence = enfantRepository.getoneInResidence(id);
+		System.out.println("residence "+ residence.get());
 
 		if (residence.isPresent()) {
-			return ResidenceConverter.entityToDto(residence.get());
+			return residence.get();
 		}
 
 		else {
@@ -218,21 +309,21 @@ public class EnfantServiceImpl implements EnfantService {
 				arrestation.getArrestationId().getIdEnfant(), arrestation.getArrestationId().getNumOrdinale());
 
 		if (deces.isPresent()) {
-			mes = "طفل فــي ذمــــــة اللـــه";
+			mes = " فــي ذمــــــة اللـــه";
 			alerte = true;
 		} else if (echappe != null) {
-			mes = "طفل في حالــــــة فـــرار";
+			mes = " في حالــــــة فـــرار";
 			alerte = true;
 		} else if (liberation.isPresent()) {
 
-			mes = "طفل  في حالـــة ســراح";
+			mes = "  في حالـــة ســراح";
 			allowNewAddArrestation = true;
 		} else if (residenceEncour != null) {
 			mes = "نقلـــة جـــارية إلـــى مركــز    " + residenceEncour.getEtablissement().getLibelle_etablissement();
 
 			alerte = true;
 		} else if (!residence.getEtablissement().getId().equals(idEtab)) {
-			mes = "طفــل مقيــم بمركــز     " + residence.getEtablissement().getLibelle_etablissement();
+			mes = " مقيــم بمركــز     " + residence.getEtablissement().getLibelle_etablissement();
 			allowNewCarte = false;
 			alerte = true;
 		} else {
@@ -383,6 +474,29 @@ public class EnfantServiceImpl implements EnfantService {
 		}
 
 		return ResidenceConverter.entityToDto(residence);
+	}
+
+	@Override
+	public List<SearchDetenuDto> trouverDetenusParCriteresDansPrisons(EnfantDTO enfantDTO) {
+		System.out.println(enfantDTO.toString());
+		 
+		System.out.println("----------------- salut -----------------");
+		 EnfantDTO enfant = EnfantDTO.builder()
+       .nom(enfantDTO .getNom())
+       .prenom(enfantDTO.getPrenom())
+       .nomPere(enfantDTO.getNomPere())
+       .dateNaissance(enfantDTO.getDateNaissance())
+       .sexe(enfantDTO.getSexe())
+       .build();
+
+
+		List<SearchDetenuDto>  list = prisonerPenalService.findPrisonerPenalByCriteria(enfant) ;
+		System.out.println(list.size());
+		for(SearchDetenuDto prisoner : list) {
+		System.out.println(prisoner.toString());
+		}
+		 System.out.println("----------------- byby -----------------");
+		return list;
 	}
 
 }

@@ -30,7 +30,7 @@ public class ArrestationConverter {
 	            .totaleResidence(entity.getTotaleResidence())
 	            .dateDebut(entity.getDateDebut())
 	            .dateFin(entity.getDateFin())
-	            .echappeDto(entity.getEchappe() != null ? 
+	            .echappe (entity.getEchappe() != null ? 
 	                EchappesConverter.entityToDto(entity.getEchappe()) : null)
 	            .situationJudiciaire(entity.getSituationJudiciaire())
 	            .age(entity.getAge())
@@ -59,7 +59,7 @@ public class ArrestationConverter {
 	            .totaleResidence(dto.getTotaleResidence())
 	            .dateDebut(dto.getDateDebut())
 	            .dateFin(dto.getDateFin())
-	            .echappe(dto.getEchappeDto() != null ? EchappesConverter.dtoToEntity(dto.getEchappeDto()) : null)
+	            .echappe(dto.getEchappe () != null ? EchappesConverter.dtoToEntity(dto.getEchappe()) : null)
 	            .situationJudiciaire(dto.getSituationJudiciaire())
 	            .age(dto.getAge())
 	            //.visite(dto.getVisite()) // Décommentez si vous avez un champ 'visite' dans Arrestation

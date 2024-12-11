@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import com.cgpr.mineur.dto.EnfantDto;
 import com.cgpr.mineur.dto.EnfantVerifieDto;
 import com.cgpr.mineur.dto.ResidenceDto;
+import com.cgpr.mineur.dto.SearchDetenuDto;
 import com.cgpr.mineur.resource.EnfantAddDTO;
 import com.cgpr.mineur.resource.EnfantDTO;
 import com.cgpr.mineur.resource.PDFListExistDTO;
@@ -31,13 +32,14 @@ public interface EnfantService {
 	
 
 
-	public List<ResidenceDto> trouverResidencesParCriteresDetenu(EnfantDTO enfantDTO) ;
-
+	public List<SearchDetenuDto> trouverResidencesParCriteresDetenu(EnfantDTO enfantDTO) ;
+	public List<SearchDetenuDto> trouverDetenusParCriteresDansPrisons(EnfantDTO enfantDTO) ;
+	
 
 	public EnfantDto getEnfantById( String id) ;
 	public EnfantVerifieDto trouverDetenuAvecSonStatutActuel(String id, String idEtab);
 	
-	public ResidenceDto trouverDerniereResidenceParIdDetenu( String id) ;
+	public SearchDetenuDto trouverDerniereResidenceParIdDetenu( String id) ;
 
 	
 	public  List<ResidenceDto>  trouverResidencesParNumeroEcrou( String numArr);
