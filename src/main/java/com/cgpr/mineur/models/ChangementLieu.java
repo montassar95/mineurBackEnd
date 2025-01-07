@@ -42,6 +42,7 @@ public class ChangementLieu extends Document {
 	private int annee;
 	
 	private String type;
+	private String statut;
 
 	 
 }

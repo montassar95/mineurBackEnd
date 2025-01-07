@@ -1,6 +1,7 @@
 package com.cgpr.mineur.repository;
 
  
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +40,7 @@ public interface StatistcsRepository  extends CrudRepository<Residence, Residenc
 				   		+ "  a.statut = 0 and"
 				        +   "(((?1 is null or a.etablissement.id  = ?1) and a.etablissement.statut = 0 ) )  "  
 				   		+ " and (a.arrestation.enfant.dateNaissance between  ?2 and  ?3)" )
-              int findByAllByAge( String etablissementId ,@Temporal Date start, @Temporal Date end);
+              int findByAllByAge( String etablissementId ,  LocalDate start,   LocalDate end);
 	 
 	 	   
 	 	  @Query("SELECT count(a) FROM Residence a where"

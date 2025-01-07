@@ -63,7 +63,7 @@ public class Arrestation  implements Serializable {
 
 	private int statut;
 	
-	private String etatJuridique;
+//	private String etatJuridique;
 	
 	@OneToOne
 	@JoinColumns({ 
@@ -75,20 +75,20 @@ public class Arrestation  implements Serializable {
 	
 	
 	 
-	private String numAffairePricipale;
+	//private String numAffairePricipale;
 	
 	
-	@ManyToOne
-	@JoinColumn(name = "triPriFK")
-	private Tribunal tribunalPricipale;
+//	@ManyToOne
+//	@JoinColumn(name = "triPriFK")
+//	private Tribunal tribunalPricipale;
 	
-	private long numOrdinalAffairePricipale;
+//	private long numOrdinalAffairePricipale;
 	
-	@Transient
-	private TypeAffaire typeAffairePricipale;
+//	@Transient
+//	private TypeAffaire typeAffairePricipale;
 	
-	private int totaleEchappes;
-	private int totaleResidence;
+//	private int totaleEchappes;
+//	private int totaleResidence;
 	
 	
 	

@@ -160,8 +160,8 @@ public class GenererStatistiquPdfMensuelImpl implements GenererStatistiquePdfMen
 		}
 
 		 	
-		titreString= "    حوصلـــة حولـــة مـــراكز  إصــــلاح الأطفــــال الجــــانحين "+ " خلال شهر "
- 				+ ToolsForReporting.getCurrentArabicMonth(moisVisite) + " " + localDate.getYear();
+		titreString= "    حوصلـــة حولـــة مـــراكز  إصــــلاح الأطفــــال الجــــانحين "+ " خلال شهر "  
+ 				+ ToolsForReporting.getCurrentArabicMonth(moisVisite) + " " + 2024; //localDate.getYear()
 			    PdfPTable tTitre = ToolsForReporting.createTitleTable(titreString);
  	
 		

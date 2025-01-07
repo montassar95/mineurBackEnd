@@ -58,88 +58,89 @@ public class StatistcsServiceImpl implements StatistcsService{
 		}
 
 		LocalDate localDate = LocalDate.now();
+		// Calcul des plages de dates pour chaque tranche d'âge
+		LocalDate today = LocalDate.now();
+		LocalDate start13 = today.minusYears(13).withDayOfYear(1);
+		LocalDate end13 = today.minusYears(12).withDayOfYear(1).minusDays(1);
 
-		Date start13 = null;
-		Date end13 = null;
+		LocalDate start14 = today.minusYears(14).withDayOfYear(1);
+		LocalDate end14 = today.minusYears(13).withDayOfYear(1).minusDays(1);
 
-		Date start14 = null;
-		Date end14 = null;
+		LocalDate start15 = today.minusYears(15).withDayOfYear(1);
+		LocalDate end15 = today.minusYears(14).withDayOfYear(1).minusDays(1);
 
-		Date start15 = null;
-		Date end15 = null;
+		LocalDate start16 = today.minusYears(16).withDayOfYear(1);
+		LocalDate end16 = today.minusYears(15).withDayOfYear(1).minusDays(1);
 
-		Date start16 = null;
-		Date end16 = null;
+		LocalDate start17 = today.minusYears(17).withDayOfYear(1);
+		LocalDate end17 = today.minusYears(16).withDayOfYear(1).minusDays(1);
 
-		Date start17 = null;
-		Date end17 = null;
-
-		Date start18 = null;
-		Date end18 = null;
+		LocalDate start18 = today.minusYears(18).withDayOfYear(1);
+		LocalDate end18 = today.minusYears(17).withDayOfYear(1).minusDays(1);
 
 		Calendar cal = Calendar.getInstance();
 
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 
-		cal.set(Calendar.YEAR, (year - 13) - 1);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		start13 = cal.getTime();
-
-		cal.set(Calendar.YEAR, year - 13);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		end13 = cal.getTime();
-
-		cal.set(Calendar.YEAR, (year - 14) - 1);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		start14 = cal.getTime();
-
-		cal.set(Calendar.YEAR, year - 14);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		end14 = cal.getTime();
-
-		cal.set(Calendar.YEAR, (year - 15) - 1);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		start15 = cal.getTime();
-
-		cal.set(Calendar.YEAR, year - 15);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		end15 = cal.getTime();
-
-		cal.set(Calendar.YEAR, (year - 16) - 1);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		start16 = cal.getTime();
-
-		cal.set(Calendar.YEAR, year - 16);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		end16 = cal.getTime();
-
-		cal.set(Calendar.YEAR, (year - 17) - 1);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		start17 = cal.getTime();
-
-		cal.set(Calendar.YEAR, year - 17);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		end17 = cal.getTime();
-
-		cal.set(Calendar.YEAR, (year - 18) - 1);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		start18 = cal.getTime();
-
-		cal.set(Calendar.YEAR, year - 18);
-		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-		end18 = cal.getTime();
+//		cal.set(Calendar.YEAR, (year - 13) - 1);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		start13 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, year - 13);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		end13 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, (year - 14) - 1);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		start14 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, year - 14);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		end14 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, (year - 15) - 1);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		start15 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, year - 15);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		end15 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, (year - 16) - 1);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		start16 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, year - 16);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		end16 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, (year - 17) - 1);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		start17 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, year - 17);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		end17 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, (year - 18) - 1);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		start18 = cal.getTime();
+//
+//		cal.set(Calendar.YEAR, year - 18);
+//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+//		end18 = cal.getTime();
 
 		StatisticsDTO sta = new StatisticsDTO();
 
@@ -170,13 +171,13 @@ public class StatistcsServiceImpl implements StatistcsService{
 			if (!(affprincipale.isEmpty())) {
 				if (a != null) {
 
-					s.setNumAffairePricipale(a.getAffaireId().getNumAffaire());
-					s.setTribunalPricipale(a.getTribunal());
-					s.setNumOrdinalAffairePricipale(a.getNumOrdinalAffaire());
-					s.setTypeAffairePricipale(a.getTypeAffaire());
+//					s.setNumAffairePricipale(a.getAffaireId().getNumAffaire());
+//					s.setTribunalPricipale(a.getTribunal());
+//					s.setNumOrdinalAffairePricipale(a.getNumOrdinalAffaire());
+//					s.setTypeAffairePricipale(a.getTypeAffaire());
 
-					Integer j = typeAffairesArrete.get(s.getTypeAffairePricipale().getLibelle_typeAffaire());
-					typeAffairesArrete.put(s.getTypeAffairePricipale().getLibelle_typeAffaire(),
+					Integer j = typeAffairesArrete.get(a.getTypeAffaire().getLibelle_typeAffaire());
+					typeAffairesArrete.put(a.getTypeAffaire().getLibelle_typeAffaire(),
 							(j == null) ? 1 : j + 1);
 
 				}
@@ -190,13 +191,13 @@ public class StatistcsServiceImpl implements StatistcsService{
 									.peek(num -> System.out.println("aff filter " + num.getTypeDocument()))
 									.filter(x -> ((x.getAffaireAffecter() == null))).findFirst().orElse(null));
 
-					s.setNumAffairePricipale(a.getAffaireId().getNumAffaire());
-					s.setTribunalPricipale(a.getTribunal());
-					s.setNumOrdinalAffairePricipale(a.getNumOrdinalAffaire());
-					s.setTypeAffairePricipale(a.getTypeAffaire());
+//					s.setNumAffairePricipale(a.getAffaireId().getNumAffaire());
+//					s.setTribunalPricipale(a.getTribunal());
+//					s.setNumOrdinalAffairePricipale(a.getNumOrdinalAffaire());
+//					s.setTypeAffairePricipale(a.getTypeAffaire());
 
-					Integer j = typeAffairesJuge.get(s.getTypeAffairePricipale().getLibelle_typeAffaire());
-					typeAffairesJuge.put(s.getTypeAffairePricipale().getLibelle_typeAffaire(), (j == null) ? 1 : j + 1);
+					Integer j = typeAffairesJuge.get(a.getTypeAffaire().getLibelle_typeAffaire());
+					typeAffairesJuge.put(a.getTypeAffaire().getLibelle_typeAffaire(), (j == null) ? 1 : j + 1);
 
 				}
 			}

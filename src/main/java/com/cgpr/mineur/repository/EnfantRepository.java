@@ -22,12 +22,17 @@ import com.cgpr.mineur.models.Residence;
 @Repository
 public interface EnfantRepository extends  JpaRepository<Enfant, String>, JpaSpecificationExecutor<Enfant>, QueryByExampleExecutor<Enfant> {
 
+	@Query("SELECT e.dateNaissance FROM Enfant e WHERE e.id = :id")
+	LocalDate findDateNaissanceById(@Param("id") String id);
+	
 	
 	 @Query("select max(e.id) from Enfant e where e.id like :idEta%")
   	 String  maxId(@Param("idEta")String idEta);
 	 
 	 @Query("SELECT new com.cgpr.mineur.dto.SearchDetenuDto(" 
 		        + "r.arrestation.enfant.id, "  // String
+		        + "r.residenceId.numOrdinaleArrestation, "
+		    	+ "r.residenceId.numOrdinaleResidence, "
 		        + "r.arrestation.enfant.nom, " // String 
 		        + "r.arrestation.enfant.prenom, " // String 
 		        + "r.arrestation.enfant.nomPere, " // String 
@@ -185,6 +190,8 @@ public interface EnfantRepository extends  JpaRepository<Enfant, String>, JpaSpe
 	
 	@Query("SELECT new com.cgpr.mineur.dto.SearchDetenuDto( " 
 	        + "r.arrestation.enfant.id, "  // String
+	        + "r.residenceId.numOrdinaleArrestation, "
+	    	+ "r.residenceId.numOrdinaleResidence, "
 	        + "r.arrestation.enfant.nom, " // String 
 	        + "r.arrestation.enfant.prenom, " // String 
 	        + "r.arrestation.enfant.nomPere, " // String 
@@ -210,8 +217,28 @@ public interface EnfantRepository extends  JpaRepository<Enfant, String>, JpaSpe
       Optional<SearchDetenuDto> getoneInResidence(@Param("id") String id);
 	
 	
-	@Query("select r from Residence r where r.numArrestation =  :numArr ")
-	List<Residence>  getResidenceByNum(@Param("numArr") String numArr);
+	@Query("SELECT new com.cgpr.mineur.dto.SearchDetenuDto( " 
+	        + "r.arrestation.enfant.id, "  // String
+	        + "r.residenceId.numOrdinaleArrestation, "
+	    	+ "r.residenceId.numOrdinaleResidence, "
+	        + "r.arrestation.enfant.nom, " // String 
+	        + "r.arrestation.enfant.prenom, " // String 
+	        + "r.arrestation.enfant.nomPere, " // String 
+	        + "r.arrestation.enfant.nomGrandPere, " // String 
+	        + "r.arrestation.enfant.nomMere, " // String 
+	        + "r.arrestation.enfant.prenomMere, " // String 
+	       
+	        + "r.arrestation.enfant.lieuNaissance, " // String
+	        + "r.arrestation.enfant.sexe, " // String 
+	        + "r.numArrestation, " //String
+	        + "r.etablissement.libelle_etablissement, " //String
+	        
+ 	        + "r.arrestation.enfant.dateNaissance, "  // LocalDate
+  	        + "TO_CHAR(r.dateEntree, 'YYYY/MM/DD'), " // date sql
+ 	        + "r.statut "// int
+	        + ") " 
+			+ " from Residence r where r.numArrestation =  :numArr ")
+	List<SearchDetenuDto>  getResidenceByNum(@Param("numArr") String numArr);
 	//+ "and e.dateNaissance like %:dateNaissance% "
 	 
 }

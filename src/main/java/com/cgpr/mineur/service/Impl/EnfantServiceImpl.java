@@ -43,7 +43,7 @@ import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.repository.EchappesRepository;
 import com.cgpr.mineur.repository.EnfantRepository;
 import com.cgpr.mineur.repository.LiberationRepository;
-import com.cgpr.mineur.repository.RapportQuotidienRepository;
+//import com.cgpr.mineur.repository.RapportQuotidienRepository;
 import com.cgpr.mineur.repository.ResidenceRepository;
 import com.cgpr.mineur.resource.EnfantAddDTO;
 import com.cgpr.mineur.resource.EnfantDTO;
@@ -74,8 +74,8 @@ public class EnfantServiceImpl implements EnfantService {
 
 	 
 
-	@Autowired
-	private RapportQuotidienRepository rapportQuotidienRepository;
+//	@Autowired
+//	private RapportQuotidienRepository rapportQuotidienRepository;
 
 	@Autowired
 	private DecesRepository decesRepository;
@@ -194,7 +194,9 @@ public class EnfantServiceImpl implements EnfantService {
 		     System.out.println("Prénom de la mère: " + prenomMere);
 		     System.out.println("Date de naissance: " + enfantDTO.getDateNaissance());
 		     System.out.println("Sexe: " + sexe);
-		   
+		   if (nom == null &&  prenom == null ) {
+			   return null;
+		   }
  	   List<SearchDetenuDto> detenus =enfantRepository.searchSimplified(
  			   nom,
  			   prenom,
@@ -234,24 +236,24 @@ for(SearchDetenuDto res :detenus) {
 	public EnfantDto getEnfantById(String id) {
 		Optional<Enfant> enfanttData = enfantRepository.findById(id);
 		if (enfanttData.isPresent()) {
-			List<Affaire> aData = documentRepository.findByArrestation(id);
-
-			try {
-				Affaire a = aData.stream().peek(num -> System.out.println("will filter " + num.getTypeDocument()))
-						.filter(x -> x.getTypeDocument().equals("CD") || x.getTypeDocument().equals("CH")
-								|| x.getTypeDocument().equals("T") || x.getTypeDocument().equals("AP")
-								|| x.getTypeDocument().equals("AE") || x.getTypeDocument().equals("CP"))
-						.findFirst().orElse(null);
-				if (a == null) {
-					System.out.println("ma7koum");
-					enfanttData.get().setEtat("محكوم");
-				} else {
-					System.out.println("maw9ouf");
-					enfanttData.get().setEtat("موقوف");
-				}
-			} catch (NullPointerException e) {
-				throw new RuntimeException("typeDocument is null " + aData.get(0).getArrestation().getEnfant().getId());
-			}
+//			List<Affaire> aData = documentRepository.findByArrestation(id);
+//
+//			try {
+//				Affaire a = aData.stream().peek(num -> System.out.println("will filter " + num.getTypeDocument()))
+//						.filter(x -> x.getTypeDocument().equals("CD") || x.getTypeDocument().equals("CH")
+//								|| x.getTypeDocument().equals("T") || x.getTypeDocument().equals("AP")
+//								|| x.getTypeDocument().equals("AE") || x.getTypeDocument().equals("CP"))
+//						.findFirst().orElse(null);
+//				if (a == null) {
+//					System.out.println("ma7koum");
+//					enfanttData.get().setEtat("محكوم");
+//				} else {
+//					System.out.println("maw9ouf");
+//					enfanttData.get().setEtat("موقوف");
+//				}
+//			} catch (NullPointerException e) {
+//				throw new RuntimeException("typeDocument is null " + aData.get(0).getArrestation().getEnfant().getId());
+//			}
 
 			return EnfantConverter.entityToDto(enfanttData.get());
 		} else {
@@ -275,11 +277,11 @@ for(SearchDetenuDto res :detenus) {
 	}
 
 	@Override
-	public List<ResidenceDto> trouverResidencesParNumeroEcrou(String numArr) {
-		List<Residence> residences = enfantRepository.getResidenceByNum(numArr);
+	public List<SearchDetenuDto> trouverResidencesParNumeroEcrou(String numArr) {
+		List<SearchDetenuDto> residences = enfantRepository.getResidenceByNum(numArr);
 
 		if (residences != null) {
-			return residences.stream().map(ResidenceConverter::entityToDto).collect(Collectors.toList());
+			return residences ;
 		}
 
 		else {
@@ -336,9 +338,9 @@ for(SearchDetenuDto res :detenus) {
 
 			List<ArrestationDto> allArrestationDto = allArrestation.stream().map(ArrestationConverter::entityToDto)
 					.collect(Collectors.toList());
-			allArrestationDto.stream()
-					.map(arr -> AffaireUtils.processArrestationToGetAffairPrincipal(arr, affaireRepository))
-					.collect(Collectors.toList());
+ 			allArrestationDto.stream()
+ 					.map(arr -> AffaireUtils.processArrestationToGetAffairPrincipal(arr, affaireRepository))
+ 				.collect(Collectors.toList());
 			allArrestation = allArrestationDto.stream().map(ArrestationConverter::dtoToEntity)
 					.collect(Collectors.toList());
 		}

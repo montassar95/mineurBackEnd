@@ -42,7 +42,7 @@ public interface EnfantService {
 	public SearchDetenuDto trouverDerniereResidenceParIdDetenu( String id) ;
 
 	
-	public  List<ResidenceDto>  trouverResidencesParNumeroEcrou( String numArr);
+	public  List<SearchDetenuDto>  trouverResidencesParNumeroEcrou( String numArr);
 
 	public ResidenceDto creerAdmissionDetenu( EnfantAddDTO enfantAddDTO) ;
 	

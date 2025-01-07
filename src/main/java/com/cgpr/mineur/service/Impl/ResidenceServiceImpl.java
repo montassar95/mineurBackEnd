@@ -6,12 +6,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.cgpr.mineur.converter.PersonelleConverter;
+//import com.cgpr.mineur.converter.PersonelleConverter;
 import com.cgpr.mineur.converter.ResidenceConverter;
 import com.cgpr.mineur.converter.ResidenceIdConverter;
 import com.cgpr.mineur.dto.ResidenceDto;
 import com.cgpr.mineur.dto.ResidenceIdDto;
-import com.cgpr.mineur.models.Personelle;
+//import com.cgpr.mineur.models.Personelle;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.ResidenceId;
 import com.cgpr.mineur.repository.ArrestationRepository;

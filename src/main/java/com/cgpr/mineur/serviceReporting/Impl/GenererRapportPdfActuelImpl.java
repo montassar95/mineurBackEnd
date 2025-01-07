@@ -5,12 +5,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.converter.RapportDetentionDTOConverter;
+import com.cgpr.mineur.dto.RapportDetentionDTO;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.resource.PDFListExistDTO;
@@ -91,14 +94,14 @@ public class GenererRapportPdfActuelImpl implements GenererRapportPdfActuelServi
 
     // --------------------------------------------------------------------------------------------------------------------
 
-    IntStream.range(0, residenceDTOList.size()).forEach(i -> 
-    ToolsForReporting.processTablePrencipal(
-        residenceDTOList.get(i),
-        tableAffaire,
-        pDFListExistDTO.getEtatJuridiue().toString(),
-        i
-    )
-      );
+//    IntStream.range(0, residenceDTOList.size()).forEach(i -> 
+//    ToolsForReporting.processTablePrencipal(
+//        residenceDTOList.get(i),
+//        tableAffaire,
+//        pDFListExistDTO.getEtatJuridiue().toString(),
+//        i
+//    )
+//      );
     document.add(tableTop);
     document.add(tTitre);
     document.newPage();
@@ -112,6 +115,21 @@ public class GenererRapportPdfActuelImpl implements GenererRapportPdfActuelServi
     
     return new ByteArrayInputStream(out.toByteArray());
 
+  }
+
+
+  @Override
+  public List<RapportDetentionDTO> genererRapportJsonActuel(PDFListExistDTO pDFListExistDTO) {
+      // Charger la liste des résidences à partir du service
+      List<Residence> residenceDTOList = chargeAllEnfantService.chargeSpecialList(pDFListExistDTO);
+      
+      // Convertir chaque résidence en un RapportDetentionDTO
+      List<RapportDetentionDTO> rapportDetentionDTOList = residenceDTOList.stream()
+          .map(RapportDetentionDTOConverter::toRapportDetentionDTO)
+          .collect(Collectors.toList());
+      
+      // Retourner la liste des RapportDetentionDTO
+      return rapportDetentionDTOList;
   }
 
   

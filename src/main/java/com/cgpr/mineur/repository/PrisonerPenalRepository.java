@@ -9,6 +9,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.cgpr.mineur.dto.PrisonerPenaleDto;
 import com.cgpr.mineur.dto.SearchDetenuDto;
 
 
@@ -109,43 +110,94 @@ public class PrisonerPenalRepository {
     }
     
     
-    public SearchDetenuDto findPrisonerPenalByPrisonerId(String prisonerId) {
-        // Construction de la requête SQL avec jointure
-        String sql = 
-            "SELECT "+
-                "iden.TNUMIDE AS prisoner_id, "+
-                "iden.TPNOMA AS firstname, "+
-                "iden.TPPERA AS father_name, "+
-                "iden.TPGPERA AS grandfather_name, "+
-                "iden.TNOMA AS lastname, "+
-                "iden.TDATN AS birth_date, "+
-                "iden.TPMER AS mother_name, "+
-                "iden.TNOMMER AS maternal_grandmother_name, "+
-                "iden.TCODSEX AS sex, "+
-                "GETLIBELLE_GOUVERNORAT@DBLINKMINEURPROD(iden.TCODGOUN) AS place_of_birth, "+
-                "res.TTYPRES || '  ' || res.TCODRES || '  ' || res.TANNRES AS numero_ecrou, "+
-                "TO_CHAR(res.TDATDR, 'YYYY-MM-DD') AS date_entre, "+
-                "GETLIBELLEPRISON@DBLINKMINEURPROD(res.TCODGOU, res.TCODPR) AS prision, "+
-                "res.TCODDET AS numroDetention "+
-            "FROM "+
-                "TIDENTITE@DBLINKMINEURPROD iden "+
-            "JOIN "+
-                "TRESIDENCE@DBLINKMINEURPROD res "+
-                "ON iden.TNUMIDE = res.TNUMIDE "+
-            "WHERE "+
-                "res.TCODDET = ( "+
-                    "SELECT MAX(r2.TCODDET) "+
-                    "FROM TRESIDENCE@DBLINKMINEURPROD r2 "+
-                    "WHERE r2.TNUMIDE = res.TNUMIDE "+
-                ") "+
-                "AND res.TDATDR = ( "+
-                    "SELECT MAX(r2.TDATDR) "+
-                    "FROM TRESIDENCE@DBLINKMINEURPROD r2 "+
-                    "WHERE r2.TNUMIDE = iden.TNUMIDE "+
-                      "AND r2.TCODDET = res.TCODDET "+
-                ") "+
-                "AND iden.TNUMIDE = ? "+
-            "ORDER BY date_entre DESC; ";
+    public PrisonerPenaleDto findPrisonerPenalByPrisonerId(String prisonerId) {
+    	// Construction de la requête SQL avec jointure
+    	String sql = 
+    	    "SELECT " +
+    	    "    iden.TNUMIDE AS prisoner_id, " +
+    	    "    iden.TPNOMA AS firstname, " +
+    	    "    iden.TPPERA AS father_name, " +
+    	    "    iden.TPGPERA AS grandfather_name, " +
+    	    "    iden.TNOMA AS lastname, " +
+    	    "    iden.TDATN AS birth_date, " +
+    	    "    iden.TPMER AS mother_name, " +
+    	    "    iden.TNOMMER AS maternal_grandmother_name, " +
+    	    "    iden.TCODSEX AS sex, " +
+    	    "    iden.tadr AS adresse, " +
+    	    "    GETLIBELLE_GOUVERNORAT@DBLINKMINEURPROD(iden.TCODGOUN) AS place_of_birth, " +
+    	    "    res.TTYPRES || '  ' || res.TCODRES || '  ' || res.TANNRES AS numero_ecrou, " +
+    	    "    TO_CHAR(res.TDATDR, 'YYYY-MM-DD') AS date_entre, " +
+    	    "    GETLIBELLEPRISON@DBLINKMINEURPROD(res.TCODGOU, res.TCODPR) AS prision, " +
+    	    "    res.TCODDET AS numroDetention, " +
+    	    "    ja.TETAT, " +
+    	    "    na.LIBELLE_NATURE as natureAffaire, " +
+    	    "    ja.TCODTYP, " +
+    	    "    ja.TDATDPE AS debutPunition, " +
+    	    "    ja.TDATLIB AS finPunition " +
+    	    "FROM " +
+    	    "    TIDENTITE@DBLINKMINEURPROD iden " +
+    	    "JOIN " +
+    	    "    TRESIDENCE@DBLINKMINEURPROD res " +
+    	    "    ON iden.TNUMIDE = res.TNUMIDE " +
+    	    "JOIN " +
+    	    "    tjugearret@DBLINKMINEURPROD ja " +
+    	    "    ON iden.TNUMIDE = ja.TNUMIDE " +
+    	    "JOIN " +
+    	    "    natureaffaire@DBLINKMINEURPROD na " +
+    	    "    ON ja.TCODTAF = na.CODE_NATURE " +
+    	    "WHERE " +
+    	     "    res.tclores = 'O' AND " +
+    	    "    res.TCODDET = ( " +
+    	    "        SELECT MAX(r2.TCODDET) " +
+    	    "        FROM TRESIDENCE@DBLINKMINEURPROD r2 " +
+    	    "        WHERE r2.TNUMIDE = res.TNUMIDE " +
+    	    "    ) AND " +
+    	    "    res.TDATDR = ( " +
+    	    "        SELECT MAX(r2.TDATDR) " +
+    	    "        FROM TRESIDENCE@DBLINKMINEURPROD r2 " +
+    	    "        WHERE r2.TNUMIDE = iden.TNUMIDE " +
+    	    "          AND r2.TCODDET = res.TCODDET " +
+    	    "    ) AND " +
+    	    "    iden.TNUMIDE = ? " +
+    	    "ORDER BY date_entre DESC";
+
+//        // Construction de la requête SQL avec jointure
+//        String sql = 
+//            "SELECT "+
+//                "iden.TNUMIDE AS prisoner_id, "+
+//                "iden.TPNOMA AS firstname, "+
+//                "iden.TPPERA AS father_name, "+
+//                "iden.TPGPERA AS grandfather_name, "+
+//                "iden.TNOMA AS lastname, "+
+//                "iden.TDATN AS birth_date, "+
+//                "iden.TPMER AS mother_name, "+
+//                "iden.TNOMMER AS maternal_grandmother_name, "+
+//                "iden.TCODSEX AS sex, "+
+//                "iden.tadr AS adresse,"+
+//                "GETLIBELLE_GOUVERNORAT@DBLINKMINEURPROD(iden.TCODGOUN) AS place_of_birth, "+
+//                "res.TTYPRES || '  ' || res.TCODRES || '  ' || res.TANNRES AS numero_ecrou, "+
+//                "TO_CHAR(res.TDATDR, 'YYYY-MM-DD') AS date_entre, "+
+//                "GETLIBELLEPRISON@DBLINKMINEURPROD(res.TCODGOU, res.TCODPR) AS prision, "+
+//                "res.TCODDET AS numroDetention "+
+//            "FROM "+
+//                "TIDENTITE@DBLINKMINEURPROD iden "+
+//            "JOIN "+
+//                "TRESIDENCE@DBLINKMINEURPROD res "+
+//                "ON iden.TNUMIDE = res.TNUMIDE "+
+//            "WHERE "+
+//                "res.TCODDET = ( "+
+//                    "SELECT MAX(r2.TCODDET) "+
+//                    "FROM TRESIDENCE@DBLINKMINEURPROD r2 "+
+//                    "WHERE r2.TNUMIDE = res.TNUMIDE "+
+//                ") "+
+//                "AND res.TDATDR = ( "+
+//                    "SELECT MAX(r2.TDATDR) "+
+//                    "FROM TRESIDENCE@DBLINKMINEURPROD r2 "+
+//                    "WHERE r2.TNUMIDE = iden.TNUMIDE "+
+//                      "AND r2.TCODDET = res.TCODDET "+
+//                ") "+
+//                "AND iden.TNUMIDE = ? "+
+//            "ORDER BY date_entre DESC  ";
         
 
         try {
@@ -155,7 +207,7 @@ public class PrisonerPenalRepository {
                 new Object[]{prisonerId},
                 (rs, rowNum) -> {
                     // Mapping du résultat de la requête vers un objet SearchDetenuDto
-                    SearchDetenuDto prisoner = new SearchDetenuDto();
+                	PrisonerPenaleDto prisoner = new PrisonerPenaleDto();
                     prisoner.setDetenuId(rs.getString("prisoner_id"));
                     prisoner.setNom(rs.getString("firstname"));
                     prisoner.setPrenom(rs.getString("lastname"));
@@ -169,10 +221,15 @@ public class PrisonerPenalRepository {
                     prisoner.setNumeroEcrou(rs.getString("numero_ecrou"));
                     prisoner.setDateEntree(rs.getString("date_entre"));
                     prisoner.setNomEtablissement(rs.getString("prision"));
+                    prisoner.setAdresse(rs.getString("adresse"));
+                    prisoner.setDebutPunition(rs.getString("debutPunition"));
+                    prisoner.setFinPunition(rs.getString("finPunition"));
+                    prisoner.setNatureAffaire(rs.getString("natureAffaire"));
                     return prisoner;
                 }
             );
         } catch (EmptyResultDataAccessException e) {
+        	System.out.println(e.getMessage());
             // Si aucun résultat n'est trouvé
             return null;
         } catch (DataAccessException e) {

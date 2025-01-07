@@ -1,30 +1,21 @@
 package com.cgpr.mineur.models;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Calendar;
+import java.util.Date;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
+import com.cgpr.mineur.config.Simplification;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
 
 @Builder
 @NoArgsConstructor
@@ -32,85 +23,100 @@ import javax.persistence.Entity;
 @Data
 @Entity
 @Table(name = "enf")
-@JsonIgnoreProperties(ignoreUnknown = true) //Ignorer les Propriétés Inconnues : Si la propriété "img" n'est pas nécessaire dans la classe
-public class Enfant  implements Serializable {
-	@Id
-	private String id;
-	private String nom;
-	private String prenom;
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class Enfant implements Serializable {
 
-	private String nomPere;
-	private String nomGrandPere;
-	private String nomMere;
-	private String prenomMere;
+    @Id
+    private String id;
+    private String nom;
+    private String prenom;
 
-	@Column(name = "DATE_NAISSANCE")
-	private LocalDate  dateNaissance;
-	private String lieuNaissance;
-	private String sexe;
+    private String nomPere;
+    private String nomGrandPere;
+    private String nomMere;
+    private String prenomMere;
+    
+//    @JsonIgnore
+    @Column(name = "DATE_NAISSANCE")
+    private LocalDate dateNaissance;
+    
+  
+    
+    
+    private String lieuNaissance;
+    private String sexe;
 
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "simplifier_criteria_id") // nom de la colonne de la référence
-	private SimplifierCriteria simplifierCriteria;
-	
-	
- 
-	@ManyToOne
-	private Nationalite nationalite;
+    @JsonIgnore
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "simplifier_criteria_id")
+    private SimplifierCriteria simplifierCriteria;
 
-	@ManyToOne
-	private NiveauEducatif niveauEducatif;
+    @ManyToOne
+    private Nationalite nationalite;
 
-	@ManyToOne
-	private SituationFamiliale situationFamiliale;
+    @ManyToOne
+    private NiveauEducatif niveauEducatif;
 
-	private int nombreFreres;
+    @ManyToOne
+    private SituationFamiliale situationFamiliale;
 
-	@ManyToOne
-	private Gouvernorat gouvernorat;
+    private int nombreFreres;
 
-	@ManyToOne
-	private Delegation delegation;
+    @ManyToOne
+    private Gouvernorat gouvernorat;
 
-	private String adresse;
+    @ManyToOne
+    private Delegation delegation;
 
-	private String surnom;
+    private String adresse;
+    private String surnom;
+    private String alias;
 
-	private String alias;
+    @ManyToOne
+    private ClassePenale classePenale;
 
-	@ManyToOne
-	private ClassePenale classePenale;
-	
-	@ManyToOne
-	private SituationSocial situationSocial;
-	
-	@ManyToOne
-	private Metier metier;
-	
- 
-	
-	@Transient
-	private String etat;
-	
-	private int nbrEnfant;
-	
-//	@PrePersist
-//    public void prePersist() {
-//        if (dateNaissance != null) {
-//        	 // Réinitialiser l'heure à 00:00:00
-//		    Calendar calendar = Calendar.getInstance();
-//		    calendar.setTime(dateNaissance); // dateNaissance est de type java.sql.Date
-//
-//		    // Réinitialiser l'heure à 00:00:00, et garantir que les millisecondes sont à zéro
-//		    calendar.set(Calendar.HOUR_OF_DAY, 0);
-//		    calendar.set(Calendar.MINUTE, 0);
-//		    calendar.set(Calendar.SECOND, 0);
-//		    calendar.set(Calendar.MILLISECOND, 0);
-//
-//		    // Recréer l'objet java.sql.Date sans l'heure
-//		    dateNaissance = new java.sql.Date(calendar.getTimeInMillis());
-//		    
-//            }
-//    }
+    @ManyToOne
+    private SituationSocial situationSocial;
+
+    @ManyToOne
+    private Metier metier;
+
+//    @Transient
+//    private String etat;
+
+    private int nbrEnfant;
+
+    @PrePersist
+    public void prePersist() {
+    	Simplification simplifier = new Simplification();
+        String nomSimplifie = simplifier.simplify(nom);
+        String prenomSimplifie = simplifier.simplify(prenom);
+        String nomPereSimplifie = simplifier.simplify(nomPere);
+        String nomGrandPereSimplifie = simplifier.simplify(nomGrandPere);
+        String nomMereSimplifie = simplifier.simplify(nomMere);
+        String prenomMereSimplifie = simplifier.simplify(prenomMere);
+
+        // Simplification du sexe
+        if ("ذكر".equals(this.sexe)) {
+            this.sexe = "1";
+        } else if ("أنثى".equals(this.sexe)) {
+            this.sexe = "0";
+        } else {
+            this.sexe = null;
+        }
+
+        SimplifierCriteria simp = new SimplifierCriteria();
+        simp.setSimplifierId(id);
+        simp.setNomSimplifie(nomSimplifie);
+        simp.setPrenomSimplifie(prenomSimplifie);
+        simp.setNomPereSimplifie(nomPereSimplifie);
+        simp.setNomMereSimplifie(nomMereSimplifie);
+        simp.setPrenomMereSimplifie(prenomMereSimplifie);
+        simp.setNomGrandPereSimplifie(nomGrandPereSimplifie);
+        simp.setDateNaissance(dateNaissance);
+        simp.setSexe(sexe);
+        simp.setLieuNaissance(simplifier.simplify(lieuNaissance));
+
+        this.simplifierCriteria = simp;
+    }
 }

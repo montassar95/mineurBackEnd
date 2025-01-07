@@ -2,6 +2,7 @@ package com.cgpr.mineur.service.Impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -10,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.cgpr.mineur.dto.RapportDetentionDTO;
 import com.cgpr.mineur.resource.PDFListExistDTO;
 import com.cgpr.mineur.resource.PDFPenaleDTO;
 import com.cgpr.mineur.service.RapportPdfService;
@@ -94,4 +96,13 @@ public class RapportPdfServiceImpl implements RapportPdfService {
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(new InputStreamResource(pdfStream));
     }
+
+	@Override
+	public List<RapportDetentionDTO> genererRapportJsonActuel(PDFListExistDTO pDFListExistDTO)  {
+		 
+			  List<RapportDetentionDTO> jsonStream = genererRapportPdfActuelService.genererRapportJsonActuel(pDFListExistDTO);
+	            return jsonStream;
+	       
+		 
+	}
 }

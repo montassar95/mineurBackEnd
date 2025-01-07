@@ -105,7 +105,7 @@ public class ArrestationServiceImpl implements  ArrestationService {
 //			arrestation.getArrestationId().setNumOrdinale(arrestationRepository.countByEnfant(arrestation.getArrestationId().getIdEnfant())+1);  
 			if (arrestationDto.getLiberation() != null) {
 				arrestationDto.setStatut(1);
-				arrestationDto.setEtatJuridique("libre");
+				//arrestationDto.setEtatJuridique("libre");
 				liberationRepository.save(LiberationConverter.dtoToEntity(arrestationDto.getLiberation()));
 				Residence r = residenceRepository.findByIdEnfantAndStatut0(arrestationDto.getArrestationId().getIdEnfant(),
 						arrestationDto.getArrestationId().getNumOrdinale());
@@ -136,7 +136,7 @@ public class ArrestationServiceImpl implements  ArrestationService {
  			LiberationDto liberationDto = null;
 			if (arrestationDto.getLiberation() != null) {
 				arrestationDto.setStatut(0);
-				arrestationDto.setEtatJuridique(null);
+				//arrestationDto.setEtatJuridique(null);
 				liberationDto = arrestationDto.getLiberation();
 				arrestationDto.setLiberation(null);
 				

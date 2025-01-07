@@ -8,8 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.cgpr.mineur.config.Simplification;
 import com.cgpr.mineur.dto.PrisonerDto;
+import com.cgpr.mineur.dto.PrisonerPenaleDto;
 import com.cgpr.mineur.dto.SearchDetenuDto;
-import com.cgpr.mineur.repository.PersonelleRepository;
+//import com.cgpr.mineur.repository.PersonelleRepository;
 import com.cgpr.mineur.repository.PrisonerPenalRepository;
 import com.cgpr.mineur.resource.EnfantDTO;
 import com.cgpr.mineur.service.PrisonerPenalService;
@@ -72,6 +73,11 @@ public class PrisonerPenalServiceImpl implements PrisonerPenalService {
 
 	    // Retour de la liste des résultats
 	    return prisonerList;
+	}
+	@Override
+	public PrisonerPenaleDto findPrisonerPenalByPrisonerId(String prisonerId) {
+		// TODO Auto-generated method stub
+		return prisonerPenalRepository.findPrisonerPenalByPrisonerId(prisonerId);
 	}
 
 

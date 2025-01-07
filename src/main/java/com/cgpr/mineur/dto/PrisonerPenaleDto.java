@@ -13,9 +13,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class SearchDetenuDto {
+public class PrisonerPenaleDto {
 
-	
 	private String detenuId;
 	private long numOrdinaleArrestation;
 	private long numOrdinaleResidence;
@@ -34,8 +33,13 @@ public class SearchDetenuDto {
     private LocalDate  dateNaissance;
  
  	private String dateEntree;
- 	private int statut;
+ 	private String adresse;
+ 	
+ 	
+ 	private String  debutPunition;
+	private String  finPunition;
 	
+	private String  natureAffaire;
  
-
+ 	private int statut;
 }

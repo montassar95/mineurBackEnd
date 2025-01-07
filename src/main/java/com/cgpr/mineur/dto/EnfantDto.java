@@ -66,7 +66,7 @@ public class EnfantDto {
  
 	
 	 
-	private String etat;
+// 	private String etat;
 	
 	private Integer nbrEnfant;
 	

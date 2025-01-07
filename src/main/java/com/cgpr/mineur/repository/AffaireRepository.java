@@ -78,74 +78,12 @@ public interface AffaireRepository extends PagingAndSortingRepository<Affaire, A
 	 List<Affaire>  findAffaireByAnyArrestation (String idEnfant,String numAffaire,long idTribunal);
 	 
 	 
-//	 
-//	 @Query("SELECT a FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1  "
-//		 		+ "and  a.statut = 0"
-//		 		+ "and  a.arrestation.arrestationId.numOrdinale = ?2 "
-//		 		
-//		 		 
-//		 		+ "order by a.typeAffaire.statutException, "
-//		 		+ "a.tribunal.typeTribunal.statutNiveau, "
-//		 		+ "a.daysDiffJuge, "
-//		 		+ "a.typeAffaire.statutNiveau desc")
-//	 List<Affaire>  findAffairePrincipale (long idEnfant,long numOrdinale ,Pageable pageable );
+ 
 	 
  
 	 
 	 
-//	 @Query("SELECT a FROM Affaire a WHERE a.arrestation.arrestationId.idEnfant = ?1  "
-//		 		+ "and  a.statut = 0"
-//		 		+ "and  a.arrestation.arrestationId.numOrdinale = ?2 "
-//		 		
-//		 		+ "and  a.typeAffaire.statutException = ("
-//							+ "select max(af.typeAffaire.statutException) from Affaire af where "
-//							+ "af.arrestation.arrestationId.idEnfant = ?1 and  "
-//							+ "af.statut = 0 "
-//							+ "and  af.arrestation.arrestationId.numOrdinale = ?2 "
-//		 		                                     + ") "
-//		 		
-//				+ "and  a.tribunal.typeTribunal.statutNiveau = ("
-//				+ "select max(af.tribunal.typeTribunal.statutNiveau) from Affaire af where "
-//								+ "af.arrestation.arrestationId.idEnfant = ?1 and "
-//								+ " af.statut = 0 "
-//							    + "and  af.arrestation.arrestationId.numOrdinale = ?2  "
-//							         + "and  af.typeAffaire.statutException = (select max(at.typeAffaire.statutException) from Affaire at where"
-//							                                        + " at.arrestation.arrestationId.idEnfant = ?1 and "
-//							                                        + " at.statut = 0  "
-//							                                        + "and  at.arrestation.arrestationId.numOrdinale = ?2 "
-//								                                           + ")"
-//			                                              	+ ")"
-//			                                          	
-//				
-//            + "and  a.daysDiffJuge = (select max(af.daysDiffJuge) from Affaire af  where "
-//                + "af.arrestation.arrestationId.idEnfant = ?1 "
-//                + "and  af.statut = 0 "
-//			    + "and  af.arrestation.arrestationId.numOrdinale = ?2  "
-//			    + "and  af.typeAffaire.statutException = (select max(at.typeAffaire.statutException) from Affaire at where "
-//			                                          + "at.arrestation.arrestationId.idEnfant = ?1 "
-//			                                          + "and  at.statut = 0  "
-//			                                          + "and  at.arrestation.arrestationId.numOrdinale = ?2 )"
-//			  
-//				+ "and  af.tribunal.typeTribunal.statutNiveau = (select max(aff.tribunal.typeTribunal.statutNiveau) from Affaire aff where "
-//				+ "aff.arrestation.arrestationId.idEnfant = ?1 "
-//						+ "and  aff.statut = 0 "
-//						+ "and  aff.arrestation.arrestationId.numOrdinale = ?2  "
-//						+ "and  aff.typeAffaire.statutException = ("
-//					                                                	+ "select max(at.typeAffaire.statutException) from Affaire at where "
-//																			+ "at.arrestation.arrestationId.idEnfant = ?1 "
-//																			+ "and  at.statut = 0  "
-//																			+ "and  at.arrestation.arrestationId.numOrdinale = ?2 )"
-//																			+ ")"
-//					
-//						
-//						
-//						                   + ")"
-//
-//			   
-//			   
-//			   
-//			   + "order by a.typeAffaire.statutNiveau desc")
-//	 List<Affaire>  findAffairePrincipale (String idEnfant,long numOrdinale  );
+ 
 	 
 	 
 	 

@@ -71,16 +71,7 @@ public  class Document implements Serializable {
 	private Etablissement etablissement;
 	
 	
-//	@ManyToOne
-//	@JoinColumn(name = "perFK")
-//	private Personelle personelle;
-	
-	
-	
-//	@ManyToOne
-//	@JoinColumn(name = "userFK")
-//	private User user;
-	
+ 
 	private Date dateInsertion;
  
 

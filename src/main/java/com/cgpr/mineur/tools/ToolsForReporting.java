@@ -682,7 +682,7 @@ public class ToolsForReporting {
 		    c1.setBorder(0);
 		    tableNumArr.addCell(c1);
 		    p1 = new Phrase(calculerAge(residenceDTO.getArrestation().getEnfant().getDateNaissance().toString())+ "", ToolsForReporting.boldfontFamielle13);
-
+		 //   p1 = new Phrase("--");
 		    c1 = ToolsForReporting.createPdfPCell(p1, 30, Element.ALIGN_CENTER,null);
 
 		    c1.setBorder(0);

@@ -185,25 +185,25 @@ public final class AffaireUtils {
            
             
             
-            arrestation.setEtatJuridique(isStopped ? "arret" : "juge");
-            arrestation.setNumAffairePricipale(
-                    affairePrincipale != null ? affairePrincipale.getAffaireId().getNumAffaire() : null);
-            arrestation.setTribunalPricipale(affairePrincipale != null ? affairePrincipale.getTribunal() : null);
-            arrestation.setNumOrdinalAffairePricipale(
-                    affairePrincipale != null ? affairePrincipale.getNumOrdinalAffaire() : null);
-            arrestation.setTypeAffairePricipale(affairePrincipale != null ? affairePrincipale.getTypeAffaire() : null);
+//            arrestation.setEtatJuridique(isStopped ? "arret" : "juge");
+//            arrestation.setNumAffairePricipale(
+//                    affairePrincipale != null ? affairePrincipale.getAffaireId().getNumAffaire() : null);
+//            arrestation.setTribunalPricipale(affairePrincipale != null ? affairePrincipale.getTribunal() : null);
+//            arrestation.setNumOrdinalAffairePricipale(
+//                    affairePrincipale != null ? affairePrincipale.getNumOrdinalAffaire() : null);
+//            arrestation.setTypeAffairePricipale(affairePrincipale != null ? affairePrincipale.getTypeAffaire() : null);
 
             boolean doitEtreLibre = affaireParPriorite.stream()
                     .allMatch(x -> x.getTypeDocument().equals("AEX") || x.getTypeDocument().equals("L"));
 
-            if (arrestation.getLiberation() != null) {
-                arrestation.setEtatJuridique("libre");
-            } else if (doitEtreLibre && arrestation.getLiberation() == null) {
-                arrestation.setEtatJuridique("isAEX");
-            }
+//            if (arrestation.getLiberation() != null) {
+//                arrestation.setEtatJuridique("libre");
+//            } else if (doitEtreLibre && arrestation.getLiberation() == null) {
+//                arrestation.setEtatJuridique("isAEX");
+//            }
 
         } else {
-            arrestation.setEtatJuridique("vide");
+//            arrestation.setEtatJuridique("vide");
         }
 
         return arrestation;
@@ -311,12 +311,12 @@ public final class AffaireUtils {
                                    .orElse(null)));
 
            
-            arrestation.setNumAffairePricipale(
-                    affairePrincipale != null ? affairePrincipale.getAffaireId().getNumAffaire() : null);
-            arrestation.setTribunalPricipale(affairePrincipale != null ? affairePrincipale.getTribunal() : null);
-            arrestation.setNumOrdinalAffairePricipale(
-                    affairePrincipale != null ? affairePrincipale.getNumOrdinalAffaire() : null);
-            arrestation.setTypeAffairePricipale(affairePrincipale != null ? affairePrincipale.getTypeAffaire() : null);
+//            arrestation.setNumAffairePricipale(
+//                    affairePrincipale != null ? affairePrincipale.getAffaireId().getNumAffaire() : null);
+//            arrestation.setTribunalPricipale(affairePrincipale != null ? affairePrincipale.getTribunal() : null);
+//            arrestation.setNumOrdinalAffairePricipale(
+//                    affairePrincipale != null ? affairePrincipale.getNumOrdinalAffaire() : null);
+//            arrestation.setTypeAffairePricipale(affairePrincipale != null ? affairePrincipale.getTypeAffaire() : null);
  
 
         

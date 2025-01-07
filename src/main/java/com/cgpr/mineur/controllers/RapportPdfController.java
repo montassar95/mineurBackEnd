@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cgpr.mineur.dto.EnfantDto;
 import com.cgpr.mineur.dto.EnfantVerifieDto;
+import com.cgpr.mineur.dto.GouvernoratDto;
+import com.cgpr.mineur.dto.RapportDetentionDTO;
 import com.cgpr.mineur.dto.ResidenceDto;
 import com.cgpr.mineur.models.ApiResponse;
 import com.cgpr.mineur.repository.RapportEnfantQuotidienRepository;
@@ -67,6 +69,17 @@ public class RapportPdfController {
 			e.printStackTrace();
 		}
 		return response;
+
+	}
+	
+	@PostMapping("/genererRapportJsonActuel")
+	public ApiResponse<List<RapportDetentionDTO>>    genererRapportJsonActuel(@RequestBody PDFListExistDTO pDFListExistDTO) {
+		 
+		 List<RapportDetentionDTO>response = null;
+	 
+			response = rapportPdfService.genererRapportJsonActuel(pDFListExistDTO);
+	 
+		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", response);    
 
 	}
 	

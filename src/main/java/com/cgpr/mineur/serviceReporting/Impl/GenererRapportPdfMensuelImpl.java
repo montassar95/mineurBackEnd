@@ -25,6 +25,7 @@ import com.cgpr.mineur.config.ConfigShaping;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.Visite;
+import com.cgpr.mineur.repository.EnfantRepository;
 import com.cgpr.mineur.repository.RapportEnfantQuotidienRepository;
 import com.cgpr.mineur.repository.StatistcsRepository;
 import com.cgpr.mineur.repository.VisiteRepository;
@@ -53,16 +54,18 @@ public class GenererRapportPdfMensuelImpl implements GenererRapportPdfMensuelSer
 	private final StatistcsRepository statistcsRepository;
 	private final VisiteRepository visiteRepository;
 	private final RapportEnfantQuotidienRepository rapportEnfantQuotidienRepository;
+	private final EnfantRepository enfantRepository;
 	 
 	@Autowired
 	public GenererRapportPdfMensuelImpl(ChargeAllEnfantService chargeAllEnfantService,
 			StatistcsRepository statistcsRepository, VisiteRepository visiteRepository ,
-			 RapportEnfantQuotidienRepository rapportEnfantQuotidienRepository) {
+			 RapportEnfantQuotidienRepository rapportEnfantQuotidienRepository, EnfantRepository enfantRepository) {
 		
 					this.chargeAllEnfantService = chargeAllEnfantService;
 					this.visiteRepository = visiteRepository;
 					this.statistcsRepository = statistcsRepository;
 					this.rapportEnfantQuotidienRepository=rapportEnfantQuotidienRepository;
+					this.enfantRepository = enfantRepository;
 	 
 	}
 
@@ -103,26 +106,11 @@ public class GenererRapportPdfMensuelImpl implements GenererRapportPdfMensuelSer
 
 		}
 
-//		List<String> etablissementIds = Arrays.asList("11", "12", "13", "14", "16");
-//		List<String> statutPenals = Arrays.asList("arrete", "juge", "libre");
-//
-//		LocalDate date1 = LocalDate.now(); // ou une autre date souhaitée
-//
-//		List<List<Residence>> result = 
-//				chargeAllEnfantService.getResidencesGroupedByEtablissementAndStatutPenal(date1, etablissementIds, statutPenals); 
+ 
 		
 		String titreString = " ";
 		List<List<Residence>> enfantAffiches = new ArrayList<List<Residence>>();
-//		|| dateString.equals(dateAujourdhui)
-//		if (dateString == null ) {
-//
-//			enfantAffiches = chargeAllEnfantService.chargeList();
-//
-//		} else {
-// System.out.println("cette methode ");
-//			LocalDate localDateJson = LocalDate.parse(dateString);
-//
-//			enfantAffiches = chargeAllEnfantService.chargeListByDate(localDateJson);
+ 
  
 	List<String> etablissementIds = new ArrayList<String>();
 	  for (Etablissement etablissement : pDFListExistDTO.getEtablissements()) {
@@ -162,110 +150,20 @@ public class GenererRapportPdfMensuelImpl implements GenererRapportPdfMensuelSer
 
 		 	
 		titreString= " تقـــريـــر خاصــــة  بمركز إصــــلاح الأطفــــال الجــــانحين "+pDFListExistDTO.getEtablissements().get(0).getLibelle_etablissement()+" خلال شهر "
- 				+ ToolsForReporting.getCurrentArabicMonth(moisVisite) + " " + localDate.getYear();
+ 				+ ToolsForReporting.getCurrentArabicMonth(moisVisite) + " " + 2024; //localDate.getYear()
 			    PdfPTable tTitre = ToolsForReporting.createTitleTable(titreString);
  	
 		
 		tTitre.setSpacingBefore(50f);
 		
  
-//		PdfPTable tTitreStatiqueGenerale=ToolsForReporting.addTitleToPdfTable(  "  الإحـصــــــــــائية العــــــــــــامة  ",
-//		        ToolsForReporting.boldfontTitleStatique, 1, null,0);
-// 
-// 		PdfPTable tableStatiqueGenerale = ToolsForReporting.createPdfTable(100, 80);
-// 
-//		StatisticsEnfant statisticsEnfant = StatisticsEnfant.calculerTotaux(enfantAffiches,  
-//				statistcsRepository ,rapportEnfantQuotidienRepository);
+ 
 
 		if (enfantAffiches.size() > 0) {
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale,
-//					"إحـصـــائية الأطفال المودعين بمراكز إصلاح الأطفال الجانحين  ", 100, Element.ALIGN_CENTER,
-//					new BaseColor(210, 210, 210), 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, "إنــاث", 30, Element.ALIGN_CENTER,
-//					new BaseColor(230, 230, 230), 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, "ذكـور ", 30, Element.ALIGN_CENTER,
-//					new BaseColor(230, 230, 230), 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, "الأصنـاف ", 40, Element.ALIGN_CENTER,
-//					new BaseColor(230, 230, 230), 30);
-//
-//			// Utiliser les getters pour accéder aux valeurs
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, statisticsEnfant.getTotalJugeFeminin() + "", 30,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, statisticsEnfant.getTotalJugeMasculin() + "", 30,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, "المحكومين ", 40, Element.ALIGN_CENTER,
-//					new BaseColor(230, 230, 230), 30);
-//
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, statisticsEnfant.getTotalArretFeminin() + "", 30,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, statisticsEnfant.getTotalArretMasculin() + "", 30,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, "الموقوفين ", 40, Element.ALIGN_CENTER,
-//					new BaseColor(230, 230, 230), 30);
-//
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale,
-//					statisticsEnfant.getTotalArretFeminin() + statisticsEnfant.getTotalJugeFeminin() + "", 30,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale,
-//					statisticsEnfant.getTotalArretMasculin() + statisticsEnfant.getTotalJugeMasculin() + "", 30,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, "المجموع", 40, Element.ALIGN_CENTER,
-//					new BaseColor(230, 230, 230), 30);
-//
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale,
-//					"  إرهاب  " + statisticsEnfant.getTotalTeroristFeminin(), 15, Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale,
-//					"أجنبي " + statisticsEnfant.getTotalEtrangerFeminin(), 15, Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale,
-//					"  إرهاب  " + statisticsEnfant.getTotalTeroristMasculin(), 15, Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale,
-//					statisticsEnfant.getTotalEtrangerMasculin() + "أجنبي", 15, Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatiqueGenerale, "من بينهم", 40, Element.ALIGN_CENTER,
-//					new BaseColor(230, 230, 230), 30);
-
-			//----------------------------------------------------
+ 
 
 			PdfPTable tTitreStatique = new PdfPTable(1);
-//
-//			Phrase pTitreStatique = new Phrase(boldConf.format("  الإحـصــــــــــائية    "),
-//					ToolsForReporting.boldfontTitleStatique);
-//			PdfPCell cTitreStatique = new PdfPCell(pTitreStatique);
-//			cTitreStatique.setPadding(60f);
-//			cTitreStatique.setBorder(Rectangle.BOX);
-//
-//			cTitreStatique.setBorderColor(BaseColor.WHITE);
-//			cTitreStatique.setHorizontalAlignment(Element.ALIGN_CENTER);
-//
-//			tTitreStatique.setSpacingBefore(100f);
-//			tTitreStatique.addCell(cTitreStatique);
-//
-//			PdfPTable tableStatique = new PdfPTable(100);
-//			tableStatique.setWidthPercentage(80);
-
-			// Ajout des cellules pour "عدد الأطفال"
-//			ToolsForReporting.addCellToTable(tableStatique, "عدد الأطفال", 50, Element.ALIGN_CENTER,
-//					new BaseColor(230, 230, 230), 30);
-//			ToolsForReporting.addCellToTable(tableStatique, "المراكز الإصلاحية", 50, Element.ALIGN_CENTER,
-//					new BaseColor(230, 230, 230), 30);
-//			ToolsForReporting.addCellToTable(tableStatique, statisticsEnfant.getTotalMourouj() + "", 50,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, "المروج", 50, Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, statisticsEnfant.getTotalSidiHani() + "", 50,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, "سيدي الهاني", 50, Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, statisticsEnfant.getTotalSoukJdid() + "", 50,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, "سوق الجديد", 50, Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, statisticsEnfant.getTotalMghira() + "", 50,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, "المغيرة", 50, Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, statisticsEnfant.getTotalMjaz() + "", 50,
-//					Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, "مجاز الباب", 50, Element.ALIGN_CENTER, null, 30);
-//			ToolsForReporting.addCellToTable(tableStatique, statisticsEnfant.getTotalCentre() + "", 50,
-//					Element.ALIGN_CENTER, new BaseColor(210, 210, 210), 30);
-//			ToolsForReporting.addCellToTable(tableStatique, "المجموع", 50, Element.ALIGN_CENTER,
-//					new BaseColor(210, 210, 210), 30);
+ 
 
 			
 			
@@ -329,16 +227,7 @@ public class GenererRapportPdfMensuelImpl implements GenererRapportPdfMensuelSer
 						new BaseColor(210, 210, 210), 30);
 				 
 
-//				ToolsForReporting.addCellToTable(tableStatiqueMourouj,
-//						"  إرهاب  " + 8, 25, Element.ALIGN_CENTER, null, 30);
-//				ToolsForReporting.addCellToTable(tableStatiqueMourouj,
-//						"أجنبي " + 8, 25, Element.ALIGN_CENTER, null, 30);
-//				 
-//				ToolsForReporting.addCellToTable(tableStatiqueMourouj, "من بينهم", 50, Element.ALIGN_CENTER,
-//						new BaseColor(230, 230, 230), 30);
-
-
-				// Adding cells for tableStatiqueLiberable
+ 
 				ToolsForReporting.addCellToTable(tableStatiqueLiberable, enfantAffiches.get(stat + 2).size() + "", 50,
 						Element.ALIGN_CENTER, null, 30);
 				ToolsForReporting.addCellToTable(tableStatiqueLiberable, "السراحات", 50, Element.ALIGN_CENTER,
@@ -353,95 +242,10 @@ public class GenererRapportPdfMensuelImpl implements GenererRapportPdfMensuelSer
 
 			document.add(tableTop);
  			document.add(tTitre);
-//			document.newPage();
-//			document.add(tTitreStatiqueGenerale);
-//			document.add(tableStatiqueGenerale);
-		//	document.newPage();
-//			document.add(tTitreStatique);
-//			document.add(tableStatique);
+ 
 			document.newPage();
 			
-//			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-//            dataset.addValue(statisticsEnfant.getTotalMourouj(), "المروج", "المروج");
-//            dataset.addValue(statisticsEnfant.getTotalSidiHani(), "سيدي الهاني", "سيدي الهاني");
-//         
-//            dataset.addValue(statisticsEnfant.getTotalSoukJdid(), "سوق الجديد",  "سوق الجديد");
-//            dataset.addValue(statisticsEnfant.getTotalMjaz(), "مجاز الباب", "مجاز الباب");
-//            dataset.addValue(statisticsEnfant.getTotalMghira(), "المغيرة",  "المغيرة");
-            
-
-//            // Création de l'histogramme
-//            JFreeChart chart = ChartFactory.createBarChart(
-//                    "الإحـصــــــــــائية", // Titre du graphique
-//                    "مراكز الإصلاح", // Axe X
-//                    "عدد الأطفال ", // Axe Y
-//                    dataset // Données
-//            );
-//
-//            // Personnalisation du graphique
-//            chart.setBackgroundPaint(Color.white);
-//
-//            // Conversion du graphique en image
-//            java.awt.Image awtImage = chart.createBufferedImage(1000, 300);
-//
-//            // Ajout de l'image dans le document PDF
-//            com.itextpdf.text.Image pdfImage = com.itextpdf.text.Image.getInstance(awtImage, null);
-//            pdfImage.setAlignment(Element.ALIGN_CENTER);
-//          
-//            PdfPTable tableBar = new PdfPTable(1);
-//            PdfPCell cellBar = new PdfPCell(pdfImage, true);
-//             
-//            
-//            cellBar.setBorder(0);
-//            tableBar.addCell(cellBar);
-//           
-//           
-//            document.add(tableBar);
-            
-            
-            
-//            PdfPTable table1 = new PdfPTable(2);
-//            table1.setWidthPercentage(100);
-//            PdfPCell cell = new PdfPCell(pdfImage, true);
-//            cell.setBorder(0);
-//            table1.addCell(cell);   
-	            
  
-            
-//            // Create a pie dataset 1
-//            DefaultPieDataset datasetPie1 = new DefaultPieDataset();
-//            datasetPie1.setValue("محكومين",  statisticsEnfant.getTotalJugeMasculin() +statisticsEnfant.getTotalJugeFeminin());
-//            datasetPie1.setValue("الموقوفين", statisticsEnfant.getTotalArretMasculin() +statisticsEnfant.getTotalArretFeminin());
-//
-//            // Create the chart for dataset 1
-//            JFreeChart chartPie1 = ChartFactory.createPieChart(" ", datasetPie1, true, true, false);
-//            java.awt.Image chartImage1 = chartPie1.createBufferedImage(300, 200);
-//            com.itextpdf.text.Image pdfImagePie1 = com.itextpdf.text.Image.getInstance(chartImage1, null);
-//
-//            // Create a pie dataset 2
-//            DefaultPieDataset datasetPie2 = new DefaultPieDataset();
-//            datasetPie2.setValue("إنــاث", statisticsEnfant.getTotalJugeFeminin() +statisticsEnfant.getTotalArretFeminin());
-//            datasetPie2.setValue("ذكـور", statisticsEnfant.getTotalJugeMasculin() +statisticsEnfant.getTotalArretMasculin());
-//
-//            // Create the chart for dataset 2
-//            JFreeChart chartPie2 = ChartFactory.createPieChart(" ", datasetPie2, true, true, false);
-//            java.awt.Image chartImage2 = chartPie2.createBufferedImage(300, 200);
-//            com.itextpdf.text.Image pdfImagePie2 = com.itextpdf.text.Image.getInstance(chartImage2, null);
-//
-//            // Add images to table
-//            PdfPTable table2 = new PdfPTable(2);
-//            table1.setWidthPercentage(100);
-//
-//            PdfPCell cell1 = new PdfPCell(pdfImagePie1, true);
-//            PdfPCell cell2 = new PdfPCell(pdfImagePie2, true);
-//            cell1.setBorder(0);
-//            cell2.setBorder(0);
-//            table2.addCell(cell1);
-//            table2.addCell(cell2);
-//          
-//            document.add(table2);
-//            document.add(table1);
-//            document.newPage();
 			  
             System.out.println(enfantAffiches.size() + "  etat "); 
           
@@ -474,22 +278,8 @@ public class GenererRapportPdfMensuelImpl implements GenererRapportPdfMensuelSer
 				ToolsForReporting.addCellToHeaderTable(tableAffaire, "الهوية", 28);
 				ToolsForReporting.addCellToHeaderTable(tableAffaire, "ع.لإيقاف", 9);
 				ToolsForReporting.addCellToHeaderTable(tableAffaire, "ع.ر", 3);
-
-				 
-//				for (int i = 0; i < enfantAfficheCentre.size(); i++) {
-//
-//					
-//				    
-//				    updateVisiteCount(enfantAfficheCentre.get(i));
-//				    
-// 				   
-//				    if(enfantAfficheCentre.get(i).getArrestation().getAffaires().isEmpty()) {
-//				    	 System.err.println("L'enfant qui a un problem"+enfantAfficheCentre.get(i));
-//				    	 
-//				    }
-// 				ToolsForReporting.processTablePrencipal(enfantAfficheCentre.get(i), tableAffaire, null, i);
-//
-//				}
+				
+ 
 				
 				
 				IntStream.range(0, enfantAfficheCentre.size()).forEach(i -> {
@@ -615,7 +405,8 @@ public class GenererRapportPdfMensuelImpl implements GenererRapportPdfMensuelSer
 	}
  
 	private void updateVisiteCount(Residence residence) {
-	    Optional<Visite> visiteOpt = visiteRepository.findbyEnfantandDate(residence.getResidenceId().getIdEnfant(), 2024, 9);
+		System.out.println(residence.getResidenceId().getIdEnfant());
+	    Optional<Visite> visiteOpt = visiteRepository.findbyEnfantandDate(residence.getResidenceId().getIdEnfant(), 2024, 12);
 	    String nbVisite = visiteOpt.map(visite -> String.valueOf(visite.getNbrVisite())).orElse("0.");
 	    residence.setNbVisite(nbVisite);
 	}

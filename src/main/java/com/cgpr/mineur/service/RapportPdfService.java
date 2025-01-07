@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.cgpr.mineur.dto.EnfantDto;
 import com.cgpr.mineur.dto.EnfantVerifieDto;
+import com.cgpr.mineur.dto.RapportDetentionDTO;
 import com.cgpr.mineur.dto.ResidenceDto;
 import com.cgpr.mineur.resource.EnfantAddDTO;
 import com.cgpr.mineur.resource.EnfantDTO;
@@ -29,7 +30,7 @@ public interface RapportPdfService {
   	public ResponseEntity<InputStreamResource> genererRapportPdfActuel( PDFListExistDTO pDFListExistDTO) throws IOException ;		 
 	public ResponseEntity<InputStreamResource> genererFicheDeDetentionPdf( PDFPenaleDTO pDFPenaleDTO) ;
 	
-	
+	public List<RapportDetentionDTO> genererRapportJsonActuel(PDFListExistDTO pDFListExistDTO) ;
 	 
 
 	

@@ -35,7 +35,7 @@ import com.cgpr.mineur.models.Document;
 import com.cgpr.mineur.models.Echappes;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.RapportEnfantQuotidien;
-import com.cgpr.mineur.models.RapportQuotidien;
+//import com.cgpr.mineur.models.RapportQuotidien;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.TitreAccusation;
 import com.cgpr.mineur.models.Visite;
@@ -47,7 +47,7 @@ import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.repository.EchappesRepository;
 import com.cgpr.mineur.repository.EtablissementRepository;
 import com.cgpr.mineur.repository.RapportEnfantQuotidienRepository;
-import com.cgpr.mineur.repository.RapportQuotidienRepository;
+//import com.cgpr.mineur.repository.RapportQuotidienRepository;
 import com.cgpr.mineur.repository.ResidenceRepository;
 import com.cgpr.mineur.repository.StatistcsRepository;
 import com.cgpr.mineur.repository.VisiteRepository;
@@ -81,7 +81,7 @@ public class ChargeAllEnfantService   {
 	private final VisiteRepository visiteRepository;
 	
 	
-	private final RapportQuotidienRepository rapportQuotidienRepository;
+//	private final RapportQuotidienRepository rapportQuotidienRepository;
 	
 	private final RapportEnfantQuotidienRepository rapportEnfantQuotidienRepository;
 //	public int masculinEtranger=0;
@@ -101,7 +101,7 @@ public class ChargeAllEnfantService   {
 			EchappesRepository echappesRepository, 
 			EtablissementRepository etablissementRepository,
 			StatistcsRepository statistcsRepository,
-			 RapportQuotidienRepository rapportQuotidienRepository,
+//			 RapportQuotidienRepository rapportQuotidienRepository,
 			 VisiteRepository  visiteRepository , RapportEnfantQuotidienRepository rapportEnfantQuotidienRepository) {
 		this.affaireRepository = affaireRepository;
 
@@ -119,7 +119,7 @@ public class ChargeAllEnfantService   {
 
 		this.etablissementRepository = etablissementRepository;
 		this.statistcsRepository = statistcsRepository;
-		this.rapportQuotidienRepository =rapportQuotidienRepository;
+//		this.rapportQuotidienRepository =rapportQuotidienRepository;
 		this.visiteRepository= visiteRepository;
 		this.rapportEnfantQuotidienRepository=rapportEnfantQuotidienRepository;
 	}
@@ -142,10 +142,13 @@ public class ChargeAllEnfantService   {
 
 	    try {
  	         Date premierJourDuMois = ToolsForReporting.getFirstDayOfMonth();
- 	         Date dateActuelle = new Date();
-	    	 
-	            
-	            
+          Date dateActuelle = new Date();
+// 	        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+//	            
+// 	       Date premierJourDuMois = formatter.parse("01/12/2024");;
+//	       Date dateActuelle = formatter.parse("31/12/2024");; 
+	       
+	       
 	        System.err.println(premierJourDuMois.toString()+"-------------------------------- ");
 	        List<Etablissement> allCentre = etablissementRepository.listEtablissementCentre();
 
@@ -315,6 +318,7 @@ public class ChargeAllEnfantService   {
 	        String key = s.getArrestation().getArrestationId().getIdEnfant() + "-" +
 	                     s.getArrestation().getArrestationId().getNumOrdinale() + "-" +
 	                     s.getNumOrdinalAffaire() + "-arrestation";
+	        System.out.println(key);
 	        Document doc = documentsMap.get(key);
 	        if (doc != null) {
 	            s.setTypeDocument(doc.getTypeDocument());
@@ -437,7 +441,9 @@ public class ChargeAllEnfantService   {
 	}
 
 	private Optional<Echappes> getFirstEchappesWithoutResidenceTrouver(Residence residence) {
-	    if (residence == null || residence.getEchappes() == null || residence.getEchappes().isEmpty()) {
+	    if (residence == null || 
+	    		residence.getEchappes() == null 
+	    		|| residence.getEchappes().isEmpty()) {
 	        return Optional.empty(); // Retourne un Optional vide si residence ou la liste est null
 	    }
 	    return residence.getEchappes().stream()
@@ -473,36 +479,36 @@ public class ChargeAllEnfantService   {
         return maxDate.orElse(null); // Retourner null si aucune date ne correspond
     }
     
-    public List<List<Residence>> chargeListByDate(LocalDate date) {
-		System.out.println(date.toString());
-	    ObjectMapper objectMapper = new ObjectMapper();
-	    List<List<Residence>> residences = new ArrayList<>(); // Créez une liste vide pour stocker les résidences
-	    
-	    try {
-	    	System.out.println("debut base");
-	        Optional<RapportQuotidien> dernierRapport = rapportQuotidienRepository.findLatestByDate(date);
-	        System.out.println("fin base");
-	        if (dernierRapport.isPresent()) {
-	            RapportQuotidien rapport = dernierRapport.get();
-	            String jsonString = rapport.getListResidance();
-
-	            // Conversion de la chaîne JSON en un objet Java
-	            residences = objectMapper.readValue(jsonString, new TypeReference<List<List<Residence>>>() {});
-	            System.out.println("On a dejé transferer");
-	        } else {
-	            System.out.println("Aucun rapport trouvé pour la date spécifiée");
-	        }
-
-	        // Faites ce que vous voulez avec la liste de résidences convertie
-	        // ...
-	    } catch (JsonProcessingException e) {
-	        e.printStackTrace();
-	        // Gérez les erreurs de conversion
-	        // ...
-	    }
-	    
-	    return residences; // Retourne la liste de résidences récupérée
-	}
+//    public List<List<Residence>> chargeListByDate(LocalDate date) {
+//		System.out.println(date.toString());
+//	    ObjectMapper objectMapper = new ObjectMapper();
+//	    List<List<Residence>> residences = new ArrayList<>(); // Créez une liste vide pour stocker les résidences
+//	    
+//	    try {
+//	    	System.out.println("debut base");
+//	        Optional<RapportQuotidien> dernierRapport = rapportQuotidienRepository.findLatestByDate(date);
+//	        System.out.println("fin base");
+//	        if (dernierRapport.isPresent()) {
+//	            RapportQuotidien rapport = dernierRapport.get();
+//	            String jsonString = rapport.getListResidance();
+//
+//	            // Conversion de la chaîne JSON en un objet Java
+//	            residences = objectMapper.readValue(jsonString, new TypeReference<List<List<Residence>>>() {});
+//	            System.out.println("On a dejé transferer");
+//	        } else {
+//	            System.out.println("Aucun rapport trouvé pour la date spécifiée");
+//	        }
+//
+//	        // Faites ce que vous voulez avec la liste de résidences convertie
+//	        // ...
+//	    } catch (JsonProcessingException e) {
+//	        e.printStackTrace();
+//	        // Gérez les erreurs de conversion
+//	        // ...
+//	    }
+//	    
+//	    return residences; // Retourne la liste de résidences récupérée
+//	}
 
 
 	private void updateNombreVisites(Residence residence, VisiteRepository visiteRepository) {
@@ -1063,7 +1069,7 @@ public class ChargeAllEnfantService   {
 
 	        // Transformer le rapport en une instance de Residence
 	        Residence residence = convertToResidence(rapport);
-
+	        residence.getArrestation().setEnfant(rapport.getEnfant());
 	        // Ajouter la résidence dans la liste appropriée pour cette clé
 	        grouped.putIfAbsent(key, new ArrayList<>());
 	        grouped.get(key).add(residence);

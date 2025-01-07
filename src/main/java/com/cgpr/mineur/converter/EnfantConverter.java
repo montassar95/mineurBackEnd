@@ -42,7 +42,7 @@ public class EnfantConverter {
                     SituationSocialConverter.entityToDto(entity.getSituationSocial()) : null)
                 .metier(entity.getMetier() != null ? 
                     MetierConverter.entityToDto(entity.getMetier()) : null)
-                .etat(entity.getEtat())
+//                .etat(entity.getEtat())
                 .nbrEnfant(entity.getNbrEnfant())
                 .build();
     }
@@ -84,7 +84,7 @@ public class EnfantConverter {
                     SituationSocialConverter.dtoToEntity(dto.getSituationSocial()) : null)
                 .metier(dto.getMetier() != null ? 
                     MetierConverter.dtoToEntity(dto.getMetier()) : null)
-                .etat(dto.getEtat())
+//                .etat(dto.getEtat())
                 .nbrEnfant(dto.getNbrEnfant())
                 .build();
     }

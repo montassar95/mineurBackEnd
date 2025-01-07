@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cgpr.mineur.dto.EnfantDto;
 import com.cgpr.mineur.dto.EnfantVerifieDto;
 import com.cgpr.mineur.dto.PrisonerDto;
+import com.cgpr.mineur.dto.PrisonerPenaleDto;
 import com.cgpr.mineur.dto.ResidenceDto;
 import com.cgpr.mineur.dto.SearchDetenuDto;
 import com.cgpr.mineur.models.ApiResponse;
@@ -40,8 +41,10 @@ public class EnfantController {
 	private EnfantService enfantService;
 
 	
- 
- 
+	@Autowired
+	private PrisonerPenalService prisonerPenalService;
+
+	
 	
 	
 	
@@ -79,7 +82,13 @@ public class EnfantController {
 		
 		
 	}
-	
+
+	@GetMapping("/findPrisonerPenalByPrisonerId/{id}")
+	public ApiResponse<PrisonerPenaleDto> findPrisonerPenalByPrisonerId(@PathVariable("id") String id) {
+		PrisonerPenaleDto enfanttData = prisonerPenalService.findPrisonerPenalByPrisonerId(id);
+		
+		return new ApiResponse<>(HttpStatus.OK.value(), "Enfant fetched suucessfully", enfanttData);
+	}
 
 	
 
@@ -110,8 +119,8 @@ public class EnfantController {
 	}
 
 	@GetMapping("/trouverResidencesParNumeroEcrou/{numArr}")
-	public ApiResponse<List<ResidenceDto>> trouverResidencesParNumeroEcrou(@PathVariable("numArr") String numArr) {
-		List<ResidenceDto> enfantData = enfantService.trouverResidencesParNumeroEcrou(numArr);
+	public ApiResponse<List<SearchDetenuDto>> trouverResidencesParNumeroEcrou(@PathVariable("numArr") String numArr) {
+		List<SearchDetenuDto> enfantData = enfantService.trouverResidencesParNumeroEcrou(numArr);
 
 		if (enfantData != null) {
 			return new ApiResponse<>(HttpStatus.OK.value(), "Enfant fetched suucessfully", enfantData);

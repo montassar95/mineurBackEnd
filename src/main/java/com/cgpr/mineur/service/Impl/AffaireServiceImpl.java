@@ -289,7 +289,7 @@ public class AffaireServiceImpl implements AffaireService {
 		if (dateFin != null) {
 			dto.setDateFin(dateFormat.format(dateFin));
 		}
-
+ System.out.println("dateDebut "+dateDebut +"dateFin "+dateFin );
 		// Récupérer les arrêts provisoires associés à l'arrestation
 		List<ArretProvisoire> list = arretProvisoireRepository.getArretProvisoirebyArrestation(idEnfant, numOrdinale);
 		if (!list.isEmpty()) {

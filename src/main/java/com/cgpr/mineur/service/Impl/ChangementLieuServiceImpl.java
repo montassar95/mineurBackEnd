@@ -2,12 +2,15 @@ package com.cgpr.mineur.service.Impl;
 
 
  
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cgpr.mineur.converter.AffaireConverter;
 import com.cgpr.mineur.converter.ChangementLieuConverter;
 import com.cgpr.mineur.dto.ChangementLieuDto;
+import com.cgpr.mineur.models.Affaire;
 import com.cgpr.mineur.models.ChangementLieu;
 import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
@@ -71,7 +74,14 @@ public class ChangementLieuServiceImpl implements ChangementLieuService{
 		System.out.println("==================================fin affaire=========================");
 		changementLieuDto.setTypeAffaire(changementLieuDto.getAffaire().getTypeAffaire());
 		changementLieuDto.getAffaire().setTypeDocument(changementLieuDto.getTypeDocument());
- 		affaireRepository.save(AffaireConverter.dtoToEntity(changementLieuDto.getAffaire()));
+		
+		Affaire affaireAsauvgarder = AffaireConverter.dtoToEntity(changementLieuDto.getAffaire());
+				
+				Optional<Affaire> affaireExistante = affaireRepository.findById(affaireAsauvgarder.getAffaireId());
+				affaireAsauvgarder.setDaysDiffJuge(affaireExistante.get().getDaysDiffJuge());
+				affaireAsauvgarder.setDateDebutPunition(affaireExistante.get().getDateDebutPunition());
+				affaireAsauvgarder.setDateFinPunition(affaireExistante.get().getDateFinPunition());
+ 		affaireRepository.save(affaireAsauvgarder);
  		
 		changementLieuDto.getAffaire().setTypeDocumentActuelle("CHL");
 		changementLieuDto.setTypeDocumentActuelle("CHL");

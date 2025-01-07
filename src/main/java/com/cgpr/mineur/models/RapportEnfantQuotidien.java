@@ -25,7 +25,10 @@ public class RapportEnfantQuotidien  implements Serializable {
 	@EmbeddedId
 	private RapportEnfantQuotidienId rapportEnfantQuotidienId;
 	 
-	 
+	
+	@ManyToOne
+	@JoinColumn(name = "enfFK")
+	private Enfant enfant;
 	
 	
 	private String statutPenal;
@@ -46,18 +49,7 @@ public class RapportEnfantQuotidien  implements Serializable {
 	
 	private String  sexe ;
 	
-	@ManyToOne
-	@JoinColumns({ @JoinColumn(name = "a_idEnf", referencedColumnName = "idEnf"),
-			      @JoinColumn(name = "a_numOrd", referencedColumnName = "numOrd") })
-	private Arrestation arrestation;
-	
-	@OneToOne
-	@JoinColumns({ 
-		@JoinColumn(name = "l_idEnf", referencedColumnName = "idEnf"),
-		@JoinColumn(name = "l_numOrd", referencedColumnName = "numOrd")
-			 
-	})
-	private Liberation liberation;
+ 
 	
 	@Lob
 	private String residance;

@@ -13,6 +13,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +26,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "res")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Residence implements Serializable{
 	
 	/**
@@ -34,14 +37,23 @@ public class Residence implements Serializable{
 	@EmbeddedId
 	private ResidenceId residenceId;
 
+	@ManyToOne
+	@JoinColumns({ @JoinColumn(name = "ar_idEnfant", referencedColumnName = "idEnf"),
+			@JoinColumn(name = "ar_numOrdinale", referencedColumnName = "numOrd") })
+	private Arrestation arrestation;
+	
 	private String numArrestation;
-
+	private int statut;
+	
+	
 	private Date dateEntree;
 	private Date dateSortie;
 
 	@ManyToOne
 	@JoinColumn(name = "etaFK")
 	private Etablissement etablissement;
+	
+	
 	
 	@ManyToOne
 	@JoinColumn(name = "etaFKE")
@@ -51,12 +63,9 @@ public class Residence implements Serializable{
 	@JoinColumn(name = "etaFKS")
 	private Etablissement etablissementSortie;
 
-	@ManyToOne
-	@JoinColumns({ @JoinColumn(name = "ar_idEnfant", referencedColumnName = "idEnf"),
-			@JoinColumn(name = "ar_numOrdinale", referencedColumnName = "numOrd") })
-	private Arrestation arrestation;
+
 	
-	private int statut;
+	
 	@ManyToOne
 	@JoinColumn(name = "cauMutFK")
 	private CauseMutation causeMutation;

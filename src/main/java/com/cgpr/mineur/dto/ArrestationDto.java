@@ -67,26 +67,26 @@ public class ArrestationDto {
 
 	private int statut;
 	
-	private String etatJuridique;
+//	private String etatJuridique;
 	
  
 	private LiberationDto liberation;
 	
 	
 	 
-	private String numAffairePricipale;
+//	private String numAffairePricipale;
 	
 	
 	 
-	private TribunalDto tribunalPricipale;
+//	private TribunalDto tribunalPricipale;
 	
-	private long numOrdinalAffairePricipale;
+//	private long numOrdinalAffairePricipale;
 	
  
-	private TypeAffaireDto typeAffairePricipale;
+//	private TypeAffaireDto typeAffairePricipale;
 	
-	private int totaleEchappes;
-	private int totaleResidence;
+//	private int totaleEchappes;
+//	private int totaleResidence;
 	
 	
 	
@@ -108,7 +108,7 @@ public class ArrestationDto {
 	   
 	   
   
-	   private String situationJudiciaire ;
+//	   private String situationJudiciaire ;
 	   
 	   
  	 
