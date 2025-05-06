@@ -15,9 +15,21 @@ public class ResidenceConverter {
 	    return ResidenceDto.builder()
 	            .residenceId(ResidenceIdConverter.entityToDto(entity.getResidenceId()))
 	            .numArrestation(entity.getNumArrestation())
+	            .datePassage(entity.getDatePassage())
 	            .dateEntree(entity.getDateEntree())
 	            .dateSortie(entity.getDateSortie())
+	            
 	            .etablissement(EtablissementConverter.entityToDto(entity.getEtablissement()))
+	            
+	            
+	            
+	            .etabChangeManiereEntree(entity.getEtabChangeManiereEntree() != null ? 
+	            		EtabChangeManiereConverter.entityToDto(entity.getEtabChangeManiereEntree()) : null)
+	            
+	            .etablissementPassage(entity.getEtablissementPassage() != null ? 
+		                EtablissementConverter.entityToDto(entity.getEtablissementPassage()) : null)
+	            
+	            
 	            .etablissementEntree(entity.getEtablissementEntree() != null ? 
 	                EtablissementConverter.entityToDto(entity.getEtablissementEntree()) : null)
 	            .etablissementSortie(entity.getEtablissementSortie() != null ? 
@@ -47,10 +59,22 @@ public class ResidenceConverter {
 	            .residenceId(ResidenceIdConverter.dtoToEntity(dto.getResidenceId()))
 	            .numArrestation(dto.getNumArrestation())
 	            .dateEntree(dto.getDateEntree())
+	            .datePassage(dto.getDatePassage())
 	            .dateSortie(dto.getDateSortie())
 	            .etablissement(EtablissementConverter.dtoToEntity(dto.getEtablissement()))
+	            
+	            
+	            .etabChangeManiereEntree(dto.getEtabChangeManiereEntree() != null ? 
+	            		EtabChangeManiereConverter.dtoToEntity(dto.getEtabChangeManiereEntree()) : null)
+	            
+	            
+	            .etablissementPassage(dto.getEtablissementPassage() != null ? 
+		                EtablissementConverter.dtoToEntity(dto.getEtablissementPassage()) : null)
+	            
+	            
 	            .etablissementEntree(dto.getEtablissementEntree() != null ? 
 	                EtablissementConverter.dtoToEntity(dto.getEtablissementEntree()) : null)
+	            
 	            .etablissementSortie(dto.getEtablissementSortie() != null ? 
 	                EtablissementConverter.dtoToEntity(dto.getEtablissementSortie()) : null)
 	            .arrestation(ArrestationConverter.dtoToEntity(dto.getArrestation()))

@@ -18,6 +18,8 @@ import lombok.experimental.SuperBuilder;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 @SuperBuilder
@@ -40,5 +42,10 @@ public class CarteDepot extends Document {
 	@ToString.Exclude
 	@OneToMany(mappedBy = "carteDepot"  )
     private List<AccusationCarteDepot> accusationCarteDepots = new ArrayList<AccusationCarteDepot>();
+	
+	
+	@ManyToOne
+	@JoinColumn(name = "etabChange")
+	private EtabChangeManiere etabChangeManiere;
   
 }

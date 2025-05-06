@@ -29,8 +29,9 @@ public interface RapportPdfService {
 	public ResponseEntity<InputStreamResource> genererStatistiquePdfMensuel(PDFListExistDTO pDFListExistDTO);
   	public ResponseEntity<InputStreamResource> genererRapportPdfActuel( PDFListExistDTO pDFListExistDTO) throws IOException ;		 
 	public ResponseEntity<InputStreamResource> genererFicheDeDetentionPdf( PDFPenaleDTO pDFPenaleDTO) ;
-	
-	public List<RapportDetentionDTO> genererRapportJsonActuel(PDFListExistDTO pDFListExistDTO) ;
+	public ResponseEntity<InputStreamResource> genererFicheDeLiberationPdf( PDFPenaleDTO pDFPenaleDTO) ;
+//	
+//	public List<RapportDetentionDTO> genererRapportJsonActuel(PDFListExistDTO pDFListExistDTO) ;
 	 
 
 	

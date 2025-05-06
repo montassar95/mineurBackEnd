@@ -12,14 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import com.cgpr.mineur.converter.RapportDetentionDTOConverter;
+//import com.cgpr.mineur.converter.RapportDetentionDTOConverter;
 import com.cgpr.mineur.dto.RapportDetentionDTO;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.resource.PDFListExistDTO;
 import com.cgpr.mineur.serviceReporting.ChargeAllEnfantService;
 import com.cgpr.mineur.serviceReporting.GenererRapportPdfActuelService;
-import com.cgpr.mineur.tools.ToolsForReporting;
+import com.cgpr.mineur.tools.ToolsForReporting2;
 import com.ibm.icu.text.ArabicShapingException;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -48,7 +48,7 @@ public class GenererRapportPdfActuelImpl implements GenererRapportPdfActuelServi
     
     
 
-    String titreString = ToolsForReporting.getTitreString(pDFListExistDTO.getEtatJuridiue());
+    String titreString = ToolsForReporting2.getTitreString(pDFListExistDTO.getEtatJuridiue());
 
     ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -58,44 +58,73 @@ public class GenererRapportPdfActuelImpl implements GenererRapportPdfActuelServi
 
     PdfPTable tableTop = new PdfPTable(3);
     
-    String date = ToolsForReporting.dtf.format(LocalDate.now());
+    String date = ToolsForReporting2.dtf.format(LocalDate.now());
     String gouvernorat = pDFListExistDTO.getEtablissement().getGouvernorat().getLibelle_gouvernorat().toString();
     try {
     	
     	
-      tableTop = ToolsForReporting.createTopTable(gouvernorat,date);
+      tableTop = ToolsForReporting2.createTopTable(gouvernorat,date);
     } catch (Exception e1) {
 
       e1.printStackTrace();
     }
-      titreString = "قائمة إسمية للأطفال " + titreString + " بمركز ";
-    List< Etablissement> etablissements = pDFListExistDTO.getEtablissements();
+     
+      
+      
+      
+    
 
     StringBuilder builder = new StringBuilder();
-
-    for (int i = 0; i < etablissements.size(); i++) {
-        builder.append(etablissements.get(i).getLibelle_etablissement().trim());
-        
-        if (i < etablissements.size() - 1) {
-            builder.append(" و ");
-        }
-    }
+      if(!pDFListExistDTO.getEtatJuridiue().equals("detenusDeMemeAffaire")) {
+    	  titreString = "قائمة إسمية للأطفال " + titreString + " بمركز ";
+    	  List< Etablissement> etablissements = pDFListExistDTO.getEtablissements();
+    	    for (int i = 0; i < etablissements.size(); i++) {
+    	        builder.append(etablissements.get(i).getLibelle_etablissement().trim());
+    	        
+    	        if (i < etablissements.size() - 1) {
+    	            builder.append(" و ");
+    	        }
+    	    }
+      }
+      else {
+    	  titreString = "قائمة إسمية للأطفال " + titreString+pDFListExistDTO.getNumAffaire()  ;
+      }
+      
 
     String resultatFinal = titreString + builder.toString();
-    PdfPTable tTitre = ToolsForReporting.createTitleTable(resultatFinal);
+    PdfPTable tTitre = ToolsForReporting2.createTitleTable(resultatFinal);
     PdfPTable tableAffaire = new PdfPTable(100);
     tableAffaire.setWidthPercentage(100);
 
-    ToolsForReporting.addCellToHeaderTable(tableAffaire, "القضايا", 41);
-    ToolsForReporting.addCellToHeaderTable(tableAffaire, "تــــــاريخ", 19);
-    ToolsForReporting.addCellToHeaderTable(tableAffaire, "الهوية", 28);
-    ToolsForReporting.addCellToHeaderTable(tableAffaire, "ع.لإيقاف", 9);
-    ToolsForReporting.addCellToHeaderTable(tableAffaire, "ع.ر", 3);
+    ToolsForReporting2.addCellToHeaderTable(tableAffaire, "القضايا", 41);
+    ToolsForReporting2.addCellToHeaderTable(tableAffaire, "تــــــاريخ", 19);
+    ToolsForReporting2.addCellToHeaderTable(tableAffaire, "الهوية", 28);
+    ToolsForReporting2.addCellToHeaderTable(tableAffaire, "ع.لإيقاف", 9);
+    ToolsForReporting2.addCellToHeaderTable(tableAffaire, "ع.ر", 3);
 
     // --------------------------------------------------------------------------------------------------------------------
+ // Convertir chaque résidence en un RapportDetentionDTO et traiter chaque rapport
+//    List<RapportDetentionDTO> rapportDetentionDTOList = residenceDTOList.stream()
+//        .map(RapportDetentionDTOConverter::residenceToRapportDetentionDTO)
+//        .collect(Collectors.toList());
 
+    // Traiter chaque rapport pour la table principale
+    IntStream.range(0, residenceDTOList.size()).forEach(i -> {
+       
+        try {
+        	ToolsForReporting2.processTablePrencipal(
+        			residenceDTOList.get(i),
+                tableAffaire,
+                pDFListExistDTO.getEtatJuridiue().toString(),
+                i
+            );
+        } catch (Exception e) {
+            // Log et continue le traitement pour les autres rapports
+            System.err.println("Erreur lors du traitement du rapport à l'index " + i + ": " + e.getMessage());
+        }
+    });
 //    IntStream.range(0, residenceDTOList.size()).forEach(i -> 
-//    ToolsForReporting.processTablePrencipal(
+//    ToolsForReporting2.processTablePrencipal(
 //        residenceDTOList.get(i),
 //        tableAffaire,
 //        pDFListExistDTO.getEtatJuridiue().toString(),
@@ -118,19 +147,19 @@ public class GenererRapportPdfActuelImpl implements GenererRapportPdfActuelServi
   }
 
 
-  @Override
-  public List<RapportDetentionDTO> genererRapportJsonActuel(PDFListExistDTO pDFListExistDTO) {
-      // Charger la liste des résidences à partir du service
-      List<Residence> residenceDTOList = chargeAllEnfantService.chargeSpecialList(pDFListExistDTO);
-      
-      // Convertir chaque résidence en un RapportDetentionDTO
-      List<RapportDetentionDTO> rapportDetentionDTOList = residenceDTOList.stream()
-          .map(RapportDetentionDTOConverter::toRapportDetentionDTO)
-          .collect(Collectors.toList());
-      
-      // Retourner la liste des RapportDetentionDTO
-      return rapportDetentionDTOList;
-  }
+//  @Override
+//  public List<RapportDetentionDTO> genererRapportJsonActuel(PDFListExistDTO pDFListExistDTO) {
+//      // Charger la liste des résidences à partir du service
+//      List<Residence> residenceDTOList = chargeAllEnfantService.chargeSpecialList(pDFListExistDTO);
+//      
+//      // Convertir chaque résidence en un RapportDetentionDTO
+//      List<RapportDetentionDTO> rapportDetentionDTOList = residenceDTOList.stream()
+//          .map(RapportDetentionDTOConverter::residenceToRapportDetentionDTO)
+//          .collect(Collectors.toList());
+//      
+//      // Retourner la liste des RapportDetentionDTO
+//      return rapportDetentionDTOList;
+//  }
 
   
 

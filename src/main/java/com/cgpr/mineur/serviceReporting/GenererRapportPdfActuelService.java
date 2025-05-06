@@ -21,6 +21,6 @@ public interface GenererRapportPdfActuelService {
     
      ByteArrayInputStream genererRapportPdfActuel( PDFListExistDTO pDFListExistDTO  )throws DocumentException, IOException, ArabicShapingException;
 
-     List<RapportDetentionDTO> genererRapportJsonActuel( PDFListExistDTO pDFListExistDTO);
+//     List<RapportDetentionDTO> genererRapportJsonActuel( PDFListExistDTO pDFListExistDTO);
 
 }

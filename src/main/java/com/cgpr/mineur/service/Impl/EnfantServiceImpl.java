@@ -1,6 +1,7 @@
 package com.cgpr.mineur.service.Impl;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.Calendar;
@@ -36,6 +37,7 @@ import com.cgpr.mineur.models.Photo;
 import com.cgpr.mineur.models.PhotoId;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.ResidenceId;
+import com.cgpr.mineur.models.SimplifierCriteria;
 import com.cgpr.mineur.repository.AffaireRepository;
 import com.cgpr.mineur.repository.ArrestationRepository;
 import com.cgpr.mineur.repository.DecesRepository;
@@ -43,8 +45,10 @@ import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.repository.EchappesRepository;
 import com.cgpr.mineur.repository.EnfantRepository;
 import com.cgpr.mineur.repository.LiberationRepository;
+import com.cgpr.mineur.repository.PrisonerPenalRepository;
 //import com.cgpr.mineur.repository.RapportQuotidienRepository;
 import com.cgpr.mineur.repository.ResidenceRepository;
+import com.cgpr.mineur.repository.SimplifierCriteriaRepository;
 import com.cgpr.mineur.resource.EnfantAddDTO;
 import com.cgpr.mineur.resource.EnfantDTO;
 import com.cgpr.mineur.service.ArrestationService;
@@ -64,9 +68,7 @@ public class EnfantServiceImpl implements EnfantService {
 	private EnfantRepository enfantRepository;
 
 	 
-
-	@Autowired
-	private PrisonerPenalService prisonerPenalService;
+	public static  SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd-MM-yyyy");
 
   
 	@Autowired
@@ -102,6 +104,17 @@ public class EnfantServiceImpl implements EnfantService {
 	private ArrestationService arrestationService;
 	@Autowired
 	private ResidenceService residenceService;
+	
+	
+	@Autowired
+	private SimplifierCriteriaRepository simplifierCriteriaRepository;
+	
+	
+	@Autowired
+	private PrisonerPenalService prisonerPenalService;
+	
+	@Autowired
+	private  PrisonerPenalRepository prisonerPenalRepository;
 	
 	 Simplification simplifier = new Simplification();
 	 
@@ -151,16 +164,7 @@ public class EnfantServiceImpl implements EnfantService {
 		System.out.println(enfantDTO.toString());
 	 
 
-//	   Example<Enfant> example =  createExample(
-//			   enfantDTO.getNom(), 
-//			   enfantDTO.getPrenom(), 
-//			   enfantDTO.getNomPere(), 
-//			   enfantDTO.getNomGrandPere(), 
-//			   enfantDTO.getNomMere(), 
-//			   enfantDTO.getPrenomMere(), 
-//			   enfantDTO.getDateNaissance(), 
-//			   enfantDTO.getSexe());
-//       System.out.println(example.toString());
+ 
        
 		  String nom = simplifier.simplify(enfantDTO.getNom().trim());
 		   String prenom = simplifier.simplify(enfantDTO.getPrenom().trim());
@@ -293,11 +297,12 @@ for(SearchDetenuDto res :detenus) {
 
 	@Override
 	public EnfantVerifieDto trouverDetenuAvecSonStatutActuel(String idEnfant, String idEtab) {
+		
 		String mes = " ";
 		boolean allowNewAddArrestation = false;
 		boolean allowNewCarte = false;
 		boolean alerte = false;
-
+		boolean libre = false;
 		Optional<Enfant> enfanttData = enfantRepository.findById(idEnfant);
 		Optional<Deces> deces = decesRepository.findById(Long.parseLong(idEnfant));
 		Echappes echappe = echappesRepository.findByIdEnfantAndResidenceTrouverNull(idEnfant);
@@ -318,7 +323,13 @@ for(SearchDetenuDto res :detenus) {
 			alerte = true;
 		} else if (liberation.isPresent()) {
 
-			mes = "  في حالـــة ســراح";
+			String libelleChangeManiere = (liberation.get().getEtabChangeManiere() != null && liberation.get().getEtabChangeManiere().getLibelle_etabChangeManiere() != null)
+				    ?" إلى "+ liberation.get().getEtabChangeManiere().getLibelle_etabChangeManiere() 
+				    : "";
+
+				    mes = liberation.get().getCauseLiberation().getLibelleCauseLiberation() + " " 
+				    + libelleChangeManiere + " بتاريخ " + simpleDateFormat.format(liberation.get().getDate());
+				    libre= true;
 			allowNewAddArrestation = true;
 		} else if (residenceEncour != null) {
 			mes = "نقلـــة جـــارية إلـــى مركــز    " + residenceEncour.getEtablissement().getLibelle_etablissement();
@@ -358,7 +369,7 @@ for(SearchDetenuDto res :detenus) {
 
 		return EnfantVerifieDto.builder().enfant(enfanttData.get()).situation(mes).age(period.getYears() + "")
 				.arrestations(allArrestation).allowNewAddArrestation(allowNewAddArrestation)
-				.allowNewCarte(allowNewCarte).alerte(alerte)
+				.allowNewCarte(allowNewCarte).alerte(alerte).libre(libre)
 				.residenceEncour(ResidenceConverter.entityToDto(residenceEncour)).adultDate(arabicMajorityAgeDate)
 				.residence(ResidenceConverter.entityToDto(residence)).build();
 
@@ -391,9 +402,10 @@ for(SearchDetenuDto res :detenus) {
 
 	@Override
 	public ResidenceDto creerAdmissionDetenu(EnfantAddDTO enfantAddDTO) {
+		System.out.println("Info 0 Residence: " + enfantAddDTO.getResidence().toString());
 		EnfantDto enfantDto = save(EnfantConverter.entityToDto(enfantAddDTO.getEnfant()),
 				enfantAddDTO.getEtablissement().getId());
-
+		System.out.println("Info 1 Residence: " + enfantAddDTO.getResidence().toString());
 		if (enfantDto == null) {
 			return null; // Gestion de l'échec de l'enregistrement
 		}
@@ -428,6 +440,9 @@ for(SearchDetenuDto res :detenus) {
 
 	private ResidenceDto createResidence(EnfantAddDTO enfantAddDTO, EnfantDto enfantDto,
 			ArrestationDto newArrestation) {
+		
+		
+		System.out.println("Info 2 Residence: " + enfantAddDTO.getResidence().toString());
 		ResidenceId residenceId = new ResidenceId();
 		residenceId.setIdEnfant(enfantDto.getId());
 		residenceId.setNumOrdinaleArrestation(1);
@@ -481,7 +496,7 @@ for(SearchDetenuDto res :detenus) {
 	@Override
 	public List<SearchDetenuDto> trouverDetenusParCriteresDansPrisons(EnfantDTO enfantDTO) {
 		System.out.println(enfantDTO.toString());
-		 
+		System.out.println("etape 2 ");
 		System.out.println("----------------- salut -----------------");
 		 EnfantDTO enfant = EnfantDTO.builder()
        .nom(enfantDTO .getNom())
@@ -494,11 +509,128 @@ for(SearchDetenuDto res :detenus) {
 
 		List<SearchDetenuDto>  list = prisonerPenalService.findPrisonerPenalByCriteria(enfant) ;
 		System.out.println(list.size());
-		for(SearchDetenuDto prisoner : list) {
-		System.out.println(prisoner.toString());
-		}
+//		for(SearchDetenuDto prisoner : list) {
+//		System.out.println(prisoner.toString());
+//		}
 		 System.out.println("----------------- byby -----------------");
 		return list;
 	}
+
+	@Override
+	public List<SearchDetenuDto> trouverDetenusParNumeroEcrouDansPrisons(String numArr) {
+		List<SearchDetenuDto> residences = prisonerPenalService.trouverDetenusParNumeroEcrouDansPrisons(numArr);
+
+		if (residences != null) {
+		 
+			return residences ;
+			
+			
+		}
+
+		else {
+			System.out.println("pas   trouverDetenusParNumeroEcrouDansPrisons !! ");
+			return null;
+		}
+	}
+
+	@Override
+	public List<SearchDetenuDto> trouverDetenusParDetenuIdMineurDansPrisons(String detenuIdMineur) {
+	    // Récupération de la SimplifierCriteria à partir du repository
+	    Optional<SimplifierCriteria> simplifierCriteria = simplifierCriteriaRepository.findById(detenuIdMineur);
+	    
+	    // Vérification que l'Optional contient une valeur avant de l'utiliser
+	    if (simplifierCriteria.isPresent()) {
+	        SimplifierCriteria criteria = simplifierCriteria.get();
+	        
+	        // Création du DTO EnfantDTO avec les données extraites
+	        
+	        
+	        
+	        List<SearchDetenuDto> prisonerList = prisonerPenalRepository.findPrisonerPenalByCriteria(
+	        		      criteria.getNomSimplifie(),
+	        				criteria.getPrenomSimplifie(),
+	        				criteria.getNomPereSimplifie(),
+	        				criteria.getDateNaissance(),
+	        				criteria.getSexe()
+	    	    );
+	        
+	        return prisonerList;
+	    } else {
+	        // Gestion du cas où l'Optional est vide
+	        throw new IllegalArgumentException("Le detenuIdMineur n'a pas été trouvé dans le système.");
+	    }
+	}
+
+	@Override
+	public List<SearchDetenuDto> trouverDetenusParDetenuIdMajeurDansCentres(String detenuIdMajeur) {
+		
+		SearchDetenuDto searchDetenuDto = prisonerPenalService.trouverDetenusParPrisonerIdDansPrisons( detenuIdMajeur);
+		System.out.println("etape 1 ");
+		System.out.println(searchDetenuDto.toString());
+		 EnfantDTO enfantDTO = EnfantDTO.builder()
+			       .nom(searchDetenuDto .getNom())
+			       .prenom(searchDetenuDto.getPrenom())
+			     .  nomPere(null)  // .  nomPere(searchDetenuDto.getNomPere())
+			       .dateNaissance(searchDetenuDto.getDateNaissance())
+			       .sexe(searchDetenuDto.getSexe())
+			       .build();
+
+		 String nom = simplifier.simplify(enfantDTO.getNom().trim());
+		   String prenom = simplifier.simplify(enfantDTO.getPrenom().trim());
+		   //String  nomPere = simplifier.simplify(enfantDTO.getNomPere().trim());
+//		   System.out.println("sexesexe: " + enfantDTO.getSexe());
+//		   String sexe = null;
+//				   if ("ذكر".equals(enfantDTO.getSexe())) {
+//		        sexe = "1";
+//		    } else if ("أنثى".equals(enfantDTO.getSexe())) {
+//		        sexe = "0";
+//		    } else {
+//		        sexe = null; // Sexe inconnu ou non fourni
+//		    }
+		   
+		     nom = simplifyOrNull(nom);
+		     prenom = simplifyOrNull(prenom);
+		    // nomPere =  simplifyOrNull(nomPere);
+		  
+
+		   
+		  // Option 2: Affichage ligne par ligne
+		     System.out.println("Nom: " + nom);
+		     System.out.println("Prénom: " + prenom);
+		  //   System.out.println("Nom du père: " + nomPere);
+		     
+		     System.out.println("Date de naissance: " + enfantDTO.getDateNaissance());
+		     System.out.println("Sexe: " + enfantDTO.getSexe());
+		   if (nom == null &&  prenom == null ) {
+			   return null;
+		   }
+	   List<SearchDetenuDto> list =enfantRepository.searchSimplified(
+			   nom,
+			   prenom,
+			   null,
+			   null,
+			   null,
+			   null, 
+			   enfantDTO.getDateNaissance(), 
+			   enfantDTO.getSexe() 
+			    );
+				
+	   
+	   if(list.isEmpty() && enfantDTO.getDateNaissance() != null &&  enfantDTO.getSexe() != null) {
+		     list =enfantRepository.searchSimplified(
+		    		 null,
+					   null,
+					   null, 
+				   null,
+				   null,
+				   null, 
+				   enfantDTO.getDateNaissance(), 
+				   enfantDTO.getSexe() 
+				    );
+	   }
+		
+		return list;
+	}
+
 
 }

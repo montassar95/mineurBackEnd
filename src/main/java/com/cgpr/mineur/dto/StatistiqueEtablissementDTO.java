@@ -18,9 +18,7 @@ public class StatistiqueEtablissementDTO {
     
     private Long nbrStatutPenalLibre;
     
-    private Long nbrNationaliteDifferentDeJuge1M;
-    private Long nbrTypeAffaireId5M;
+    private Long nbrStatutProbleme;
     
-    private Long nbrNationaliteDifferentDeJuge1F;
-    private Long nbrTypeAffaireId5F;
+    private String idsEnfants;
 }

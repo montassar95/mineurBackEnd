@@ -4,6 +4,8 @@ package com.cgpr.mineur.resource;
  
 import java.util.List;
 
+import org.springframework.data.repository.query.Param;
+
 import com.cgpr.mineur.models.CauseLiberation;
 import com.cgpr.mineur.models.ClassePenale;
 import com.cgpr.mineur.models.Delegation;
@@ -74,5 +76,6 @@ public class PDFListExistDTO {
  
  private String datePrintAllCentre;
  
- 
+ private String numAffaire;
+ private long tribunalId;
 }

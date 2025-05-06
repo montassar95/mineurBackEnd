@@ -28,11 +28,10 @@ import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.repository.ResidenceRepository;
 import com.cgpr.mineur.repository.StatistcsRepository;
 import com.cgpr.mineur.resource.StatisticsDTO;
- 
-@Service
-public class StatistcsServiceImpl implements StatistcsService{
 
-	
+@Service
+public class StatistcsServiceImpl implements StatistcsService {
+
 	@Autowired
 	private StatistcsRepository statistcsRepository;
 
@@ -46,10 +45,10 @@ public class StatistcsServiceImpl implements StatistcsService{
 	@Autowired
 	private AffaireRepository affaireRepository;
 
-//	findByEtablissement
+	// findByEtablissement
 
 	@Override
-	public  StatisticsDTO  getStatistcs( String id) {
+	public StatisticsDTO getStatistcs(String id) {
 
 		System.out.println(id + " zzzzzzzzzz");
 
@@ -82,65 +81,65 @@ public class StatistcsServiceImpl implements StatistcsService{
 
 		int year = Calendar.getInstance().get(Calendar.YEAR);
 
-//		cal.set(Calendar.YEAR, (year - 13) - 1);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		start13 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, year - 13);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		end13 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, (year - 14) - 1);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		start14 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, year - 14);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		end14 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, (year - 15) - 1);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		start15 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, year - 15);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		end15 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, (year - 16) - 1);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		start16 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, year - 16);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		end16 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, (year - 17) - 1);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		start17 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, year - 17);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		end17 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, (year - 18) - 1);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		start18 = cal.getTime();
-//
-//		cal.set(Calendar.YEAR, year - 18);
-//		cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
-//		cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
-//		end18 = cal.getTime();
+		// cal.set(Calendar.YEAR, (year - 13) - 1);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// start13 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, year - 13);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// end13 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, (year - 14) - 1);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// start14 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, year - 14);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// end14 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, (year - 15) - 1);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// start15 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, year - 15);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// end15 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, (year - 16) - 1);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// start16 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, year - 16);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// end16 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, (year - 17) - 1);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// start17 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, year - 17);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// end17 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, (year - 18) - 1);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// start18 = cal.getTime();
+		//
+		// cal.set(Calendar.YEAR, year - 18);
+		// cal.set(Calendar.MONTH, (localDate.getMonthValue() - 1));
+		// cal.set(Calendar.DAY_OF_MONTH, localDate.getDayOfMonth());
+		// end18 = cal.getTime();
 
 		StatisticsDTO sta = new StatisticsDTO();
 
@@ -156,7 +155,7 @@ public class StatistcsServiceImpl implements StatistcsService{
 					s.getArrestationId().getNumOrdinale());
 
 			boolean allSameName = affprincipale.stream()
-					.allMatch(x -> x.getTypeDocument().toString().equals("AEX".toString()));
+					.allMatch(x -> x.getTypeDocument().toString().equals("ArretEx".toString()));
 
 			Affaire a = affprincipale.stream().peek(num -> System.out.println("aff filter " + num.getTypeDocument()))
 					.filter(x -> x.getTypeDocument().equals("AP") || x.getTypeDocument().equals("CD")
@@ -171,10 +170,10 @@ public class StatistcsServiceImpl implements StatistcsService{
 			if (!(affprincipale.isEmpty())) {
 				if (a != null) {
 
-//					s.setNumAffairePricipale(a.getAffaireId().getNumAffaire());
-//					s.setTribunalPricipale(a.getTribunal());
-//					s.setNumOrdinalAffairePricipale(a.getNumOrdinalAffaire());
-//					s.setTypeAffairePricipale(a.getTypeAffaire());
+					// s.setNumAffairePricipale(a.getAffaireId().getNumAffaire());
+					// s.setTribunalPricipale(a.getTribunal());
+					// s.setNumOrdinalAffairePricipale(a.getNumOrdinalAffaire());
+					// s.setTypeAffairePricipale(a.getTypeAffaire());
 
 					Integer j = typeAffairesArrete.get(a.getTypeAffaire().getLibelle_typeAffaire());
 					typeAffairesArrete.put(a.getTypeAffaire().getLibelle_typeAffaire(),
@@ -191,10 +190,10 @@ public class StatistcsServiceImpl implements StatistcsService{
 									.peek(num -> System.out.println("aff filter " + num.getTypeDocument()))
 									.filter(x -> ((x.getAffaireAffecter() == null))).findFirst().orElse(null));
 
-//					s.setNumAffairePricipale(a.getAffaireId().getNumAffaire());
-//					s.setTribunalPricipale(a.getTribunal());
-//					s.setNumOrdinalAffairePricipale(a.getNumOrdinalAffaire());
-//					s.setTypeAffairePricipale(a.getTypeAffaire());
+					// s.setNumAffairePricipale(a.getAffaireId().getNumAffaire());
+					// s.setTribunalPricipale(a.getTribunal());
+					// s.setNumOrdinalAffairePricipale(a.getNumOrdinalAffaire());
+					// s.setTypeAffairePricipale(a.getTypeAffaire());
 
 					Integer j = typeAffairesJuge.get(a.getTypeAffaire().getLibelle_typeAffaire());
 					typeAffairesJuge.put(a.getTypeAffaire().getLibelle_typeAffaire(), (j == null) ? 1 : j + 1);
@@ -205,10 +204,11 @@ public class StatistcsServiceImpl implements StatistcsService{
 			return s;
 		}).collect(Collectors.toList());
 
-//	        for (Arrestation i : arrestationData) {
-//	            Integer j = hm.get(i.getTypeAffairePricipale().getLibelle_typeAffaire());
-//	            hm.put(i.getTypeAffairePricipale().getLibelle_typeAffaire(), (j == null) ? 1 : j + 1);
-//	        }
+		// for (Arrestation i : arrestationData) {
+		// Integer j = hm.get(i.getTypeAffairePricipale().getLibelle_typeAffaire());
+		// hm.put(i.getTypeAffairePricipale().getLibelle_typeAffaire(), (j == null) ? 1
+		// : j + 1);
+		// }
 
 		sta.setTypeAffairesArrete(typeAffairesArrete);
 
@@ -246,23 +246,25 @@ public class StatistcsServiceImpl implements StatistcsService{
 		sta.setNbrSiFaOrphelinPeMe(statistcsRepository.findByAllEnfantSituationFamiliale(id, 5));
 		sta.setNbrSiFaCasSoci(statistcsRepository.findByAllEnfantSituationFamiliale(id, 6));
 
-		return   sta ;
+		return sta;
 
 	}
 
-// 	@GetMapping("/countTotaleRecidence/{idEnfant}/{numOrdinaleArrestation}")
-//	public ApiResponse<Object> countTotaleRecidence(@PathVariable("idEnfant") String idEnfant,@PathVariable("numOrdinaleArrestation") long numOrdinaleArrestation) {
-//		
-//	 int total =residenceRepository.countTotaleRecidence(idEnfant,numOrdinaleArrestation);
-//				
-//	 if(total==0) {
-//		 total =0;
-//	 }
-//	 else {total=total-1;}
-//		
-//		 
-//			return new ApiResponse<>(HttpStatus.OK.value(), "ok", total);
-//	 }
-
+	// @GetMapping("/countTotaleRecidence/{idEnfant}/{numOrdinaleArrestation}")
+	// public ApiResponse<Object> countTotaleRecidence(@PathVariable("idEnfant")
+	// String idEnfant,@PathVariable("numOrdinaleArrestation") long
+	// numOrdinaleArrestation) {
+	//
+	// int total
+	// =residenceRepository.countTotaleRecidence(idEnfant,numOrdinaleArrestation);
+	//
+	// if(total==0) {
+	// total =0;
+	// }
+	// else {total=total-1;}
+	//
+	//
+	// return new ApiResponse<>(HttpStatus.OK.value(), "ok", total);
+	// }
 
 }

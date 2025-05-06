@@ -23,6 +23,6 @@ public interface GenererFicheDeDetentionPdfService {
     
     
     
-    ByteArrayInputStream genererFicheDeDetentionPdf( PDFPenaleDTO pDFPenaleDTO )throws DocumentException, IOException, ArabicShapingException;
+     ByteArrayInputStream genererFicheDeDetentionPdf( PDFPenaleDTO pDFPenaleDTO )throws DocumentException, IOException, ArabicShapingException;
    
 }

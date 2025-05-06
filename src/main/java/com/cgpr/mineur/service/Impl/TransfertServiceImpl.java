@@ -55,6 +55,7 @@ public class TransfertServiceImpl implements TransfertService {
 		System.out.println("================================debut affaire ===========================");
 		System.out.println(transfertDto.getAffaire().toString());
 		transfertDto.getAffaire().setTypeDocument("T");
+		transfertDto.getAffaire().setStatut(0);
 		affaireRepository.save(AffaireConverter.dtoToEntity(transfertDto.getAffaire()));
 		System.out.println("==================================fin affaire=========================");
 

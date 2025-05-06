@@ -81,6 +81,6 @@ public class AffaireDto {
 	private long daysDiffJuge;
 
 	 
-    private boolean affairePrincipale;
+     private boolean affairePrincipale;
 
 }

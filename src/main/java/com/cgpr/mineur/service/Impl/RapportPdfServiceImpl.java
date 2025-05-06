@@ -16,6 +16,7 @@ import com.cgpr.mineur.resource.PDFListExistDTO;
 import com.cgpr.mineur.resource.PDFPenaleDTO;
 import com.cgpr.mineur.service.RapportPdfService;
 import com.cgpr.mineur.serviceReporting.GenererFicheDeDetentionPdfService;
+import com.cgpr.mineur.serviceReporting.GenererFicheDeLiberationPdfService;
 import com.cgpr.mineur.serviceReporting.GenererRapportPdfActuelService;
 import com.cgpr.mineur.serviceReporting.GenererRapportPdfMensuelService;
 import com.cgpr.mineur.serviceReporting.GenererStatistiquePdfMensuelService;
@@ -29,17 +30,19 @@ public class RapportPdfServiceImpl implements RapportPdfService {
     private final GenererRapportPdfActuelService genererRapportPdfActuelService;
     private final GenererRapportPdfMensuelService genererRapportPdfMensuelService;
     private final GenererStatistiquePdfMensuelService genererStatistiquePdfMensuelService;
-
-    @Autowired
+    private final GenererFicheDeLiberationPdfService genererFicheDeLiberationPdfService;
+     @Autowired
     public RapportPdfServiceImpl(
             GenererFicheDeDetentionPdfService genererFicheDeDetentionPdfService,
             GenererRapportPdfActuelService genererRapportPdfActuelService,
             GenererRapportPdfMensuelService genererRapportPdfMensuelService,
-            GenererStatistiquePdfMensuelService genererStatistiquePdfMensuelService) {
+            GenererStatistiquePdfMensuelService genererStatistiquePdfMensuelService,
+            GenererFicheDeLiberationPdfService genererFicheDeLiberationPdfService) {
         this.genererFicheDeDetentionPdfService = genererFicheDeDetentionPdfService;
         this.genererRapportPdfActuelService = genererRapportPdfActuelService;
         this.genererRapportPdfMensuelService = genererRapportPdfMensuelService;
         this.genererStatistiquePdfMensuelService= genererStatistiquePdfMensuelService;
+        this.genererFicheDeLiberationPdfService=genererFicheDeLiberationPdfService;
     }
 
     @Override
@@ -98,11 +101,22 @@ public class RapportPdfServiceImpl implements RapportPdfService {
     }
 
 	@Override
-	public List<RapportDetentionDTO> genererRapportJsonActuel(PDFListExistDTO pDFListExistDTO)  {
-		 
-			  List<RapportDetentionDTO> jsonStream = genererRapportPdfActuelService.genererRapportJsonActuel(pDFListExistDTO);
-	            return jsonStream;
-	       
-		 
+	public ResponseEntity<InputStreamResource> genererFicheDeLiberationPdf(PDFPenaleDTO pDFPenaleDTO) {
+		  try {
+	            ByteArrayInputStream pdfStream = genererFicheDeLiberationPdfService.genererFicheDeLiberationPdf(pDFPenaleDTO);
+	            return createPdfResponse(pdfStream, "fiche_liberation.pdf");
+	        } catch (IOException | DocumentException | ArabicShapingException e) {
+	            e.printStackTrace();
+	            return ResponseEntity.status(500).build();
+	        }
 	}
+
+//	@Override
+//	public List<RapportDetentionDTO> genererRapportJsonActuel(PDFListExistDTO pDFListExistDTO)  {
+//		 
+//			  List<RapportDetentionDTO> jsonStream = genererRapportPdfActuelService.genererRapportJsonActuel(pDFListExistDTO);
+//	            return jsonStream;
+//	       
+//		 
+//	}
 }

@@ -35,6 +35,11 @@ public interface EnfantService {
 	public List<SearchDetenuDto> trouverResidencesParCriteresDetenu(EnfantDTO enfantDTO) ;
 	public List<SearchDetenuDto> trouverDetenusParCriteresDansPrisons(EnfantDTO enfantDTO) ;
 	
+	public List<SearchDetenuDto> trouverDetenusParDetenuIdMineurDansPrisons(String detenuIdMineur);
+	
+	
+	public List<SearchDetenuDto> trouverDetenusParDetenuIdMajeurDansCentres(String detenuIdMajeur);
+	
 
 	public EnfantDto getEnfantById( String id) ;
 	public EnfantVerifieDto trouverDetenuAvecSonStatutActuel(String id, String idEtab);
@@ -43,7 +48,10 @@ public interface EnfantService {
 
 	
 	public  List<SearchDetenuDto>  trouverResidencesParNumeroEcrou( String numArr);
-
+	
+	public  List<SearchDetenuDto>  trouverDetenusParNumeroEcrouDansPrisons( String numArr);
+	
+	
 	public ResidenceDto creerAdmissionDetenu( EnfantAddDTO enfantAddDTO) ;
 	
 	public ResidenceDto mettreAJourAdmissionDetenu( EnfantAddDTO enfantAddDTO) ;

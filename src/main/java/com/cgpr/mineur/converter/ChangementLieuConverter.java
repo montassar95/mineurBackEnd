@@ -5,7 +5,6 @@ import java.util.Optional;
 import javax.persistence.EntityNotFoundException;
 
 import com.cgpr.mineur.dto.ChangementLieuDto;
-import com.cgpr.mineur.models.CarteDepot;
 import com.cgpr.mineur.models.ChangementLieu;
 import com.cgpr.mineur.models.Document;
 

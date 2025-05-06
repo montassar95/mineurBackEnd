@@ -1,6 +1,7 @@
 package com.cgpr.mineur.models;
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,5 +35,6 @@ public class AccusationCarteDepot  implements Serializable {
 	@JoinColumn(name = "titreAccusationFK")
 	private TitreAccusation titreAccusation;
  
-
+//	@Column(name = "type", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'depot'")
+//	private String type;
 }

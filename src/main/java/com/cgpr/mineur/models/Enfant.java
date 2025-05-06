@@ -36,7 +36,7 @@ public class Enfant implements Serializable {
     private String nomMere;
     private String prenomMere;
     
-//    @JsonIgnore
+    //  @JsonIgnore
     @Column(name = "DATE_NAISSANCE")
     private LocalDate dateNaissance;
     
@@ -48,6 +48,7 @@ public class Enfant implements Serializable {
 
     @JsonIgnore
     @OneToOne(cascade = CascadeType.ALL)
+//    @MapsId
     @JoinColumn(name = "simplifier_criteria_id")
     private SimplifierCriteria simplifierCriteria;
 
@@ -96,14 +97,7 @@ public class Enfant implements Serializable {
         String nomMereSimplifie = simplifier.simplify(nomMere);
         String prenomMereSimplifie = simplifier.simplify(prenomMere);
 
-        // Simplification du sexe
-        if ("ذكر".equals(this.sexe)) {
-            this.sexe = "1";
-        } else if ("أنثى".equals(this.sexe)) {
-            this.sexe = "0";
-        } else {
-            this.sexe = null;
-        }
+       
 
         SimplifierCriteria simp = new SimplifierCriteria();
         simp.setSimplifierId(id);
@@ -114,9 +108,17 @@ public class Enfant implements Serializable {
         simp.setPrenomMereSimplifie(prenomMereSimplifie);
         simp.setNomGrandPereSimplifie(nomGrandPereSimplifie);
         simp.setDateNaissance(dateNaissance);
-        simp.setSexe(sexe);
+        
         simp.setLieuNaissance(simplifier.simplify(lieuNaissance));
-
+        // Simplification du sexe
+        if ("ذكر".equals(this.sexe)) {
+        	simp.setSexe("1");
+        } else if ("أنثى".equals(this.sexe)) {
+        	simp.setSexe("0");
+        } else {
+        	simp.setSexe(null);
+        }
         this.simplifierCriteria = simp;
+        System.err.println(simplifierCriteria.toString());
     }
 }

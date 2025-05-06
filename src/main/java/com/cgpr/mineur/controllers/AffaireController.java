@@ -79,5 +79,14 @@ public class AffaireController {
 		return new ApiResponse<>(HttpStatus.OK.value(), " verifierAffaireDto", erifierAffaireDto);
 
 	}
+	
+	
+	
+	
+//	@GetMapping("/trouverDetenusParNumAffaireEtTribunalId/{numAffaire}/{tribunalId}") 
+//	public boolean trouverDetenusParNumAffaireEtTribunalId(@PathVariable("numAffaire")  String numAffaire, @PathVariable("tribunalId")long tribunalId) {
+//		// TODO Auto-generated method stub
+//		return affaireService.trouverDetenusParNumAffaireEtTribunalId(numAffaire, tribunalId);
+//	}
 
 }

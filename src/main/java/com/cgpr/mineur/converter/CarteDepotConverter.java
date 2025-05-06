@@ -48,6 +48,14 @@ public class CarteDepotConverter extends DocumentConverter {
 	                                             .orElse(null);
 	                          })
 	                          .collect(Collectors.toList()))
+	        		  .etabChangeManiere(Optional.ofNullable(entity.getEtabChangeManiere())
+	                          .map(EtabChangeManiereConverter::entityToDto)
+	                          .orElse(null))
+	        		  
+	        		 
+	          		
+	          		
+	          		
 	                .build();
 	    }
 
@@ -87,8 +95,15 @@ public class CarteDepotConverter extends DocumentConverter {
 //	                .user(document.getUser())
 	                .dateInsertion(document.getDateInsertion())
 	               
-	                .textJugement(dto.getTextJugement()) .build();
+	                .textJugement(dto.getTextJugement()) 
 	                
+	        
+	        .etabChangeManiere(Optional.ofNullable(dto.getEtabChangeManiere())
+                    .map(EtabChangeManiereConverter::dtoToEntity)
+                    .orElse(null))
+	        
+	        .build();
+	        
 //	                // Liste pour stocker les AccusationCarteDepot
 //	                List<AccusationCarteDepot> accusations = new ArrayList<>();
 //	                AccusationCarteDepotId acdId = new AccusationCarteDepotId();

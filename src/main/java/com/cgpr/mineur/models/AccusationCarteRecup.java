@@ -3,6 +3,7 @@ package com.cgpr.mineur.models;
 import java.io.Serializable;
 import java.sql.Date;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -45,5 +46,8 @@ public class AccusationCarteRecup  implements Serializable {
 	@ManyToOne
 	@JoinColumn(name = "TitreAccusationFK")
 	private TitreAccusation titreAccusation;
+	
+//	@Column(name = "type", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'jugement'")
+//	private String type;
 	
 }

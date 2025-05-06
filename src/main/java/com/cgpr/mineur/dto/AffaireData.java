@@ -22,5 +22,7 @@ public class AffaireData {
     private TribunalDto tribunal1;
     private String numAffaire2;
     private TribunalDto tribunal2;
+    private String numAffaire3;
+    private TribunalDto tribunal3;
     private AffaireDto affaireOrigine;
 }

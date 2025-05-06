@@ -16,7 +16,7 @@ import lombok.ToString;
 public class PrisonerPenaleDto {
 
 	private String detenuId;
-	private long numOrdinaleArrestation;
+	private String numOrdinaleArrestation;
 	private long numOrdinaleResidence;
 	private String nom;
 	private String prenom;
@@ -40,6 +40,34 @@ public class PrisonerPenaleDto {
 	private String  finPunition;
 	
 	private String  natureAffaire;
+	private String  etat;
+	
+	private String typeClassementPenal;
+	private String age;
+	private String punition;
+	private String arretProvisoire;
+	
+	private String  condanne ;
+	
  
+	private String  dateContestation ;
+	private String  typeContestation ;
+	
+	
+	private String  dateLiberation ;
+	private String  motifLiberation ;
+	
+	
+	private String  nomPartenaire ;
+	
+	private String  nombreEnfant ;
+	private String nationalite;
+	private String profession;
+	private String niveauCulturel;
+	
+	private String codeImage;
+	
  	private int statut;
+ 	
+ 	
 }

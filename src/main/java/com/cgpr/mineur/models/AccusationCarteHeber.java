@@ -1,6 +1,7 @@
 package com.cgpr.mineur.models;
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -34,5 +35,7 @@ public class AccusationCarteHeber  implements Serializable {
 	@JoinColumn(name = "titreAccHebFK")
 	private TitreAccusation titreAccusation;
  
+//	@Column(name = "type", nullable = false, columnDefinition = "VARCHAR(255) DEFAULT 'hebergement'")
+//	private String type;
 
 }

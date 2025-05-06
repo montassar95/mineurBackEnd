@@ -65,7 +65,7 @@ public class AffaireServiceImpl implements AffaireService {
 
 	@Autowired
 	private EchappesRepository echappesRepository;
-	
+
 	@Autowired
 	private ArrestationRepository arrestationRepository;
 
@@ -103,13 +103,11 @@ public class AffaireServiceImpl implements AffaireService {
 		// Conversion du DTO en entité
 		Affaire affaire = AffaireConverter.dtoToEntitybasic(affaireDto);
 
-		
-		
 		// Récupération du numéro ordinal maximum pour l'arrestation active
 		Integer result = affaireRepository
 				.trouverMaxAffaireParArrestationIdEtStatutActif(affaire.getArrestation().getArrestationId());
-		
-		int maxAffaire = (result != null) ? result : 0; 
+
+		int maxAffaire = (result != null) ? result : 0;
 
 		try {
 
@@ -170,31 +168,29 @@ public class AffaireServiceImpl implements AffaireService {
 	@Override
 	public FicheDeDetentionDto obtenirInformationsDeDetentionParIdDetention(String idEnfant, long numOrdinale) {
 
-		
 		System.out.println("*********************** debut fiche detention **************");
 		// Récupérer l'arrestation
 		ArrestationId arrestationId = new ArrestationId(idEnfant, numOrdinale);
-		ArrestationDto arrestation = ArrestationConverter.entityToDto(arrestationRepository.findById(arrestationId).get());
-          System.out.println(arrestation.toString());
+		ArrestationDto arrestation = ArrestationConverter
+				.entityToDto(arrestationRepository.findById(arrestationId).get());
+		System.out.println(arrestation.toString());
 		// Récupérer la liste des affaires en fonction des paramètres fournis
 		List<AffaireDto> lesAffairesDto = trouverAffairesParAction("general", idEnfant, numOrdinale);
-		
-		 System.out.println(lesAffairesDto.toString());
+
+		System.out.println(lesAffairesDto.toString());
 		FicheDeDetentionDto dto = new FicheDeDetentionDto();
 
 		// Si aucune affaire n'est trouvée, retourner un DTO vide
 		if (lesAffairesDto.isEmpty()) {
 			System.out.println("no");
-		 
+
 			return dto;
-		}
-		else {
+		} else {
 			System.out.println("yes");
 		}
 
 		dto.setArrestation(arrestation);
-		
-		
+
 		System.out.println(lesAffairesDto.size());
 		// Mettre à jour les informations de l'affaire principale
 		AffaireUtils.updateAffairePrincipale(lesAffairesDto);
@@ -212,7 +208,7 @@ public class AffaireServiceImpl implements AffaireService {
 		for (AffaireDto element : lesAffairesDto) {
 			// Effectuer les calculs pénaux si l'affaire n'est pas affectée et répond aux
 			// critères
-			if (element.getAffaireAffecter() == null && !"AEX".equals(element.getTypeDocument())
+			if (element.getAffaireAffecter() == null && !"ArretEx".equals(element.getTypeDocument())
 					&& (element.getTypeJuge() == null || element.getTypeJuge().getId() != 29)) {
 				AffaireUtils.calculerPenal(element, dto);
 			}
@@ -289,7 +285,7 @@ public class AffaireServiceImpl implements AffaireService {
 		if (dateFin != null) {
 			dto.setDateFin(dateFormat.format(dateFin));
 		}
- System.out.println("dateDebut "+dateDebut +"dateFin "+dateFin );
+		System.out.println("dateDebut " + dateDebut + "dateFin " + dateFin);
 		// Récupérer les arrêts provisoires associés à l'arrestation
 		List<ArretProvisoire> list = arretProvisoireRepository.getArretProvisoirebyArrestation(idEnfant, numOrdinale);
 		if (!list.isEmpty()) {
@@ -311,12 +307,14 @@ public class AffaireServiceImpl implements AffaireService {
 		TribunalDto tribunal1 = affaireData.getTribunal1();
 		String numAffaire2 = affaireData.getNumAffaire2();
 		TribunalDto tribunal2 = affaireData.getTribunal2();
+		String numAffaire3 = affaireData.getNumAffaire3();
+		TribunalDto tribunal3 = affaireData.getTribunal3();
 		AffaireDto affaireOrigine = affaireData.getAffaireOrigine();
 		VerifierAffaireDto verifierAffaireDto = new VerifierAffaireDto();
 
 		AffaireId idAffaire = new AffaireId(idEnfant, numAffaire1, tribunal1.getId(),
 				arrestationDto.getArrestationId().getNumOrdinale());
-		
+
 		Optional<Affaire> affaireDemmande = affaireRepository.findById(idAffaire);
 
 		// ---------------------------Chercher l'affaire origine existe ou n'exist
@@ -492,6 +490,28 @@ public class AffaireServiceImpl implements AffaireService {
 				verifierAffaireDto.setNextBoolean(true);
 			}
 		}
+		if (numAffaire3 != null && tribunal3 != null) {
+			System.out.println("verification de  affaire affecter   ");
+			AffaireId idAffaireAffecter = new AffaireId(idEnfant, numAffaire3, tribunal3.getId(),
+					arrestationDto.getArrestationId().getNumOrdinale());
+
+			Optional<Affaire> affaireAffecterFromDB = affaireRepository.findById(idAffaireAffecter);
+			if (affaireAffecterFromDB.isPresent()) {
+				System.out.println(" affaire affecter  existe   dans la base de donne ");
+				// -------------------- l'affaire origine est un lien d'autre affaire
+				// ------------------------ ----------------------------------------------------
+				Affaire affaireAffecter = affaireAffecterFromDB.get();
+				AffaireDto affaireAffecterDTO = new AffaireDto();
+				affaireAffecterDTO.setAffaireId(AffaireIdConverter.entityToDto(idAffaireAffecter));
+				affaireAffecterDTO.setArrestation(arrestationDto);
+				affaireAffecterDTO.setTribunal(tribunal3);
+				affaireOrigine.setAffaireAffecter(affaireAffecterDTO);
+
+			} else {
+				System.out.println(" affaire affecter n'existe pas dans la base de donne ");
+			}
+		}
+
 		affaireOrigine.setAffaireId(AffaireIdConverter.entityToDto(idAffaire));
 		verifierAffaireDto.setAffaire(affaireOrigine);
 		System.out.println(verifierAffaireDto.toString());
@@ -501,24 +521,28 @@ public class AffaireServiceImpl implements AffaireService {
 	@Override
 	public List<AffaireDto> trouverAffairesParAction(String action, String idEnfant, long numOrdinale) {
 		switch (action) {
-		case "general":
-			return trouverAffairesGeneral(idEnfant, numOrdinale);
-		case "transferer":
-			return trouverAffairesATransferer(idEnfant, numOrdinale);
-		case "arreter":
-			return trouverAffairesAArreter(idEnfant, numOrdinale);
-		case "appelerOuReviser":
-			return trouverAffairesAAppelerOuReviser(idEnfant, numOrdinale);
-		case "prolonger":
-			return trouverAffairesAProlonger(idEnfant, numOrdinale);
-		default:
-			throw new IllegalArgumentException("Action non reconnue");
+			case "general":
+				return trouverAffairesGeneral(idEnfant, numOrdinale);
+			case "transferer":
+				return trouverAffairesATransferer(idEnfant, numOrdinale);
+			case "arreter":
+				return trouverAffairesAArreter(idEnfant, numOrdinale);
+			case "appelerOuReviser":
+				return trouverAffairesAAppelerOuReviser(idEnfant, numOrdinale);
+			case "prolonger":
+				return trouverAffairesAProlonger(idEnfant, numOrdinale);
+			default:
+				throw new IllegalArgumentException("Action non reconnue");
 		}
 	}
 
 	private List<AffaireDto> trouverAffairesGeneral(String idEnfant, long numOrdinale) {
-		 System.out.println("rqt"+affaireRepository.findAffairePrincipale(idEnfant, numOrdinale).size());
-		return processAffaires(affaireRepository.findAffairePrincipale(idEnfant, numOrdinale));
+		List<Affaire> listAddaire = affaireRepository.findAffairePrincipale(idEnfant, numOrdinale);
+		System.out.println("rqt" + listAddaire.size());
+		for (Affaire a : listAddaire) {
+			System.err.println(a.toString());
+		}
+		return processAffaires(listAddaire);
 
 	}
 
@@ -539,8 +563,8 @@ public class AffaireServiceImpl implements AffaireService {
 	}
 
 	public List<AffaireDto> processAffaires(List<Affaire> lesAffaires) {
-	System.out.println("avant "+lesAffaires.size()); 
-	
+		System.out.println("avant " + lesAffaires.size());
+
 		List<Affaire> output = lesAffaires.stream().map(s -> {
 
 			Document lastDocument = documentRepository.getLastDocumentByAffaire(s.getAffaireId().getIdEnfant(),
@@ -556,12 +580,12 @@ public class AffaireServiceImpl implements AffaireService {
 				if (lastDocument instanceof Transfert) {
 
 					Transfert t = (Transfert) lastDocument;
-                    s.setDateEmission(t.getDateEmission());
+					s.setDateEmission(t.getDateEmission());
 					s.setTypeFile(t.getTypeFile());
 
 				}
 				// pour definire le type de Arreterlexecution exactement ("إيقاف تنفيذ الحكم "
-				// => value: "AEX") ("ســــــــــــراح"=> value: "L")
+				// => value: "ArretEx") ("ســــــــــــراح"=> value: "L")
 				if (lastDocument instanceof Arreterlexecution) {
 					Arreterlexecution t = (Arreterlexecution) lastDocument;
 
@@ -624,9 +648,18 @@ public class AffaireServiceImpl implements AffaireService {
 			}
 			return s;
 		}).collect(Collectors.toList());
-		System.out.println("apres "+output.stream().map(AffaireConverter::entityToDto).collect(Collectors.toList()).size());
+		System.out.println(
+				"apres " + output.stream().map(AffaireConverter::entityToDto).collect(Collectors.toList()).size());
 		return output.stream().map(AffaireConverter::entityToDto).collect(Collectors.toList());
 
 	}
+
+	// @Override
+	// public boolean trouverDetenusParNumAffaireEtTribunalId(String numAffaire,
+	// long tribunalId) {
+	// // TODO Auto-generated method stub
+	// return affaireRepository.trouverDetenusParNumAffaireEtTribunalId(numAffaire,
+	// tribunalId);
+	// }
 
 }

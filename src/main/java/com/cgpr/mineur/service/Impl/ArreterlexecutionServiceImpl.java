@@ -14,12 +14,9 @@ import com.cgpr.mineur.repository.ArreterlexecutionRepository;
 import com.cgpr.mineur.repository.DocumentRepository;
 import com.cgpr.mineur.service.ArreterlexecutionService;
 
-
-
 @Service
 public class ArreterlexecutionServiceImpl implements ArreterlexecutionService {
 
-	
 	@Autowired
 	private ArreterlexecutionRepository arreterlexecutionRepository;
 
@@ -31,11 +28,10 @@ public class ArreterlexecutionServiceImpl implements ArreterlexecutionService {
 
 	@Autowired
 	private DocumentRepository documentRepository;
-	
-	
+
 	@Override
 	public ArreterlexecutionDto save(ArreterlexecutionDto arreterlexecutionDto) {
-		
+
 		if (arreterlexecutionDto.getAffaire().getAffaireLien() != null) {
 			arreterlexecutionDto.getAffaire().getAffaireLien().setStatut(1);
 			System.out.println("=========================debut lien ==================================");
@@ -43,28 +39,31 @@ public class ArreterlexecutionServiceImpl implements ArreterlexecutionService {
 			arreterlexecutionDto.getAffaire().setNumOrdinalAffaireByAffaire(
 					arreterlexecutionDto.getAffaire().getAffaireLien().getNumOrdinalAffaireByAffaire() + 1);
 
-			arreterlexecutionDto.getAffaire().setTypeDocument("AEX");
-			arreterlexecutionDto.getAffaire().setTypeAffaire(arreterlexecutionDto.getAffaire().getAffaireLien().getTypeAffaire());
-		
-			Affaire affaireSaved = affaireRepository.save(AffaireConverter.dtoToEntity(arreterlexecutionDto.getAffaire()));
+			arreterlexecutionDto.getAffaire().setTypeDocument("ArretEx");
+			arreterlexecutionDto.getAffaire()
+					.setTypeAffaire(arreterlexecutionDto.getAffaire().getAffaireLien().getTypeAffaire());
+
+			Affaire affaireSaved = affaireRepository
+					.save(AffaireConverter.dtoToEntity(arreterlexecutionDto.getAffaire().getAffaireLien()));
 			affaireRepository.save(AffaireConverter.dtoToEntity(arreterlexecutionDto.getAffaire()));
 			System.out.println("============================fin lien===============================");
 		}
 		System.out.println("================================debut affaire ===========================");
 		System.out.println(arreterlexecutionDto.getAffaire().toString());
-		arreterlexecutionDto.getAffaire().setTypeDocument("AEX");
+		arreterlexecutionDto.getAffaire().setTypeDocument("ArretEx");
 		System.out.println(AffaireConverter.dtoToEntity(arreterlexecutionDto.getAffaire()));
 		affaireRepository.save(AffaireConverter.dtoToEntity(arreterlexecutionDto.getAffaire()));
 		System.out.println("==================================fin affaire=========================");
 		arreterlexecutionDto.setTypeAffaire(arreterlexecutionDto.getAffaire().getTypeAffaire());
-		Arreterlexecution c = arreterlexecutionRepository.save(ArreterlexecutionConverter.dtoToEntity(arreterlexecutionDto));
+		Arreterlexecution c = arreterlexecutionRepository
+				.save(ArreterlexecutionConverter.dtoToEntity(arreterlexecutionDto));
 
-//		arrestationRepository.save(ar);
+		// arrestationRepository.save(ar);
 
 		try {
-			return  null ;
+			return null;
 		} catch (Exception e) {
-			return  null ;
+			return null;
 		}
 
 	}

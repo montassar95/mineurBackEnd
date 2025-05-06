@@ -45,7 +45,7 @@ public class Residence implements Serializable{
 	private String numArrestation;
 	private int statut;
 	
-	
+	private Date datePassage;
 	private Date dateEntree;
 	private Date dateSortie;
 
@@ -53,7 +53,9 @@ public class Residence implements Serializable{
 	@JoinColumn(name = "etaFK")
 	private Etablissement etablissement;
 	
-	
+	@ManyToOne
+	@JoinColumn(name = "etaPassageFK")
+	private Etablissement etablissementPassage;
 	
 	@ManyToOne
 	@JoinColumn(name = "etaFKE")
@@ -82,20 +84,26 @@ public class Residence implements Serializable{
      private List<Echappes> echappes; // Échappements liés à cette résidence
 	
 	
-	@Transient
-	private Date dateFin;
 	
-	
-	   @Transient
-	   private String  nbVisite ;
 	
 	
 	@ManyToOne
 	@JoinColumn(name = "etabChange")
 	private EtabChangeManiere etabChangeManiere;
 
+	@ManyToOne
+	@JoinColumn(name = "etabChangeEntree")
+	private EtabChangeManiere etabChangeManiereEntree;
 
-
+	
+	@Transient
+	private Date dateFin;
+	
+	
+	@Transient
+	private String  nbVisite ;
+	   
+	   
 	public Residence(ResidenceId residenceId, String numArrestation, int statut) {
 		super();
 		this.residenceId = residenceId;

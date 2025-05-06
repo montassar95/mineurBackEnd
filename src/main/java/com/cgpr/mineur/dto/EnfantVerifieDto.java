@@ -28,6 +28,7 @@ public class EnfantVerifieDto {
 	private boolean allowNewAddArrestation;
 	private boolean allowNewCarte;
 	private boolean alerte;
+	private boolean libre;
 	private ResidenceDto residence;
 	private ResidenceDto residenceEncour;
  

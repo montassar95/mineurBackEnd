@@ -16,7 +16,16 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class RapportDetentionDTO {
-    private String detentionId;
+	
+	
+	
+	 // Constructeur spécifique pour detentionId et affaires
+    public RapportDetentionDTO(String detentionId ) {
+        this.detentionId = detentionId;
+        
+    }
+
+	private String detentionId;
     private String nomComplet; 
    
     private String detailsNaissance;  
@@ -33,21 +42,21 @@ public class RapportDetentionDTO {
     private String numeroEcrou;
     private Date  dateArrestation;
     private Date  dateDebutPeine;
-    private Date dateLiberation;
+    private Date   dateFinPeine;
    
     private String liberation;
     private String etablissementActuel;
   
-    private String mouvementArrivee;
+    private String mouvementArrive;
     private String mouvementSortie;
     
     private boolean mutationEnCours;
-    private String age;
+    private int age;
     private String nombreVisites;
     private boolean evasion;
 
     // Liste des affaires
-    private List<Affaire> affaires;
+    private List<RapportAffaire> affaires ;
 
     
     // Classe interne pour représenter une affaire
@@ -56,13 +65,17 @@ public class RapportDetentionDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class Affaire {
+    public static class RapportAffaire {
+    	 // Constructeur spécifique pour numeroOrdinalAffaire
+        public RapportAffaire(int numeroOrdinalAffaire) {
+            this.numeroOrdinalAffaire = numeroOrdinalAffaire;
+        }
     	private int numeroOrdinalAffaire;
         private String numeroAffaire;
         private String tribunal ;
         private String typeAffaire;
         private  String  accusations;
-        private List<EvenementJuridique> evenementJuridiqueList;
+        private List<RapportEvenementJuridiqueDto> evenementJuridiqueList;
         private String jugement;  
     }
 
@@ -72,7 +85,7 @@ public class RapportDetentionDTO {
     @NoArgsConstructor
     @AllArgsConstructor
     @Builder
-    public static class EvenementJuridique {
+    public static class RapportEvenementJuridiqueDto {
         private String evenement;
         private Date date;
     }

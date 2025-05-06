@@ -25,11 +25,8 @@ import com.cgpr.mineur.repository.ResidenceRepository;
 import com.cgpr.mineur.service.ArrestationService;
 import com.cgpr.mineur.tools.AffaireUtils;
 
-
- 
-
 @Service
-public class ArrestationServiceImpl implements  ArrestationService {
+public class ArrestationServiceImpl implements ArrestationService {
 
 	@Autowired
 	private ArrestationRepository arrestationRepository;
@@ -46,101 +43,94 @@ public class ArrestationServiceImpl implements  ArrestationService {
 	@Autowired
 	private ResidenceRepository residenceRepository;
 
- 
-
- 
-
 	@Override
-	public ArrestationDto trouverDerniereDetentionParIdDetenu(  String id) {
+	public ArrestationDto trouverDerniereDetentionParIdDetenu(String id) {
 		Arrestation arrestationData = arrestationRepository.findByIdEnfantAndStatut0(id);
 
-//		if (arrestationData.getLiberation() == null) {
-//
-//			List<Affaire> affprincipale = affaireRepository.findAffairePrincipale(
-//					arrestationData.getArrestationId().getIdEnfant(),
-//					arrestationData.getArrestationId().getNumOrdinale());
-//			boolean allSameName = affprincipale.stream().allMatch(x -> x.getTypeDocument().equals("AEX"));
-//			if (allSameName) {
-//				arrestationData.setEtatJuridique("isAEX");
-//
-//			} else {
-//				List<Affaire> aData = documentRepository
-//						.findStatutJurByArrestation(arrestationData.getArrestationId().getIdEnfant());
-//
-//				if (aData.isEmpty()) {
-//					arrestationData.setEtatJuridique("juge");
-//				} else {
-//					arrestationData.setEtatJuridique("arret");
-//				}
-//
-//			}
-//		} else {
-//			arrestationData.setEtatJuridique("libre");
-//		}
+		// if (arrestationData.getLiberation() == null) {
+		//
+		// List<Affaire> affprincipale = affaireRepository.findAffairePrincipale(
+		// arrestationData.getArrestationId().getIdEnfant(),
+		// arrestationData.getArrestationId().getNumOrdinale());
+		// boolean allSameName = affprincipale.stream().allMatch(x ->
+		// x.getTypeDocument().equals("ArretEx"));
+		// if (allSameName) {
+		// arrestationData.setEtatJuridique("isArretEx");
+		//
+		// } else {
+		// List<Affaire> aData = documentRepository
+		// .findStatutJurByArrestation(arrestationData.getArrestationId().getIdEnfant());
+		//
+		// if (aData.isEmpty()) {
+		// arrestationData.setEtatJuridique("juge");
+		// } else {
+		// arrestationData.setEtatJuridique("arret");
+		// }
+		//
+		// }
+		// } else {
+		// arrestationData.setEtatJuridique("libre");
+		// }
 
 		if (arrestationData != null) {
-		 
+
 			return ArrestationConverter.entityToDto(arrestationData);
 		} else {
 			return null;
 		}
 	}
-	
-	
- 
 
 	@Override
-	public Object calculerNombreDetentionsParIdDetenu( String id) {
+	public Object calculerNombreDetentionsParIdDetenu(String id) {
 
-		return   arrestationRepository.countByEnfant(id);
+		return arrestationRepository.countByEnfant(id);
 
 	}
 
 	@Override
-	public ArrestationDto save( ArrestationDto arrestationDto) {
+	public ArrestationDto save(ArrestationDto arrestationDto) {
 
 		try {
-			 
+
 			Arrestation a = null;
-//			arrestation.getArrestationId().setNumOrdinale(arrestationRepository.countByEnfant(arrestation.getArrestationId().getIdEnfant())+1);  
+			// arrestation.getArrestationId().setNumOrdinale(arrestationRepository.countByEnfant(arrestation.getArrestationId().getIdEnfant())+1);
 			if (arrestationDto.getLiberation() != null) {
 				arrestationDto.setStatut(1);
-				//arrestationDto.setEtatJuridique("libre");
+				// arrestationDto.setEtatJuridique("libre");
 				liberationRepository.save(LiberationConverter.dtoToEntity(arrestationDto.getLiberation()));
-				Residence r = residenceRepository.findByIdEnfantAndStatut0(arrestationDto.getArrestationId().getIdEnfant(),
+				Residence r = residenceRepository.findByIdEnfantAndStatut0(
+						arrestationDto.getArrestationId().getIdEnfant(),
 						arrestationDto.getArrestationId().getNumOrdinale());
 				r.setStatut(1);
 				r.setDateSortie(arrestationDto.getLiberation().getDate());
 				if (arrestationDto.getLiberation().getEtabChangeManiere() != null) {
-					r.setEtabChangeManiere(EtabChangeManiereConverter.dtoToEntity(arrestationDto.getLiberation().getEtabChangeManiere()) );
+					r.setEtabChangeManiere(EtabChangeManiereConverter
+							.dtoToEntity(arrestationDto.getLiberation().getEtabChangeManiere()));
 
 				}
 				residenceRepository.save(r);
 			}
 			a = arrestationRepository.save(ArrestationConverter.dtoToEntity(arrestationDto));
-			return  ArrestationConverter.entityToDto(a);
+			return ArrestationConverter.entityToDto(a);
 		} catch (Exception e) {
-			return  null;
+			return null;
 		}
 	}
 
- 
-
 	@Override
-	public ArrestationDto delete( ArrestationDto arrestationDto) {
+	public ArrestationDto delete(ArrestationDto arrestationDto) {
 
 		try {
-		 
+
 			Arrestation a = null;
- 			Liberation liberation = null;
- 			LiberationDto liberationDto = null;
+			Liberation liberation = null;
+			LiberationDto liberationDto = null;
 			if (arrestationDto.getLiberation() != null) {
 				arrestationDto.setStatut(0);
-				//arrestationDto.setEtatJuridique(null);
+				// arrestationDto.setEtatJuridique(null);
 				liberationDto = arrestationDto.getLiberation();
 				arrestationDto.setLiberation(null);
-				
-				
+
 				arrestationRepository.save(ArrestationConverter.dtoToEntity(arrestationDto));
 
 				liberationRepository.delete(LiberationConverter.dtoToEntity(liberationDto));
@@ -152,11 +142,10 @@ public class ArrestationServiceImpl implements  ArrestationService {
 				residenceRepository.save(r);
 			}
 
-			return  ArrestationConverter.entityToDto(a);
+			return ArrestationConverter.entityToDto(a);
 		} catch (Exception e) {
-			return  null;
+			return null;
 		}
-	}	
-	 
-}
+	}
 
+}

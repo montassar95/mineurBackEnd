@@ -52,7 +52,7 @@ public interface EnfantRepository extends  JpaRepository<Enfant, String>, JpaSpe
 		        + "FROM Residence r WHERE "
 		        
 		        // Filtrage sur les noms et autres critères
-		        + "(:nom IS NULL OR r.arrestation.enfant.simplifierCriteria.nomSimplifie LIKE %:nom%) "
+		       + "(:nom IS NULL OR r.arrestation.enfant.simplifierCriteria.nomSimplifie LIKE %:nom%) "
 		        + "AND (:prenom IS NULL OR r.arrestation.enfant.simplifierCriteria.prenomSimplifie LIKE %:prenom%) "
 		        + "AND (:nomPere IS NULL OR r.arrestation.enfant.simplifierCriteria.nomPereSimplifie LIKE %:nomPere%) "
 		        + "AND (:nomGrandPere IS NULL OR r.arrestation.enfant.simplifierCriteria.nomGrandPereSimplifie LIKE %:nomGrandPere%) "

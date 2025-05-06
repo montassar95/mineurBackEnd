@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import com.cgpr.mineur.models.Etablissement;
 import com.cgpr.mineur.models.Residence;
 import com.cgpr.mineur.models.TypeAffaire;
-import com.cgpr.mineur.repository.RapportEnfantQuotidienRepository;
+ 
 import com.cgpr.mineur.repository.StatistcsRepository;
 import com.cgpr.mineur.serviceReporting.ChargeAllEnfantService;
 
@@ -38,7 +38,7 @@ public class StatisticsEnfant {
     
     
     public static StatisticsEnfant calculerTotaux(List<List<Residence>> enfantAffiches,
-    		  StatistcsRepository statistcsRepository , RapportEnfantQuotidienRepository rapportEnfantQuotidienRepository) {
+    		  StatistcsRepository statistcsRepository  ) {
         StatisticsEnfant totals = new StatisticsEnfant();
         
         
@@ -63,15 +63,15 @@ public class StatisticsEnfant {
             if (statutPenals != null && statutPenals.isEmpty()) statutPenals = null;
             if (etablissementIds != null && etablissementIds.isEmpty()) etablissementIds = null;
 
-        	int  total = rapportEnfantQuotidienRepository.countByFilters(
-        			sexes,
-        			typeAffaires,
-        			nationalites,
-        			statutPenals, 
-        			etablissementIds,
-        			date);
-            	 
-            System.out.println("Total stat : " + total);
+//        	int  total = rapportEnfantQuotidienRepository.countByFilters(
+//        			sexes,
+//        			typeAffaires,
+//        			nationalites,
+//        			statutPenals, 
+//        			etablissementIds,
+//        			date);
+//            	 
+//            System.out.println("Total stat : " + total);
         
 
         

@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinColumns;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -63,7 +64,7 @@ public class Arrestation  implements Serializable {
 
 	private int statut;
 	
-//	private String etatJuridique;
+
 	
 	@OneToOne
 	@JoinColumns({ 
@@ -73,24 +74,7 @@ public class Arrestation  implements Serializable {
 	})
 	private Liberation liberation;
 	
-	
-	 
-	//private String numAffairePricipale;
-	
-	
-//	@ManyToOne
-//	@JoinColumn(name = "triPriFK")
-//	private Tribunal tribunalPricipale;
-	
-//	private long numOrdinalAffairePricipale;
-	
-//	@Transient
-//	private TypeAffaire typeAffairePricipale;
-	
-//	private int totaleEchappes;
-//	private int totaleResidence;
-	
-	
+
 	
 	
 	
@@ -117,8 +101,35 @@ public class Arrestation  implements Serializable {
 	   private int  age ;
 	   
 	   
-//	   @Transient
-//	   private String  visite ;
+
+// 	  // for rapp 
+ 	  @Transient
+ 		private String etatJuridique;
+ 	 @Transient
+ 		 private String numAffairePricipale;
+// 		
+// 		
+ 	@Transient
+  		private Tribunal tribunalPricipale;
+ 	@Transient
+  		private long numOrdinalAffairePricipale;
+// 		
+  		@Transient
+  		private TypeAffaire typeAffairePricipale;
+  		@Transient
+  		private int totaleEchappes;
+  		@Transient
+  		private int totaleResidence;
+// 		
+  		   @Transient
+  		   private String  visite ;
 	   
  
+ 	   
+ 	   
+// 	     @OneToMany(mappedBy = "arrestation")
+// 	    private List<Residence> residences;
+//
+//  	    @OneToMany(mappedBy = "arrestation")
+//  	    private List<Affaire> affaires;
 }

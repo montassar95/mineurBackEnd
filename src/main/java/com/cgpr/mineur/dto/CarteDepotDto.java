@@ -24,4 +24,6 @@ public class CarteDepotDto extends DocumentDto {
 	private String textJugement;
 
 	private List<TitreAccusationDto>  titreAccusations = new ArrayList<TitreAccusationDto>();
+	
+	private EtabChangeManiereDto etabChangeManiere;
 }

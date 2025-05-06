@@ -65,63 +65,51 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.codec.Base64;
 
- 
 @Service
- 
-public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPdfService {
 
- 
+public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPdfService {
 
 	@Autowired
 	private AffaireRepository affaireRepository;
- 
-
-	 
 
 	@Autowired
 	private ResidenceRepository residenceRepository;
 
 	@Autowired
 	private EchappesRepository echappesRepository;
-	
+
 	@Autowired
 	private AffaireServiceImpl affaireServiceImpl;
- 
-	
+
 	@Autowired
 	private PhotoService photoService;
-
- 
 
 	public static final Font FONT = new Font();
 	public static final Font BOLD = new Font(FontFamily.HELVETICA, 12, Font.BOLD);
 	DateTimeFormatter dtf = DateTimeFormatter.ofPattern("uuuu/MM/dd");
 	SimpleDateFormat outputFormat = new SimpleDateFormat("dd-MM-yyyy");
-	public static   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
 	@Override
 	public ByteArrayInputStream genererFicheDeDetentionPdf(PDFPenaleDTO pDFPenaleDTO)
 			throws DocumentException, IOException, ArabicShapingException {
-		
-		 
-		FicheDeDetentionDto ficheDeDetentionDto =affaireServiceImpl.obtenirInformationsDeDetentionParIdDetention(pDFPenaleDTO.getIdEnfant(), pDFPenaleDTO.getNumOrdinale());
+
+		FicheDeDetentionDto ficheDeDetentionDto = affaireServiceImpl.obtenirInformationsDeDetentionParIdDetention(
+				pDFPenaleDTO.getIdEnfant(), pDFPenaleDTO.getNumOrdinale());
 		AffaireDto affairePricipale = trouverAffairePrincipale(ficheDeDetentionDto.getAffaires());
-		
+
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 
 		Rectangle layout = new Rectangle(PageSize.A4);
 
 		Document document = new Document(layout);
 		PdfWriter pdf = PdfWriter.getInstance(document, out);
-		
- 
-        
+
 		document.open();
 
 		URL backgroundUrl = GenererFicheDeDetentionPdfService.class.getResource("/images/page.jpg");
 
 		Image backgroundImage = Image.getInstance(backgroundUrl);
-
-		 
 
 		pdf.getDirectContentUnder().addImage(backgroundImage, 600, 0, 0, 500, 0, 120);
 
@@ -163,7 +151,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		Phrase p1Top;
 		PdfPCell c1Top;
 
-//		       ---------------  nom --------------------
+		// --------------- nom --------------------
 
 		LocalDate localDate = LocalDate.now();
 
@@ -213,9 +201,9 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		cTitre.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 
 		cTitre.setPaddingBottom(20f);
- 	cTitre.setBorder(Rectangle.BOX);
+		cTitre.setBorder(Rectangle.BOX);
 
-		cTitre.setBorderWidth(  0.5F);
+		cTitre.setBorderWidth(0.5F);
 
 		cTitre.setBackgroundColor(new BaseColor(240, 240, 240)); // Couleur de fond plus claire
 
@@ -225,30 +213,24 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		tTitre.addCell(cTitre);
 		tTitre.setWidthPercentage(60);
-		
-		
-		
-		
 
-		if (  !pDFPenaleDTO.isSansImage()) {
-			 
+		if (!pDFPenaleDTO.isSansImage()) {
+
 			PhotoId photoId = new PhotoId();
 			photoId.setIdEnfant(ficheDeDetentionDto.getArrestation().getEnfant().getId());
 			photoId.setNumOrdinaleArrestation(ficheDeDetentionDto.getArrestation().getArrestationId().getNumOrdinale());
-		    Optional<Photo> photo = photoService.getPhotoById(photoId);
-		    if (photo.isPresent() && photo.get().getImg() != null) {
-			  
-			 
-			   final String base64Data = photo.get().getImg()
-						.substring( photo.get().getImg().indexOf(",") + 1);
+			Optional<Photo> photo = photoService.getPhotoById(photoId);
+			if (photo.isPresent() && photo.get().getImg() != null) {
+
+				final String base64Data = photo.get().getImg()
+						.substring(photo.get().getImg().indexOf(",") + 1);
 				Image ima = Image.getInstance(Base64.decode(base64Data));
 				ima.setAbsolutePosition(30f, 540f);
 				ima.scaleAbsolute(120f, 120f);
 				document.add(ima);
-				
-		   }
-		    
-			
+
+			}
+
 		}
 
 		tTitre.setSpacingAfter(15f);
@@ -265,17 +247,20 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		PdfPCell spaceCell = new PdfPCell(new Phrase("  "));
 		spaceCell.setBorder(0);
-		
-//		       ---------------  nom --------------------
+
+		// --------------- nom --------------------
 		if (ficheDeDetentionDto.getArrestation().getArrestationId().getNumOrdinale() < 10) {
 			p1 = new Phrase(
 
-					"0" + ficheDeDetentionDto.getArrestation().getArrestationId().getNumOrdinale() + "  /  " + ficheDeDetentionDto.getArrestation().getEnfant().getId(),
+					"0" + ficheDeDetentionDto.getArrestation().getArrestationId().getNumOrdinale() + "  /  "
+							+ ficheDeDetentionDto.getArrestation().getEnfant().getId(),
 					boldfontLabelAmiri);
 		}
 
 		else {
-			p1 = new Phrase(ficheDeDetentionDto.getArrestation().getArrestationId().getNumOrdinale() + "  /  " + ficheDeDetentionDto.getArrestation().getEnfant().getId(),
+			p1 = new Phrase(
+					ficheDeDetentionDto.getArrestation().getArrestationId().getNumOrdinale() + "  /  "
+							+ ficheDeDetentionDto.getArrestation().getEnfant().getId(),
 					boldfontLabelAmiri);
 		}
 		c1 = new PdfPCell(p1);
@@ -301,7 +286,8 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setColspan(40);
 
 		tArr.addCell(c1);
-		p1 = new Phrase(ficheDeDetentionDto. getResidences().get(0).getEtablissement().getLibelle_etablissement(), boldfontArr);
+		p1 = new Phrase(ficheDeDetentionDto.getResidences().get(0).getEtablissement().getLibelle_etablissement(),
+				boldfontArr);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -327,7 +313,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		tArr.addCell(c1);
 
-		p1 = new Phrase(ficheDeDetentionDto. getResidences().get(0).getNumArrestation(), boldfontLabelAmiri);
+		p1 = new Phrase(ficheDeDetentionDto.getResidences().get(0).getNumArrestation(), boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -352,7 +338,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setColspan(40);
 
 		tArr.addCell(c1);
-		p1 = new Phrase( affairePricipale.getAffaireId().getNumAffaire().toString() , boldfontLabelAmiri);
+		p1 = new Phrase(affairePricipale.getAffaireId().getNumAffaire().toString(), boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -370,7 +356,8 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		tArr.addCell(c1);
 
 		if (ficheDeDetentionDto.getAffaires().size() < 10) {
-			p1 = new Phrase("عـــــ" + "0" + ficheDeDetentionDto.getAffaires().size() + "ــدد القضيــــــة", boldfontLabelAmirix);
+			p1 = new Phrase("عـــــ" + "0" + ficheDeDetentionDto.getAffaires().size() + "ــدد القضيــــــة",
+					boldfontLabelAmirix);
 
 		} else {
 			p1 = new Phrase("عـــــ" + ficheDeDetentionDto.getAffaires().size() + "" + "ـــــدد القضيــــــة",
@@ -385,14 +372,14 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		tArr.addCell(c1);
 
-		
-		String  arabicMajorityAgeDate =ToolsForReporting.getArabicMajorityAgeDate(ficheDeDetentionDto.getArrestation().getEnfant().getDateNaissance().toString()); 
+		String arabicMajorityAgeDate = ToolsForReporting.getArabicMajorityAgeDate(
+				ficheDeDetentionDto.getArrestation().getEnfant().getDateNaissance().toString());
 		System.err.println(arabicMajorityAgeDate);
-		 String[] partsDate = arabicMajorityAgeDate.split(" ");
-		    String day = partsDate[0];
-		    String month = partsDate[1];
-		    String year = partsDate[2];
-		    
+		String[] partsDate = arabicMajorityAgeDate.split(" ");
+		String day = partsDate[0];
+		String month = partsDate[1];
+		String year = partsDate[2];
+
 		p1 = new Phrase(year.toString() + " " + month.toString(),
 				boldfontLabelAmiri);
 
@@ -426,8 +413,11 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setColspan(5);
 
 		tArr.addCell(c1);
-		
-		p1 = new Phrase("ســـــ" + ToolsForReporting.calculerAge(ficheDeDetentionDto.getArrestation().getEnfant().getDateNaissance().toString().trim()) + "ـــن الرشـــــــــد",
+
+		p1 = new Phrase(
+				"ســـــ" + ToolsForReporting.calculerAge(
+						ficheDeDetentionDto.getArrestation().getEnfant().getDateNaissance().toString().trim())
+						+ "ـــن الرشـــــــــد",
 				boldfontLabelAmirix);
 
 		c1 = new PdfPCell(p1);
@@ -444,25 +434,25 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		table.setWidthPercentage(100);
 
-//	       ---------------  nom --------------------
+		// --------------- nom --------------------
 
-		 boldfontFamielle.setColor(255, 0, 0);
-		p1 = new Phrase(   affairePricipale.getTypeAffaire().getLibelle_typeAffaire()  ,
-		boldfontFamielle);
-		 
+		boldfontFamielle.setColor(255, 0, 0);
+		p1 = new Phrase(affairePricipale.getTypeAffaire().getLibelle_typeAffaire(),
+				boldfontFamielle);
+
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_LEFT);
 		c1.setBorder(0);
 		c1.setColspan(20);
 		c1.setPaddingBottom(7f);
-		 
-		 
 
 		table.addCell(c1);
 		p1 = new Phrase(
-				ficheDeDetentionDto.getArrestation().getEnfant().getNom() + " بن " + ficheDeDetentionDto.getArrestation().getEnfant().getNomPere() + " بن "
-						+ ficheDeDetentionDto.getArrestation().getEnfant().getNomGrandPere() + " " + ficheDeDetentionDto.getArrestation().getEnfant().getPrenom(),
+				ficheDeDetentionDto.getArrestation().getEnfant().getNom() + " بن "
+						+ ficheDeDetentionDto.getArrestation().getEnfant().getNomPere() + " بن "
+						+ ficheDeDetentionDto.getArrestation().getEnfant().getNomGrandPere() + " "
+						+ ficheDeDetentionDto.getArrestation().getEnfant().getPrenom(),
 				boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -491,9 +481,11 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       ---------------  mere --------------------  
+		// --------------- mere --------------------
 
-		p1 = new Phrase(ficheDeDetentionDto.getArrestation().getEnfant().getNomMere() + " " + ficheDeDetentionDto.getArrestation().getEnfant().getPrenomMere(),
+		p1 = new Phrase(
+				ficheDeDetentionDto.getArrestation().getEnfant().getNomMere() + " "
+						+ ficheDeDetentionDto.getArrestation().getEnfant().getPrenomMere(),
 				boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
@@ -521,11 +513,10 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       ---------------   Lieu et lieu --------------------	    
-		
-		
-     p1 = new Phrase(   "بــــــــــ" + ficheDeDetentionDto.getArrestation().getEnfant().getLieuNaissance() 
-				
+		// --------------- Lieu et lieu --------------------
+
+		p1 = new Phrase("بــــــــــ" + ficheDeDetentionDto.getArrestation().getEnfant().getLieuNaissance()
+
 				, boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
@@ -534,9 +525,9 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setColspan(48);
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
-		p1 = new Phrase( 
-				 ficheDeDetentionDto.getArrestation().getEnfant().getDateNaissance().toString() +"  " 
-				, boldfontLabelAmiri);
+		p1 = new Phrase(
+				ficheDeDetentionDto.getArrestation().getEnfant().getDateNaissance().toString() + "  ",
+				boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -544,7 +535,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setColspan(17);
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
-		
+
 		p1 = new Phrase(":", boldfontLabel);
 		c1 = new PdfPCell(p1);
 		c1.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -562,9 +553,10 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       ---------------  nationnalite --------------------      
+		// --------------- nationnalite --------------------
 
-		p1 = new Phrase(ficheDeDetentionDto.getArrestation().getEnfant().getNationalite().getLibelle_nationalite().toString(),
+		p1 = new Phrase(
+				ficheDeDetentionDto.getArrestation().getEnfant().getNationalite().getLibelle_nationalite().toString(),
 				boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -592,9 +584,11 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       ---------------  situation fam --------------------      
+		// --------------- situation fam --------------------
 
-		p1 = new Phrase(ficheDeDetentionDto.getArrestation().getEnfant().getSituationFamiliale().getLibelle_situation_familiale().toString(),
+		p1 = new Phrase(
+				ficheDeDetentionDto.getArrestation().getEnfant().getSituationFamiliale()
+						.getLibelle_situation_familiale().toString(),
 				boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -622,15 +616,16 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       --------------- adress --------------------      
-		
-		
+		// --------------- adress --------------------
+
 		String address = ficheDeDetentionDto.getArrestation().getEnfant().getAdresse().toString().trim() + " ";
-		if(ficheDeDetentionDto.getArrestation().getEnfant().getDelegation().getId() != Long.valueOf(900)) {
-			address+=ficheDeDetentionDto.getArrestation().getEnfant().getDelegation().getLibelle_delegation().toString() + " ";
+		if (ficheDeDetentionDto.getArrestation().getEnfant().getDelegation().getId() != Long.valueOf(900)) {
+			address += ficheDeDetentionDto.getArrestation().getEnfant().getDelegation().getLibelle_delegation()
+					.toString() + " ";
 		}
-		if(ficheDeDetentionDto.getArrestation().getEnfant().getGouvernorat().getId() != Long.valueOf(30)) {
-			address+=ficheDeDetentionDto.getArrestation().getEnfant().getGouvernorat().getLibelle_gouvernorat().toString();
+		if (ficheDeDetentionDto.getArrestation().getEnfant().getGouvernorat().getId() != Long.valueOf(30)) {
+			address += ficheDeDetentionDto.getArrestation().getEnfant().getGouvernorat().getLibelle_gouvernorat()
+					.toString();
 		}
 		p1 = new Phrase(address, boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
@@ -658,9 +653,11 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       --------------- niveau edu --------------------      
+		// --------------- niveau edu --------------------
 
-		p1 = new Phrase( ficheDeDetentionDto.getArrestation().getEnfant().getNiveauEducatif().getLibelle_niveau_educatif().toString(),
+		p1 = new Phrase(
+				ficheDeDetentionDto.getArrestation().getEnfant().getNiveauEducatif().getLibelle_niveau_educatif()
+						.toString(),
 				boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
@@ -688,14 +685,10 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       --------------- situation penal --------------------      
-		
+		// --------------- situation penal --------------------
 
-		
-		
-      String statutJudiciaire =ecrireStatut(ficheDeDetentionDto);
-		 
-		 
+		String statutJudiciaire = ecrireStatut(ficheDeDetentionDto);
+
 		p1 = new Phrase(statutJudiciaire, boldfontLabelEtat);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
@@ -722,7 +715,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(12f);
 		table.addCell(c1);
 
-//		       --------------- jugee--------------------      
+		// --------------- jugee--------------------
 		if (!(ficheDeDetentionDto.getAnneePenal() == 0 && ficheDeDetentionDto.getMoisPenal() == 0
 				&& ficheDeDetentionDto.getJourPenal() == 0)) {
 
@@ -776,13 +769,13 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 			List<Affaire> affprincipale = affaireRepository.findAffairePrincipale(
 					ficheDeDetentionDto.getArrestation().getArrestationId().getIdEnfant(),
 					ficheDeDetentionDto.getArrestation().getArrestationId().getNumOrdinale());
-			boolean allSameName = affprincipale.stream().allMatch(x -> x.getTypeDocument().equals("AEX"));
+			boolean allSameName = affprincipale.stream().allMatch(x -> x.getTypeDocument().equals("ArretEx"));
 			if (ficheDeDetentionDto.isAgeAdulte()) {
 				if (!allSameName) {
-					p1 = new Phrase((" الإيداع لبلوغ سن الرشد  و") +(jugeA) + (jugeM) + (jugeJ)  , boldfontLabelAmiri);
+					p1 = new Phrase((" الإيداع لبلوغ سن الرشد  و") + (jugeA) + (jugeM) + (jugeJ), boldfontLabelAmiri);
 				} else {
 					p1 = new Phrase(
-							(" الإيداع لبلوغ سن الرشد  و")	+ (jugeA) + (jugeM) + (jugeJ)  + (" إيقاف تنفيذ الحكم") ,
+							(" الإيداع لبلوغ سن الرشد  و") + (jugeA) + (jugeM) + (jugeJ) + (" إيقاف تنفيذ الحكم"),
 							boldfontLabelAmiri);
 				}
 
@@ -790,44 +783,14 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 			else {
 				if (!allSameName) {
-					p1 = new Phrase((jugeA) + (jugeM) + (jugeJ) ,
+					p1 = new Phrase((jugeA) + (jugeM) + (jugeJ),
 							boldfontLabelAmiri);
 				} else {
-					p1 = new Phrase(   (jugeA) + (jugeM) + (jugeJ) + (" تم إيقاف تنفيذ الحكم"), boldfontLabelAmiri);
+					p1 = new Phrase((jugeA) + (jugeM) + (jugeJ) + (" تم إيقاف تنفيذ الحكم"), boldfontLabelAmiri);
 				}
 
 			}
 
-			c1 = new PdfPCell(p1);
-			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
-			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			c1.setBorder(0);
-			c1.setColspan(65);
-			c1.setPaddingBottom(7f);
-			table.addCell(c1);
-
-			p1 = new Phrase( (":"), boldfontLabel);
-			c1 = new PdfPCell(p1);
-			c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-			c1.setBorder(0);
-			c1.setColspan(5);
-
-			table.addCell(c1);
-
-			p1 = new Phrase( ("الحكــــــــــــــــــــــــــــــــــم"), boldfontLabel);
-			c1 = new PdfPCell(p1);
-			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
-			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			c1.setBorder(0);
-			c1.setColspan(30);
-			c1.setPaddingBottom(7f);
-			table.addCell(c1);
-		}
-
-		if ((ficheDeDetentionDto.getAnneePenal() == 0 && ficheDeDetentionDto.getMoisPenal() == 0 && ficheDeDetentionDto.getJourPenal() == 0)
-				&& (ficheDeDetentionDto.isAgeAdulte())) {
-
-			p1 = new Phrase( (" الإيداع لبلوغ سن الرشد "), boldfontLabelAmiri);
 			c1 = new PdfPCell(p1);
 			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -840,10 +803,11 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 			c1 = new PdfPCell(p1);
 			c1.setHorizontalAlignment(Element.ALIGN_CENTER);
 			c1.setBorder(0);
-			c1.setColspan(5); 
+			c1.setColspan(5);
+
 			table.addCell(c1);
 
-			p1 = new Phrase( ("الحكــــــــــــــــــــــــــــــــــم"), boldfontLabel);
+			p1 = new Phrase(("الحكــــــــــــــــــــــــــــــــــم"), boldfontLabel);
 			c1 = new PdfPCell(p1);
 			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -852,13 +816,40 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 			c1.setPaddingBottom(7f);
 			table.addCell(c1);
 		}
-//		       --------------- Lieu jugee--------------------      
-		
-	 
-		p1 = new Phrase( (ficheDeDetentionDto.getDateJugementPrincipale().toString()), boldfontLabelAmiri);
-		
-		
-		 
+
+		if ((ficheDeDetentionDto.getAnneePenal() == 0 && ficheDeDetentionDto.getMoisPenal() == 0
+				&& ficheDeDetentionDto.getJourPenal() == 0)
+				&& (ficheDeDetentionDto.isAgeAdulte())) {
+
+			p1 = new Phrase((" الإيداع لبلوغ سن الرشد "), boldfontLabelAmiri);
+			c1 = new PdfPCell(p1);
+			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
+			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			c1.setBorder(0);
+			c1.setColspan(65);
+			c1.setPaddingBottom(7f);
+			table.addCell(c1);
+
+			p1 = new Phrase((":"), boldfontLabel);
+			c1 = new PdfPCell(p1);
+			c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+			c1.setBorder(0);
+			c1.setColspan(5);
+			table.addCell(c1);
+
+			p1 = new Phrase(("الحكــــــــــــــــــــــــــــــــــم"), boldfontLabel);
+			c1 = new PdfPCell(p1);
+			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
+			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			c1.setBorder(0);
+			c1.setColspan(30);
+			c1.setPaddingBottom(7f);
+			table.addCell(c1);
+		}
+		// --------------- Lieu jugee--------------------
+
+		p1 = new Phrase((ficheDeDetentionDto.getDateJugementPrincipale().toString()), boldfontLabelAmiri);
+
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -874,10 +865,11 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setColspan(5);
 
 		table.addCell(c1);
-		if ((ficheDeDetentionDto.getAnneePenal() == 0 && ficheDeDetentionDto.getMoisPenal() == 0 && ficheDeDetentionDto.getJourPenal() == 0)
+		if ((ficheDeDetentionDto.getAnneePenal() == 0 && ficheDeDetentionDto.getMoisPenal() == 0
+				&& ficheDeDetentionDto.getJourPenal() == 0)
 				&& (ficheDeDetentionDto.getEtatJuridique().equals("arret"))) {
 
-			p1 = new Phrase( ("تـــــــــــاريخ الإيقـــــــــــــاف"), boldfontLabel);
+			p1 = new Phrase(("تـــــــــــاريخ الإيقـــــــــــــاف"), boldfontLabel);
 			c1 = new PdfPCell(p1);
 			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -889,7 +881,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 			if (ficheDeDetentionDto.getAnneePenal() == 0 && ficheDeDetentionDto.getMoisPenal() == 0
 					&& ficheDeDetentionDto.getJourPenal() == 0) {
-				p1 = new Phrase( ("تاريـــخ صـــدور البطاقــــــة"), boldfontLabel);
+				p1 = new Phrase(("تاريـــخ صـــدور البطاقــــــة"), boldfontLabel);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -898,7 +890,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 				c1.setPaddingBottom(7f);
 				table.addCell(c1);
 			} else {
-				p1 = new Phrase( ("تـــــــــــاريخ الحكــــــــــــــم"), boldfontLabel);
+				p1 = new Phrase(("تـــــــــــاريخ الحكــــــــــــــم"), boldfontLabel);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -910,12 +902,9 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		}
 
-//		       --------------- tribunal--------------------    
+		// --------------- tribunal--------------------
 
-		
- 
-
-		p1 = new Phrase( affairePricipale.getTribunal().getNom_tribunal().toString() ,
+		p1 = new Phrase(affairePricipale.getTribunal().getNom_tribunal().toString(),
 				boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
@@ -925,7 +914,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-		p1 = new Phrase( (":"), boldfontLabel);
+		p1 = new Phrase((":"), boldfontLabel);
 		c1 = new PdfPCell(p1);
 		c1.setHorizontalAlignment(Element.ALIGN_CENTER);
 		c1.setBorder(0);
@@ -933,7 +922,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		table.addCell(c1);
 
-		p1 = new Phrase( ("المحكمـــــــــــــــــــــــــــــة"), boldfontLabel);
+		p1 = new Phrase(("المحكمـــــــــــــــــــــــــــــة"), boldfontLabel);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -942,25 +931,21 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       --------------- tribunal--------------------      
+		// --------------- tribunal--------------------
 
-		
 		String titreAccusationSring1 = " ";
- 
-		
-		List<TitreAccusationDto> titreAccusationsDto = affairePricipale.getTitreAccusations(); 
-				
-		List<TitreAccusation> titreAccusations = titreAccusationsDto . stream().map(TitreAccusationConverter::dtoToEntity).collect(Collectors.toList()); 
+
+		List<TitreAccusationDto> titreAccusationsDto = affairePricipale.getTitreAccusations();
+
+		List<TitreAccusation> titreAccusations = titreAccusationsDto.stream().map(TitreAccusationConverter::dtoToEntity)
+				.collect(Collectors.toList());
 		for (int i = 0; i < titreAccusations.size(); i++) {
-			titreAccusationSring1 +=  titreAccusations.get(i).getTitreAccusation();
-		    if (i != titreAccusations.size() - 1) {
-		         titreAccusationSring1 += " و ";
-		    }
+			titreAccusationSring1 += titreAccusations.get(i).getTitreAccusation();
+			if (i != titreAccusations.size() - 1) {
+				titreAccusationSring1 += " و ";
+			}
 		}
-		
-		
-		
-		
+
 		p1 = new Phrase(titreAccusationSring1.trim(), boldfontLabelAmirix);
 
 		c1 = new PdfPCell(p1);
@@ -971,7 +956,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-		p1 = new Phrase( (":"), boldfontLabel);
+		p1 = new Phrase((":"), boldfontLabel);
 		c1 = new PdfPCell(p1);
 		c1.setHorizontalAlignment(Element.ALIGN_CENTER);
 		c1.setBorder(0);
@@ -979,7 +964,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		table.addCell(c1);
 
-		p1 = new Phrase( ("التهمـــــــــــــــــــــــــــــــــة"), boldfontLabel);
+		p1 = new Phrase(("التهمـــــــــــــــــــــــــــــــــة"), boldfontLabel);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -988,9 +973,9 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       --------------- tribunal--------------------      
-		 
-		p1 = new Phrase( (ficheDeDetentionDto.getArrestation().getDate().toString()), boldfontLabelAmiri);
+		// --------------- tribunal--------------------
+
+		p1 = new Phrase((ficheDeDetentionDto.getArrestation().getDate().toString()), boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -999,7 +984,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-		p1 = new Phrase( (":"), boldfontLabel);
+		p1 = new Phrase((":"), boldfontLabel);
 		c1 = new PdfPCell(p1);
 		c1.setHorizontalAlignment(Element.ALIGN_CENTER);
 		c1.setBorder(0);
@@ -1007,7 +992,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		table.addCell(c1);
 
-		p1 = new Phrase( ("تــــاريخ الإيـــداع بالمــــركز"), boldfontLabel);
+		p1 = new Phrase(("تــــاريخ الإيـــداع بالمــــركز"), boldfontLabel);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1016,13 +1001,14 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       --------------- tribunal--------------------      
+		// --------------- tribunal--------------------
 
 		if (ficheDeDetentionDto.getDateDebut() != null) {
-			 
-			p1 = new Phrase( (ficheDeDetentionDto.getDateDebut().toString()), boldfontLabelAmiri);
-			
-//			p1 = new Phrase( (ficheDeDetentionDto.getDateDebut().toString()), boldfontLabelAmiri);
+
+			p1 = new Phrase((ficheDeDetentionDto.getDateDebut().toString()), boldfontLabelAmiri);
+
+			// p1 = new Phrase( (ficheDeDetentionDto.getDateDebut().toString()),
+			// boldfontLabelAmiri);
 			c1 = new PdfPCell(p1);
 			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1031,7 +1017,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 			c1.setPaddingBottom(7f);
 			table.addCell(c1);
 
-			p1 = new Phrase( (":"), boldfontLabel);
+			p1 = new Phrase((":"), boldfontLabel);
 			c1 = new PdfPCell(p1);
 			c1.setHorizontalAlignment(Element.ALIGN_CENTER);
 			c1.setBorder(0);
@@ -1039,7 +1025,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 			table.addCell(c1);
 
-			p1 = new Phrase( ("تاريخ بداية العقـــــــــــــــاب"), boldfontLabel);
+			p1 = new Phrase(("تاريخ بداية العقـــــــــــــــاب"), boldfontLabel);
 			c1 = new PdfPCell(p1);
 			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1049,43 +1035,43 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 			table.addCell(c1);
 		}
 
-//		       --------------- tribunal--------------------      
+		// --------------- tribunal--------------------
 		if (ficheDeDetentionDto.getArrestation().getLiberation() == null) {
-		if (ficheDeDetentionDto.getDateFin() != null) {
-			
-			 
-			p1 = new Phrase( (ficheDeDetentionDto.getDateFin().toString()), boldfontLabelAmiri);
-	 		c1 = new PdfPCell(p1);
-			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
-			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			c1.setBorder(0);
-			c1.setColspan(65);
-			c1.setPaddingBottom(7f);
+			if (ficheDeDetentionDto.getDateFin() != null) {
 
-			table.addCell(c1);
+				p1 = new Phrase((ficheDeDetentionDto.getDateFin().toString()), boldfontLabelAmiri);
+				c1 = new PdfPCell(p1);
+				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
+				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				c1.setBorder(0);
+				c1.setColspan(65);
+				c1.setPaddingBottom(7f);
 
-			p1 = new Phrase( (":"), boldfontLabel);
-			c1 = new PdfPCell(p1);
-			c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-			c1.setBorder(0);
-			c1.setColspan(5);
+				table.addCell(c1);
 
-			table.addCell(c1);
-			  
-			p1 = new Phrase( ("تاريخ الســـــــــــــــــــــــراح"), boldfontLabel);
-			c1 = new PdfPCell(p1);
-			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
-			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			c1.setBorder(0);
-			c1.setColspan(30);
-			c1.setPaddingBottom(7f);
-			table.addCell(c1);
-			  }
+				p1 = new Phrase((":"), boldfontLabel);
+				c1 = new PdfPCell(p1);
+				c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+				c1.setBorder(0);
+				c1.setColspan(5);
+
+				table.addCell(c1);
+
+				p1 = new Phrase(("تاريخ الســـــــــــــــــــــــراح"), boldfontLabel);
+				c1 = new PdfPCell(p1);
+				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
+				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				c1.setBorder(0);
+				c1.setColspan(30);
+				c1.setPaddingBottom(7f);
+				table.addCell(c1);
+			}
 		}
 
-//		       --------------- tribunal--------------------      
+		// --------------- tribunal--------------------
 
-		if (!(ficheDeDetentionDto.getAnneeArret() == 0 && ficheDeDetentionDto.getMoisArret() == 0 && ficheDeDetentionDto.getJourArret() == 0)) {
+		if (!(ficheDeDetentionDto.getAnneeArret() == 0 && ficheDeDetentionDto.getMoisArret() == 0
+				&& ficheDeDetentionDto.getJourArret() == 0)) {
 
 			String arretA = " ";
 			String arretM = " ";
@@ -1136,10 +1122,10 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 			}
 
-			 
 			for (ArretProvisoireDto ap : ficheDeDetentionDto.getArretProvisoires()) {
 				String duree = "";
-				duree = duree + "من  " + outputFormat.format( ap.getDateDebut() )+ " إلى  " + outputFormat.format (ap.getDateFin()) + "\n";
+				duree = duree + "من  " + outputFormat.format(ap.getDateDebut()) + " إلى  "
+						+ outputFormat.format(ap.getDateFin()) + "\n";
 				p1 = new Phrase(duree, boldfontFamielle);
 			}
 
@@ -1150,7 +1136,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 			c1.setColspan(40);
 			c1.setPaddingBottom(7f);
 			table.addCell(c1);
-			p1 = new Phrase( (arretA) +  (arretM) +  (arretJ),
+			p1 = new Phrase((arretA) + (arretM) + (arretJ),
 					boldfontLabelAmiri);
 			c1 = new PdfPCell(p1);
 			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
@@ -1160,7 +1146,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 			c1.setPaddingBottom(7f);
 			table.addCell(c1);
 
-			p1 = new Phrase( (":"), boldfontLabel);
+			p1 = new Phrase((":"), boldfontLabel);
 			c1 = new PdfPCell(p1);
 			c1.setHorizontalAlignment(Element.ALIGN_CENTER);
 			c1.setBorder(0);
@@ -1168,7 +1154,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 			table.addCell(c1);
 
-			p1 = new Phrase( ("إيقــــــاف تحفظـــــــــــــــي"), boldfontLabel);
+			p1 = new Phrase(("إيقــــــاف تحفظـــــــــــــــي"), boldfontLabel);
 			c1 = new PdfPCell(p1);
 			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1183,11 +1169,12 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		if (nbrRetour > 1) {
 			classePenale = "عـــــ" + "0" + nbrRetour + " " + "ـــــــــائـــد";
 		} else {
-			classePenale = ficheDeDetentionDto.getArrestation().getEnfant().getClassePenale().getLibelle_classe_penale().toString();
+			classePenale = ficheDeDetentionDto.getArrestation().getEnfant().getClassePenale().getLibelle_classe_penale()
+					.toString();
 		}
 
-		if(ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
-			classePenale+="ة";
+		if (ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
+			classePenale += "ة";
 		}
 		p1 = new Phrase(classePenale, boldfontLabelAmiri);
 		c1 = new PdfPCell(p1);
@@ -1198,7 +1185,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-		p1 = new Phrase( (":"), boldfontLabel);
+		p1 = new Phrase((":"), boldfontLabel);
 		c1 = new PdfPCell(p1);
 		c1.setHorizontalAlignment(Element.ALIGN_CENTER);
 		c1.setBorder(0);
@@ -1206,7 +1193,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		table.addCell(c1);
 
-		p1 = new Phrase( ("العقوبــــــات السابقــــــــــة"), boldfontLabel);
+		p1 = new Phrase(("العقوبــــــات السابقــــــــــة"), boldfontLabel);
 		c1 = new PdfPCell(p1);
 		c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 		c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1215,18 +1202,17 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		c1.setPaddingBottom(7f);
 		table.addCell(c1);
 
-//		       --------------- tribunal--------------------    
+		// --------------- tribunal--------------------
 		if (ficheDeDetentionDto.getTotaleEchappe() != 0 || ficheDeDetentionDto.getTotaleRecidence() != 0
 				|| ficheDeDetentionDto.getTotaleRecidenceWithetabChangeManiere() != 0) {
-			
-//			if (ficheDeDetentionDto.getTotaleRecidence() != 0) {
+
+			// if (ficheDeDetentionDto.getTotaleRecidence() != 0) {
 			p1 = new Phrase(
 
 					("نقــــــل ") + (" " + ficheDeDetentionDto.getTotaleRecidence() + " "),
 					boldfontLabelAmiri);
-//			}
-			
-			
+			// }
+
 			if (ficheDeDetentionDto.getTotaleEchappe() != 0) {
 				p1.add(((" و ") + ("فــــــرار ")
 						+ (" " + ficheDeDetentionDto.getTotaleEchappe() + " ")));
@@ -1252,7 +1238,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 			table.addCell(c1);
 
-			p1 = new Phrase( ("المـــــــلاحظـــــــات "), boldfontLabel);
+			p1 = new Phrase(("المـــــــلاحظـــــــات "), boldfontLabel);
 			c1 = new PdfPCell(p1);
 			c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 			c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1294,8 +1280,10 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 				table.addCell(c1);
 			}
 
-			Echappes e = echappesRepository.findByIdEnfantAndResidenceTrouverNull(ficheDeDetentionDto.getArrestation().getEnfant().getId());
-			Echappes eLast = echappesRepository.findMaxEchappes(ficheDeDetentionDto.getArrestation().getEnfant().getId(),
+			Echappes e = echappesRepository
+					.findByIdEnfantAndResidenceTrouverNull(ficheDeDetentionDto.getArrestation().getEnfant().getId());
+			Echappes eLast = echappesRepository.findMaxEchappes(
+					ficheDeDetentionDto.getArrestation().getEnfant().getId(),
 					ficheDeDetentionDto.getArrestation().getArrestationId().getNumOrdinale());
 
 			if (e != null) {
@@ -1390,18 +1378,20 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 		if (!pDFPenaleDTO.isSansDetail()) {
 
-//		       ---------------  nom --------------------
+			// --------------- nom --------------------
 
 			p1 = new Phrase(boldConf
-					.format(ficheDeDetentionDto.getArrestation().getEnfant().getNom() + " بن " + ficheDeDetentionDto.getArrestation().getEnfant().getNomPere() + " بن "
-							+ ficheDeDetentionDto.getArrestation().getEnfant().getNomGrandPere() + " " + ficheDeDetentionDto.getArrestation().getEnfant().getPrenom()),
+					.format(ficheDeDetentionDto.getArrestation().getEnfant().getNom() + " بن "
+							+ ficheDeDetentionDto.getArrestation().getEnfant().getNomPere() + " بن "
+							+ ficheDeDetentionDto.getArrestation().getEnfant().getNomGrandPere() + " "
+							+ ficheDeDetentionDto.getArrestation().getEnfant().getPrenom()),
 					boldfontLabelAmiri);
 			c1 = new PdfPCell(p1);
 			c1.setHorizontalAlignment(Element.ALIGN_CENTER);
 
 			c1.setColspan(100);
 			c1.setBorderWidth(1);
-			
+
 			c1.setBorder(Rectangle.BOX);
 			c1.setBackgroundColor(new BaseColor(240, 240, 240)); // Couleur de fond plus claire
 			c1.setPaddingBottom(7f);
@@ -1415,12 +1405,11 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 			c1.setColspan(100);
 
 			tableLien.addCell(c1);
-			List<AffaireDto> affaireAffiche =ficheDeDetentionDto.getAffaires();
+			List<AffaireDto> affaireAffiche = ficheDeDetentionDto.getAffaires();
 
 			for (int i = 0; i < affaireAffiche.size(); i++) {
 
-				p1 = new Phrase( (" "), boldfontLabel);
-				 
+				p1 = new Phrase((" "), boldfontLabel);
 
 				p1 = new Phrase(" ", boldfontLabel);
 				c1 = new PdfPCell(p1);
@@ -1431,7 +1420,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 				c1.setColspan(70);
 				tableAffaire.addCell(c1);
 
-				p1 = new Phrase((i + 1) + " " +  (" العدد الرتبي للقضية   "), boldfontLabel);
+				p1 = new Phrase((i + 1) + " " + (" العدد الرتبي للقضية   "), boldfontLabel);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1439,7 +1428,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 				c1.setColspan(30);
 				tableAffaire.addCell(c1);
 
-				p1 = new Phrase( (affaireAffiche.get(i).getAffaireId().getNumAffaire()) + " "
+				p1 = new Phrase((affaireAffiche.get(i).getAffaireId().getNumAffaire()) + " "
 						+ affaireAffiche.get(i).getTribunal().getNom_tribunal(), boldfontLabel);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
@@ -1447,7 +1436,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 				c1.setColspan(70);
 				tableAffaire.addCell(c1);
-				p1 = new Phrase( ("  القضية"), boldfontLabel);
+				p1 = new Phrase(("  القضية"), boldfontLabel);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1459,94 +1448,94 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 						+ affaireAffiche.get(i).getAffaireId().getIdEnfant().toString());
 
 				switch (affaireAffiche.get(i).getTypeDocument().toString().trim()) {
-				case "CD":
-					p1 = new Phrase(("بطاقة إيداع"), boldfontLabelAmiri);
+					case "CD":
+						p1 = new Phrase(("بطاقة إيداع"), boldfontLabelAmiri);
 
-					break;
+						break;
 
-				case "CH":
-					p1 = new Phrase(("بطاقة إيواء"), boldfontLabelAmiri);
+					case "CH":
+						p1 = new Phrase(("بطاقة إيواء"), boldfontLabelAmiri);
 
-					break;
+						break;
 
-				case "AEX":
+					case "ArretEx":
 
-					if (affaireAffiche.get(i).getTypeFile() != null) {
-						if (affaireAffiche.get(i).getTypeFile().toString().equals("AEX".toString())) {
+						if (affaireAffiche.get(i).getTypeFile() != null) {
+							if (affaireAffiche.get(i).getTypeFile().toString().equals("ArretEx".toString())) {
+
+								p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+										+ ("إيقاف تنفيذ الحكم"), boldfontLabelAmiri);
+							} else if (affaireAffiche.get(i).getTypeFile().toString().equals("L".toString())) {
+
+								p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+										+ ("ســــــــــــراح"), boldfontLabelAmiri);
+
+							}
+						} else {
 
 							p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
 									+ ("إيقاف تنفيذ الحكم"), boldfontLabelAmiri);
-						} else if (affaireAffiche.get(i).getTypeFile().toString().equals("L".toString())) {
-
-							p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-									+ ("ســــــــــــراح"), boldfontLabelAmiri);
-
 						}
-					} else {
+						break;
+					case "CJ":
+						p1 = new Phrase(("مضمون حكم"), boldfontLabelAmiri);
 
-						p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-								+ ("إيقاف تنفيذ الحكم"), boldfontLabelAmiri);
-					}
-					break;
-				case "CJ":
-					p1 = new Phrase(("مضمون حكم"), boldfontLabelAmiri);
+						break;
 
-					break;
-
-				case "T":
-					if (affaireAffiche.get(i).getTypeFile() != null) {
-						if (affaireAffiche.get(i).getTypeFile().toString().equals("T".toString())) {
+					case "T":
+						if (affaireAffiche.get(i).getTypeFile() != null) {
+							if (affaireAffiche.get(i).getTypeFile().toString().equals("T".toString())) {
+								p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+										+ ("إحــــــالة"), boldfontLabelAmiri);
+							} else if (affaireAffiche.get(i).getTypeFile().toString().equals("A".toString())) {
+								p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+										+ ("تخلــــــي"), boldfontLabelAmiri);
+							} else if (affaireAffiche.get(i).getTypeFile().toString().equals("G".toString())) {
+								p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+										+ ("تعهــــــد"), boldfontLabelAmiri);
+							}
+						} else {
 							p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
 									+ ("إحــــــالة"), boldfontLabelAmiri);
-						} else if (affaireAffiche.get(i).getTypeFile().toString().equals("A".toString())) {
-							p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-									+ ("تخلــــــي"), boldfontLabelAmiri);
-						} else if (affaireAffiche.get(i).getTypeFile().toString().equals("G".toString())) {
-							p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-									+ ("تعهــــــد"), boldfontLabelAmiri);
 						}
-					} else {
+
+						break;
+
+					case "AE":
 						p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-								+ ("إحــــــالة"), boldfontLabelAmiri);
-					}
+								+ ("طعن الطفل بالاستئناف"), boldfontLabelAmiri);
 
-					break;
+						break;
 
-				case "AE":
-					p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-							+ ("طعن الطفل بالاستئناف"), boldfontLabelAmiri);
+					case "AP":
+						p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+								+ ("طعن النيابة بالاستئناف"), boldfontLabelAmiri);
 
-					break;
+						break;
 
-				case "AP":
-					p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-							+ ("طعن النيابة بالاستئناف"), boldfontLabelAmiri);
+					case "CR":
+						p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+								+ ("مراجعة"), boldfontLabelAmiri);
 
-					break;
+						break;
+					case "CRR":
+						p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+								+ ("قرار رفض المراجعة"), boldfontLabelAmiri);
 
-				case "CR":
-					p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-							+ ("مراجعة"), boldfontLabelAmiri);
+						break;
+					case "CP":
+						p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+								+ ("قرار تمديد"), boldfontLabelAmiri);
 
-					break;
-				case "CRR":
-					p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-							+ ("قرار رفض المراجعة"), boldfontLabelAmiri);
+						break;
+					case "CHL":
+						p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
+								+ ("قرار تغير مكان الإيداع "), boldfontLabelAmiri);
 
-					break;
-				case "CP":
-					p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-							+ ("قرار تمديد"), boldfontLabelAmiri);
+						break;
 
-					break;
-				case "CHL":
-					p1 = new Phrase(affaireAffiche.get(i).getDateEmissionDocument().toString() + " "
-							+ ("قرار تغير مكان الإيداع "), boldfontLabelAmiri);
-
-					break;
-
-				default:
-					p1 = new Phrase(("--"), boldfontLabelAmiri);
+					default:
+						p1 = new Phrase(("--"), boldfontLabelAmiri);
 
 				}
 
@@ -1557,7 +1546,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 				c1.setColspan(70);
 				tableAffaire.addCell(c1);
 
-				p1 = new Phrase( ("  نوع الوثيقة"), boldfontLabel);
+				p1 = new Phrase(("  نوع الوثيقة"), boldfontLabel);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1577,9 +1566,9 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 				if (affaireAffiche.get(i).getTypeDocument().toString().equals("CD")
 						|| affaireAffiche.get(i).getTypeDocument().toString().equals("CH")
 						|| affaireAffiche.get(i).getTypeDocument().toString().equals("T")
-						|| affaireAffiche.get(i).getTypeDocument().toString().equals("CP") 
-						|| (affaireAffiche.get(i).getAnnee() == 0 && affaireAffiche.get(i).getMois () == 0
-						&& affaireAffiche.get(i).getJour() == 0)) {
+						|| affaireAffiche.get(i).getTypeDocument().toString().equals("CP")
+						|| (affaireAffiche.get(i).getAnnee() == 0 && affaireAffiche.get(i).getMois() == 0
+								&& affaireAffiche.get(i).getJour() == 0)) {
 					labelAffair = "تاريخ صدور البطاقة ";
 				} else {
 					if (affaireAffiche.get(i).getTypeDocument().toString().equals("CHL")) {
@@ -1590,7 +1579,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 					}
 				}
 
-				p1 = new Phrase( (labelAffair), boldfontLabel);
+				p1 = new Phrase((labelAffair), boldfontLabel);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1611,7 +1600,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 				// c1.setBackgroundColor(new BaseColor(210, 210, 210));
 				c1.setColspan(70);
 				tableAffaire.addCell(c1);
-				p1 = new Phrase( ("التهمة "), boldfontLabel);
+				p1 = new Phrase(("التهمة "), boldfontLabel);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1619,87 +1608,90 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 				c1.setColspan(30);
 				tableAffaire.addCell(c1);
 
-				if (!(affaireAffiche.get(i).getAnnee() == 0 && affaireAffiche.get(i).getMois() == 0
-						&& affaireAffiche.get(i).getJour() == 0)) {
-
-					String jugeA = " ";
-					String jugeM = " ";
-					String jugeJ = " ";
-
-					if (affaireAffiche.get(i).getAnnee() != 0) {
-						if (affaireAffiche.get(i).getAnnee() == 1) {
-							jugeA = " " + "عام" + " ";
-						} else if (affaireAffiche.get(i).getAnnee() == 2) {
-							jugeA = " " + "عامين" + " ";
-						} else if ((affaireAffiche.get(i).getAnnee() >= 3)
-								&& (affaireAffiche.get(i).getAnnee() <= 10)) {
-							jugeA = affaireAffiche.get(i).getAnnee() + " " + "أعوام" + " ";
-						} else {
-							jugeA = affaireAffiche.get(i).getAnnee() + " " + "عام" + " ";
-						}
-
-						if (affaireAffiche.get(i).getMois() != 0 || affaireAffiche.get(i).getJour() != 0) {
-							jugeA = jugeA + " و ";
-						}
-					}
-					if (affaireAffiche.get(i).getMois() != 0) {
-						if (affaireAffiche.get(i).getMois() == 1) {
-							jugeM = " " + "شهر" + " ";
-						} else if (affaireAffiche.get(i).getMois() == 2) {
-							jugeM = " " + "شهرين" + " ";
-						} else if ((affaireAffiche.get(i).getMois() >= 3) && (affaireAffiche.get(i).getMois() <= 10)) {
-							jugeM = affaireAffiche.get(i).getMois() + " " + "أشهر" + " ";
-						} else {
-							jugeM = affaireAffiche.get(i).getMois() + "  " + "شهر" + " ";
-						}
-
-						if (affaireAffiche.get(i).getJour() != 0) {
-							jugeM = jugeM + " و ";
-						}
-					}
-					if (affaireAffiche.get(i).getJour() != 0) {
-						if (affaireAffiche.get(i).getJour() == 1) {
-							jugeJ = " " + "يوم " + " ";
-						} else if (affaireAffiche.get(i).getJour() == 2) {
-							jugeJ = " " + "يومين" + " ";
-						} else if ((affaireAffiche.get(i).getJour() >= 3) && (affaireAffiche.get(i).getJour() <= 10)) {
-							jugeJ = affaireAffiche.get(i).getJour() + " " + "أيام" + " ";
-						} else {
-							jugeJ = affaireAffiche.get(i).getJour() + "  " + "يوم" + " ";
-						}
-
-					}
+				if (affaireAffiche.get(i).getAffaireAffecter() != null) {
 					String remarque = " ";
-					if (affaireAffiche.get(i).getTypeJuge() != null) {
-						remarque = remarque + " " + affaireAffiche.get(i).getTypeJuge().getLibelle_typeJuge() + " ";
-					}
-					if (affaireAffiche.get(i).getTypeDocument().toString().equals("AEX")) {
-						remarque = remarque + "(إيقاف   الحكم)";
-					}
-					if (affaireAffiche.get(i).getAffaireAffecter() != null) {
-						remarque = remarque + " تم الضم إلى القضية عدد :  "
-								+ affaireAffiche.get(i).getAffaireAffecter().getAffaireId().getNumAffaire() + " ";
-					}
-					p1 = new Phrase(remarque + " " + jugeJ + " " + jugeM + " " + jugeA
-
-							, boldfontLabelAmiri);
+					// remarque = affaireAffiche.get(i).getTypeJuge().getLibelle_typeJuge() + " إلى
+					// القضية عدد : "
+					// + affaireAffiche.get(i).getAffaireAffecter().getAffaireId().getNumAffaire() +
+					// " ";
+					p1 = new Phrase((affaireAffiche.get(i).getAffaireId().getNumAffaire())
+							+ affaireAffiche.get(i).getTypeJuge().getLibelle_typeJuge() + " إلى القضية عدد   ",
+							boldfontLabelAmiri);
 					c1 = new PdfPCell(p1);
 					c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 					c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-					// c1.setBackgroundColor(new BaseColor(210, 210, 210));
+
 					c1.setColspan(70);
 					tableAffaire.addCell(c1);
-				} else {
+				}
 
-					if (affaireAffiche.get(i).getTypeDocument().toString().equals("AEX")) {
+				else {
+					if (!(affaireAffiche.get(i).getAnnee() == 0 && affaireAffiche.get(i).getMois() == 0
+							&& affaireAffiche.get(i).getJour() == 0)) {
 
-						String remarque = " إيقاف الحكم   سراح ";
+						String jugeA = " ";
+						String jugeM = " ";
+						String jugeJ = " ";
 
+						if (affaireAffiche.get(i).getAnnee() != 0) {
+							if (affaireAffiche.get(i).getAnnee() == 1) {
+								jugeA = " " + "عام" + " ";
+							} else if (affaireAffiche.get(i).getAnnee() == 2) {
+								jugeA = " " + "عامين" + " ";
+							} else if ((affaireAffiche.get(i).getAnnee() >= 3)
+									&& (affaireAffiche.get(i).getAnnee() <= 10)) {
+								jugeA = affaireAffiche.get(i).getAnnee() + " " + "أعوام" + " ";
+							} else {
+								jugeA = affaireAffiche.get(i).getAnnee() + " " + "عام" + " ";
+							}
+
+							if (affaireAffiche.get(i).getMois() != 0 || affaireAffiche.get(i).getJour() != 0) {
+								jugeA = jugeA + " و ";
+							}
+						}
+						if (affaireAffiche.get(i).getMois() != 0) {
+							if (affaireAffiche.get(i).getMois() == 1) {
+								jugeM = " " + "شهر" + " ";
+							} else if (affaireAffiche.get(i).getMois() == 2) {
+								jugeM = " " + "شهرين" + " ";
+							} else if ((affaireAffiche.get(i).getMois() >= 3)
+									&& (affaireAffiche.get(i).getMois() <= 10)) {
+								jugeM = affaireAffiche.get(i).getMois() + " " + "أشهر" + " ";
+							} else {
+								jugeM = affaireAffiche.get(i).getMois() + "  " + "شهر" + " ";
+							}
+
+							if (affaireAffiche.get(i).getJour() != 0) {
+								jugeM = jugeM + " و ";
+							}
+						}
+						if (affaireAffiche.get(i).getJour() != 0) {
+							if (affaireAffiche.get(i).getJour() == 1) {
+								jugeJ = " " + "يوم " + " ";
+							} else if (affaireAffiche.get(i).getJour() == 2) {
+								jugeJ = " " + "يومين" + " ";
+							} else if ((affaireAffiche.get(i).getJour() >= 3)
+									&& (affaireAffiche.get(i).getJour() <= 10)) {
+								jugeJ = affaireAffiche.get(i).getJour() + " " + "أيام" + " ";
+							} else {
+								jugeJ = affaireAffiche.get(i).getJour() + "  " + "يوم" + " ";
+							}
+
+						}
+						String remarque = " ";
+						if (affaireAffiche.get(i).getTypeJuge() != null) {
+							remarque = remarque + " " + affaireAffiche.get(i).getTypeJuge().getLibelle_typeJuge() + " ";
+						}
+						if (affaireAffiche.get(i).getTypeDocument().toString().equals("ArretEx")) {
+							remarque = remarque + "(إيقاف   الحكم)";
+						}
 						if (affaireAffiche.get(i).getAffaireAffecter() != null) {
 							remarque = remarque + " تم الضم إلى القضية عدد :  "
 									+ affaireAffiche.get(i).getAffaireAffecter().getAffaireId().getNumAffaire() + " ";
 						}
-						p1 = new Phrase(remarque, boldfontLabelAmiri);
+						p1 = new Phrase(remarque + " " + jugeJ + " " + jugeM + " " + jugeA
+
+								, boldfontLabelAmiri);
 						c1 = new PdfPCell(p1);
 						c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 						c1.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -1708,31 +1700,51 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 						tableAffaire.addCell(c1);
 					} else {
 
-						String remarque = " ";
-						if (!affaireAffiche.get(i).getTypeDocument().toString().equals("CJ")) {
-							remarque = remarque + "إيقــــاف";
-						}
-						if (affaireAffiche.get(i).getTypeJuge() != null) {
-							remarque = remarque + " " + affaireAffiche.get(i).getTypeJuge().getLibelle_typeJuge() + " ";
-						}
+						if (affaireAffiche.get(i).getTypeDocument().toString().equals("ArretEx")) {
 
-						if (affaireAffiche.get(i).getAffaireAffecter() != null) {
-							remarque = remarque + "  تم الضم إلى القضية عدد :  "
-									+ affaireAffiche.get(i).getAffaireAffecter().getAffaireId().getNumAffaire() + " ";
+							String remarque = " إيقاف الحكم   سراح ";
+
+							if (affaireAffiche.get(i).getAffaireAffecter() != null) {
+								remarque = remarque + " تم الضم إلى القضية عدد :  "
+										+ affaireAffiche.get(i).getAffaireAffecter().getAffaireId().getNumAffaire()
+										+ " ";
+							}
+							p1 = new Phrase(remarque, boldfontLabelAmiri);
+							c1 = new PdfPCell(p1);
+							c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
+							c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+							// c1.setBackgroundColor(new BaseColor(210, 210, 210));
+							c1.setColspan(70);
+							tableAffaire.addCell(c1);
+						} else {
+
+							String remarque = " ";
+							if (!affaireAffiche.get(i).getTypeDocument().toString().equals("CJ")) {
+								remarque = remarque + "إيقــــاف";
+							}
+							if (affaireAffiche.get(i).getTypeJuge() != null) {
+								remarque = remarque + " " + affaireAffiche.get(i).getTypeJuge().getLibelle_typeJuge()
+										+ " ";
+							}
+
+							if (affaireAffiche.get(i).getAffaireAffecter() != null) {
+								remarque = remarque + "  تم الضم إلى القضية عدد :  "
+										+ affaireAffiche.get(i).getAffaireAffecter().getAffaireId().getNumAffaire()
+										+ " ";
+							}
+							p1 = new Phrase(remarque, boldfontLabelAmiri);
+							c1 = new PdfPCell(p1);
+							c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
+							c1.setHorizontalAlignment(Element.ALIGN_CENTER);
+							// c1.setBackgroundColor(new BaseColor(210, 210, 210));
+							c1.setColspan(70);
+							tableAffaire.addCell(c1);
+
 						}
-						p1 = new Phrase(remarque, boldfontLabelAmiri);
-						c1 = new PdfPCell(p1);
-						c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
-						c1.setHorizontalAlignment(Element.ALIGN_CENTER);
-						// c1.setBackgroundColor(new BaseColor(210, 210, 210));
-						c1.setColspan(70);
-						tableAffaire.addCell(c1);
 
 					}
-
 				}
-
-				p1 = new Phrase( ("نص الحكم"), boldfontLabel);
+				p1 = new Phrase(("نص الحكم"), boldfontLabel);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -1740,7 +1752,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 				c1.setColspan(30);
 				tableAffaire.addCell(c1);
 
-				p1 = new Phrase( ("  "), boldfontLabelAmiri);
+				p1 = new Phrase(("  "), boldfontLabelAmiri);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -1748,7 +1760,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 				c1.setColspan(70);
 				tableAffaire.addCell(c1);
-				p1 = new Phrase( ("  "), boldfontLabelAmiri);
+				p1 = new Phrase(("  "), boldfontLabelAmiri);
 				c1 = new PdfPCell(p1);
 				c1.setRunDirection(PdfWriter.RUN_DIRECTION_LTR);
 				c1.setHorizontalAlignment(Element.ALIGN_CENTER);
@@ -1763,7 +1775,7 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 		Rectangle rect = new Rectangle(15, 20, 580, 690);
 		rect.setBorder(Rectangle.BOX);
 		rect.setBorderWidth(1);
-      
+
 		document.add(tableTop);
 		document.add(tTitre);
 		document.add(rect);
@@ -1787,168 +1799,137 @@ public class GenererFicheDeDetentionPdfImpl implements GenererFicheDeDetentionPd
 
 	}
 
- 
-
-	 
-
-	 
-
- 
-
- 
-	 public AffaireDto trouverAffairePrincipale(List<AffaireDto> liste) {
-	        for (AffaireDto affaire : liste) {
-	            if (affaire.isAffairePrincipale()) {
-	                return affaire; // Retourne la première affaire principale trouvée
-	            }
-	        }
-	        return null; // Retourne null si aucune affaire principale n'est trouvée
-	    }
-	 
-
- 
-
-	 
-
- 
-
-	 
-
-	 
- 
-
-	 
- private String ecrireStatut(FicheDeDetentionDto ficheDeDetentionDto)  {
-	 String statutJudiciaire ="**";
-		if (ficheDeDetentionDto.getEtatJuridique().equals("juge")) {
-			statutJudiciaire =  "محكــــــــــــــوم"    ;
-			if(ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
-				statutJudiciaire =  "محكــــــــــــــومة" ;
+	public AffaireDto trouverAffairePrincipale(List<AffaireDto> liste) {
+		for (AffaireDto affaire : liste) {
+			if (affaire.isAffairePrincipale()) {
+				return affaire; // Retourne la première affaire principale trouvée
 			}
-			
+		}
+		return null; // Retourne null si aucune affaire principale n'est trouvée
+	}
+
+	private String ecrireStatut(FicheDeDetentionDto ficheDeDetentionDto) {
+		String statutJudiciaire = "**";
+		if (ficheDeDetentionDto.getEtatJuridique().equals("juge")) {
+			statutJudiciaire = "محكــــــــــــــوم";
+			if (ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
+				statutJudiciaire = "محكــــــــــــــومة";
+			}
+
 		} else if (ficheDeDetentionDto.getEtatJuridique().equals("arret")) {
 
 			if (ficheDeDetentionDto.isAppelParquet()) {
-				statutJudiciaire =  ficheDeDetentionDto.getDateAppelParquet() 
-						      + "موقـــوف  طعــن النيابـة بالاستئناف " ;
-				if(ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
-					statutJudiciaire =  ficheDeDetentionDto.getDateAppelParquet() 
-						      + "موقـــوفة  طعــن النيابـة بالاستئناف " ;
+				statutJudiciaire = ficheDeDetentionDto.getDateAppelParquet()
+						+ "موقـــوف  طعــن النيابـة بالاستئناف ";
+				if (ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
+					statutJudiciaire = ficheDeDetentionDto.getDateAppelParquet()
+							+ "موقـــوفة  طعــن النيابـة بالاستئناف ";
 				}
 				ficheDeDetentionDto.setDateFin(null);
 			} else if (!ficheDeDetentionDto.isAppelParquet() && !ficheDeDetentionDto.isAppelEnfant()) {
-				statutJudiciaire = "موقــــــــــــــوف" ;
-				if(ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
-					statutJudiciaire = "موقــــــــــــــوفة"  ;
+				statutJudiciaire = "موقــــــــــــــوف";
+				if (ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
+					statutJudiciaire = "موقــــــــــــــوفة";
 				}
 				ficheDeDetentionDto.setDateFin(null);
 			}
 
 			else if (ficheDeDetentionDto.isAppelEnfant() && !ficheDeDetentionDto.isAppelParquet()) {
-				statutJudiciaire =  ficheDeDetentionDto.getDateAppelEnfant() 
-						       + "موقـــوف   طعــن الطفــل بالاستئناف " ;
-				if(ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
-					statutJudiciaire =  ficheDeDetentionDto.getDateAppelEnfant() 
-						       + "موقـــوفة   طعــن الطفــل بالاستئناف " ;
+				statutJudiciaire = ficheDeDetentionDto.getDateAppelEnfant()
+						+ "موقـــوف   طعــن الطفــل بالاستئناف ";
+				if (ficheDeDetentionDto.getArrestation().getEnfant().getSexe().equals("أنثى")) {
+					statutJudiciaire = ficheDeDetentionDto.getDateAppelEnfant()
+							+ "موقـــوفة   طعــن الطفــل بالاستئناف ";
 				}
 			}
 
 		}
 
 		else if (ficheDeDetentionDto.getArrestation().getLiberation() != null) {
-			
-			 
-			
 
 			if (ficheDeDetentionDto.getArrestation().getLiberation().getEtabChangeManiere() == null) {
-				statutJudiciaire =  
-						"  "+ ficheDeDetentionDto.getArrestation().getLiberation().getDate().toString()+"  "+
-						
+				statutJudiciaire = "  " + ficheDeDetentionDto.getArrestation().getLiberation().getDate().toString()
+						+ "  " +
+
 						ficheDeDetentionDto.getArrestation().getLiberation().getCauseLiberation()
-						.getLibelleCauseLiberation().toString()   ;
+								.getLibelleCauseLiberation().toString();
 
 			} else {
-				
-				
-				statutJudiciaire = 
-						"  "+ ficheDeDetentionDto.getArrestation().getLiberation().getDate().toString()+"  "+
-						
+
+				statutJudiciaire = "  " + ficheDeDetentionDto.getArrestation().getLiberation().getDate().toString()
+						+ "  " +
+
 						ficheDeDetentionDto.getArrestation().getLiberation().getCauseLiberation()
-						.getLibelleCauseLiberation().toString().trim() + " إلى "
+								.getLibelleCauseLiberation().toString().trim()
+						+ " إلى "
 						+ ficheDeDetentionDto.getArrestation().getLiberation().getEtabChangeManiere()
-								.getLibelle_etabChangeManiere().toString().trim()  ;
-				
+								.getLibelle_etabChangeManiere().toString().trim();
 
 			}
 
 		} else {
-			statutJudiciaire="--";
-			
+			statutJudiciaire = "--";
+
 		}
 		return statutJudiciaire;
- }
-	
-
-	 
-
-	 
- String getDocumentDescription(AffaireDto affaireAffiche) {
-	    String typeDocument = affaireAffiche.getTypeDocument().toString().trim();
-	    String dateEmission = affaireAffiche.getDateEmissionDocument().toString();
-	    String typeFile = affaireAffiche.getTypeFile() != null ? affaireAffiche.getTypeFile().toString() : null;
-
-	    switch (typeDocument) {
-	        case "CD":
-	            return "بطاقة إيداع";
-
-	        case "CH":
-	            return "بطاقة إيواء";
-
-	        case "AEX":
-	            if ("AEX".equals(typeFile)) {
-	                return dateEmission + " إيقاف تنفيذ الحكم";
-	            } else if ("L".equals(typeFile)) {
-	                return dateEmission + " ســــــــــــراح";
-	            } else {
-	                return dateEmission + " إيقاف تنفيذ الحكم";
-	            }
-
-	        case "CJ":
-	            return "مضمون حكم";
-
-	        case "T":
-	            if ("T".equals(typeFile)) {
-	                return dateEmission + " إحــــــالة";
-	            } else if ("A".equals(typeFile)) {
-	                return dateEmission + " تخلــــــي";
-	            } else if ("G".equals(typeFile)) {
-	                return dateEmission + " تعهــــــد";
-	            } else {
-	                return dateEmission + " إحــــــالة";
-	            }
-
-	        case "AE":
-	            return dateEmission + " طعن الطفل بالاستئناف";
-
-	        case "AP":
-	            return dateEmission + " طعن النيابة بالاستئناف";
-
-	        case "CR":
-	            return dateEmission + " مراجعة";
-
-	        case "CRR":
-	            return dateEmission + " قرار رفض المراجعة";
-
-	        case "CP":
-	            return dateEmission + " قرار تمديد";
-
-	        case "CHL":
-	            return dateEmission + " قرار تغير مكان الإيداع ";
-
-	        default:
-	            return "--";
-	    }
 	}
-	 
+
+	String getDocumentDescription(AffaireDto affaireAffiche) {
+		String typeDocument = affaireAffiche.getTypeDocument().toString().trim();
+		String dateEmission = affaireAffiche.getDateEmissionDocument().toString();
+		String typeFile = affaireAffiche.getTypeFile() != null ? affaireAffiche.getTypeFile().toString() : null;
+
+		switch (typeDocument) {
+			case "CD":
+				return "بطاقة إيداع";
+
+			case "CH":
+				return "بطاقة إيواء";
+
+			case "ArretEx":
+				if ("ArretEx".equals(typeFile)) {
+					return dateEmission + " إيقاف تنفيذ الحكم";
+				} else if ("L".equals(typeFile)) {
+					return dateEmission + " ســــــــــــراح";
+				} else {
+					return dateEmission + " إيقاف تنفيذ الحكم";
+				}
+
+			case "CJ":
+				return "مضمون حكم";
+
+			case "T":
+				if ("T".equals(typeFile)) {
+					return dateEmission + " إحــــــالة";
+				} else if ("A".equals(typeFile)) {
+					return dateEmission + " تخلــــــي";
+				} else if ("G".equals(typeFile)) {
+					return dateEmission + " تعهــــــد";
+				} else {
+					return dateEmission + " إحــــــالة";
+				}
+
+			case "AE":
+				return dateEmission + " طعن الطفل بالاستئناف";
+
+			case "AP":
+				return dateEmission + " طعن النيابة بالاستئناف";
+
+			case "CR":
+				return dateEmission + " مراجعة";
+
+			case "CRR":
+				return dateEmission + " قرار رفض المراجعة";
+
+			case "CP":
+				return dateEmission + " قرار تمديد";
+
+			case "CHL":
+				return dateEmission + " قرار تغير مكان الإيداع ";
+
+			default:
+				return "--";
+		}
+	}
 
 }

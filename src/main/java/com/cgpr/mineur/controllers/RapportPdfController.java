@@ -23,7 +23,7 @@ import com.cgpr.mineur.dto.GouvernoratDto;
 import com.cgpr.mineur.dto.RapportDetentionDTO;
 import com.cgpr.mineur.dto.ResidenceDto;
 import com.cgpr.mineur.models.ApiResponse;
-import com.cgpr.mineur.repository.RapportEnfantQuotidienRepository;
+//import com.cgpr.mineur.repository.RapportEnfantQuotidienRepository;
 import com.cgpr.mineur.resource.EnfantAddDTO;
 import com.cgpr.mineur.resource.EnfantDTO;
 import com.cgpr.mineur.resource.PDFListExistDTO;
@@ -72,16 +72,16 @@ public class RapportPdfController {
 
 	}
 	
-	@PostMapping("/genererRapportJsonActuel")
-	public ApiResponse<List<RapportDetentionDTO>>    genererRapportJsonActuel(@RequestBody PDFListExistDTO pDFListExistDTO) {
-		 
-		 List<RapportDetentionDTO>response = null;
-	 
-			response = rapportPdfService.genererRapportJsonActuel(pDFListExistDTO);
-	 
-		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", response);    
-
-	}
+//	@PostMapping("/genererRapportJsonActuel")
+//	public ApiResponse<List<RapportDetentionDTO>>    genererRapportJsonActuel(@RequestBody PDFListExistDTO pDFListExistDTO) {
+//		 
+//		 List<RapportDetentionDTO>response = null;
+//	 
+//			response = rapportPdfService.genererRapportJsonActuel(pDFListExistDTO);
+//	 
+//		return new ApiResponse<>(HttpStatus.OK.value(), "  List Fetched Successfully.", response);    
+//
+//	}
 	
 	@PostMapping("/genererFicheDeDetentionPdf")
 	public ResponseEntity<InputStreamResource> genererFicheDeDetentionPdf(@RequestBody PDFPenaleDTO pDFPenaleDTO) {
@@ -91,5 +91,13 @@ public class RapportPdfController {
 	}
 	
 	 
+	@PostMapping("/genererFicheDeLiberationPdf")
+	public ResponseEntity<InputStreamResource> genererFicheDeLiberationPdf(@RequestBody PDFPenaleDTO pDFPenaleDTO) {
 
+		ResponseEntity<InputStreamResource> response = rapportPdfService.genererFicheDeLiberationPdf(pDFPenaleDTO);
+		return response;
+	}
+	
+	
+	
 }

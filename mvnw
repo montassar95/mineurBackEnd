@@ -117,18 +117,18 @@ if $mingw ; then
 fi
 
 if [ -z "$JAVA_HOME" ]; then
-  javaExecutable="`which javac`"
-  if [ -n "$javaExecutable" ] && ! [ "`expr \"$javaExecutable\" : '\([^ ]*\)'`" = "no" ]; then
+  javArretExecutable="`which javac`"
+  if [ -n "$javArretExecutable" ] && ! [ "`expr \"$javArretExecutable\" : '\([^ ]*\)'`" = "no" ]; then
     # readlink(1) is not available as standard on Solaris 10.
     readLink=`which readlink`
     if [ ! `expr "$readLink" : '\([^ ]*\)'` = "no" ]; then
       if $darwin ; then
-        javaHome="`dirname \"$javaExecutable\"`"
-        javaExecutable="`cd \"$javaHome\" && pwd -P`/javac"
+        javaHome="`dirname \"$javArretExecutable\"`"
+        javArretExecutable="`cd \"$javaHome\" && pwd -P`/javac"
       else
-        javaExecutable="`readlink -f \"$javaExecutable\"`"
+        javArretExecutable="`readlink -f \"$javArretExecutable\"`"
       fi
-      javaHome="`dirname \"$javaExecutable\"`"
+      javaHome="`dirname \"$javArretExecutable\"`"
       javaHome=`expr "$javaHome" : '\(.*\)/bin'`
       JAVA_HOME="$javaHome"
       export JAVA_HOME

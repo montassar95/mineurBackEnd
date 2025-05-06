@@ -32,12 +32,13 @@ public class ResidenceDto {
 	private String numArrestation;
 
 	private Date dateEntree;
+	private Date datePassage;
 	private Date dateSortie;
 
 	 
 	private EtablissementDto etablissement;
-	
- 
+	private EtablissementDto etablissementPassage;
+	private EtabChangeManiereDto etabChangeManiereEntree;
 	private EtablissementDto etablissementEntree;
 	
 	 

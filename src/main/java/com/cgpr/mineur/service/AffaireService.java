@@ -4,6 +4,8 @@ package com.cgpr.mineur.service;
  
 import java.util.List;
 
+import org.springframework.data.repository.query.Param;
+
 import com.cgpr.mineur.dto.AffaireData;
 import com.cgpr.mineur.dto.AffaireDto;
 import com.cgpr.mineur.dto.FicheDeDetentionDto;
@@ -29,7 +31,7 @@ public interface AffaireService  {
 	public VerifierAffaireDto validerAffaire(AffaireData affaireData );
 	
 	
-	
+//	public boolean trouverDetenusParNumAffaireEtTribunalId( String numAffaire,   long tribunalId);
 	 
 	
 	
