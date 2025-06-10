@@ -1,5 +1,6 @@
 package com.cgpr.mineur.service.Impl;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -12,15 +13,23 @@ import com.cgpr.mineur.dto.AccusationExtraitJugementDTO;
 import com.cgpr.mineur.dto.ActeJudiciaire;
 import com.cgpr.mineur.dto.AffairePenaleDto;
 import com.cgpr.mineur.dto.ArretExecutionPenalDTO;
+import com.cgpr.mineur.dto.EvasionCaptureDTO;
+import com.cgpr.mineur.dto.MutationResidenceDTO;
+import com.cgpr.mineur.dto.ParticipantAffaireDTO;
+import com.cgpr.mineur.dto.PenalAffaireDTO;
 import com.cgpr.mineur.dto.PenalContestationDto;
+import com.cgpr.mineur.dto.PenalContrainteDTO;
+import com.cgpr.mineur.dto.PenalGraceDto;
 import com.cgpr.mineur.dto.PenalJugementDTO;
 import com.cgpr.mineur.dto.PenalMandatDepotDTO;
+import com.cgpr.mineur.dto.PenalSyntheseDto;
 import com.cgpr.mineur.dto.PenalTransfertDto;
 import com.cgpr.mineur.dto.PenaleDetentionInfoDto;
 import com.cgpr.mineur.dto.PrisonerPenaleDto;
 import com.cgpr.mineur.dto.SearchDetenuDto;
 //import com.cgpr.mineur.repository.PersonelleRepository;
 import com.cgpr.mineur.repository.PrisonerPenalRepository;
+import com.cgpr.mineur.repository.rapport.RechercherAffairesRepositoryCustom;
 import com.cgpr.mineur.resource.EnfantDTO;
 import com.cgpr.mineur.service.PrisonerPenalService;
 
@@ -29,7 +38,8 @@ public class PrisonerPenalServiceImpl implements PrisonerPenalService {
 	
 	@Autowired
 	private PrisonerPenalRepository prisonerPenalRepository;
-
+	@Autowired
+	private RechercherAffairesRepositoryCustom rechercherAffairesRepositoryCustom;
 	Simplification simplifier = new Simplification();
 	
 	 private String simplifyOrNull(String value) {
@@ -84,9 +94,14 @@ public class PrisonerPenalServiceImpl implements PrisonerPenalService {
 	    return prisonerList;
 	}
 	@Override
-	public PrisonerPenaleDto findPrisonerPenalByPrisonerId(String prisonerId) {
+	public PrisonerPenaleDto findPrisonerPenalByPrisonerId(String prisonerId, String tcoddet) {
 		// TODO Auto-generated method stub
-		return prisonerPenalRepository.findPrisonerPenalByPrisonerId(prisonerId);
+		System.err.println("findPrisonerPenalByPrisonerId");
+		PrisonerPenaleDto prisonerPenaleDto = prisonerPenalRepository.findPrisonerPenalByPrisonerId(prisonerId,   tcoddet);
+		//PenalSyntheseDto penalSyntheseDto = rechercherAffairesRepositoryCustom.rechercherPenalSyntheseDetenu(prisonerId, tcoddet);
+		//prisonerPenaleDto.setPenalSyntheseDto(penalSyntheseDto);
+		System.err.println(prisonerPenaleDto.toString());
+		return prisonerPenaleDto;
 	}
 	@Override
 	public SearchDetenuDto trouverDetenusParPrisonerIdDansPrisons(String prisonerId) {
@@ -144,10 +159,43 @@ public class PrisonerPenalServiceImpl implements PrisonerPenalService {
 		return prisonerPenalRepository.getArretExecutionParTypeActe(  tnumide,   tcoddet,   tnumseqaff, typeActe);
 	}
 	@Override
-	public List<PenaleDetentionInfoDto> trouverToutDetentionInfosParPrisonerIdDansPrisons(String prisonerId) {
+	public List<PenaleDetentionInfoDto> trouverToutDetentionInfosParPrisonerIdDansPrisons(String prisonerId  ) {
 		// TODO Auto-generated method stub
-		return prisonerPenalRepository.trouverToutDetentionInfosParPrisonerIdDansPrisons(prisonerId);
+		return prisonerPenalRepository.trouverToutDetentionInfosParPrisonerIdDansPrisons(prisonerId  );
 	}
 
-
+	@Override
+    public List<PenalAffaireDTO> rechercherAffaires(String tnumide, String tcoddet, int minPage , int maxPage)   {
+	  return rechercherAffairesRepositoryCustom.rechercherAffaires(tnumide , tcoddet , minPage, maxPage);
+	}
+	@Override
+	public PenalSyntheseDto rechercherPenalSyntheseDetenu(String tnumide, String tcoddet) {
+		// TODO Auto-generated method stub
+		return rechercherAffairesRepositoryCustom.rechercherPenalSyntheseDetenu(tnumide, tcoddet);
+	}
+	@Override
+	public PenalContrainteDTO getContrainte(String tnumide, String tcoddet, String tnumseqaff) {
+		// TODO Auto-generated method stub
+		return prisonerPenalRepository.getContrainte(tnumide, tcoddet, tnumseqaff);
+	}
+	@Override
+	public List<PenalGraceDto> getPenalGraces(String tnumide, String tcoddet) {
+		// TODO Auto-generated method stub
+		return  prisonerPenalRepository.getPenalGraces(tnumide,   tcoddet);
+	}
+	@Override
+	public List<MutationResidenceDTO> getMutationResidence(String numide, String coddet) {
+		// TODO Auto-generated method stub
+		return prisonerPenalRepository.getMutationResidence(numide, coddet);
+	}
+	@Override
+	public List<EvasionCaptureDTO> getEvasionsWithCaptures(String tnumide, String tcoddet) {
+		// TODO Auto-generated method stub
+		return prisonerPenalRepository.getEvasionsWithCaptures(tnumide, tcoddet);
+	}
+	@Override
+	public List<ParticipantAffaireDTO> findParticipantsAffaire(String tnumide, String tcoddet) {
+		// TODO Auto-generated method stub
+		return prisonerPenalRepository.findParticipantsAffaire(tnumide, tcoddet);
+	}
 }

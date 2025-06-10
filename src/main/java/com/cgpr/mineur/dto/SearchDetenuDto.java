@@ -35,7 +35,42 @@ public class SearchDetenuDto {
  
  	private String dateEntree;
  	private int statut;
-	
+ 	
  
+// 	public SearchDetenuDto(
+// 		    String detenuId,
+// 		    long numOrdinaleArrestation,
+// 		    long numOrdinaleResidence,
+// 		    String nom,
+// 		    String prenom,
+// 		    String nomPere,
+// 		    String nomGrandPere,
+// 		    String nomMere,
+// 		    String prenomMere,
+// 		    String lieuNaissance,
+// 		    String sexe,
+// 		    String numeroEcrou,
+// 		    String nomEtablissement,
+// 		    LocalDate dateNaissance,
+// 		    String dateEntree,
+// 		    int statut
+// 		) {
+// 		    this.detenuId = detenuId;
+// 		    this.numOrdinaleArrestation = String.valueOf(numOrdinaleArrestation);
+// 		    this.numOrdinaleResidence = String.valueOf(numOrdinaleResidence);
+// 		    this.nom = nom;
+// 		    this.prenom = prenom;
+// 		    this.nomPere = nomPere;
+// 		    this.nomGrandPere = nomGrandPere;
+// 		    this.nomMere = nomMere;
+// 		    this.prenomMere = prenomMere;
+// 		    this.lieuNaissance = lieuNaissance;
+// 		    this.sexe = sexe;
+// 		    this.numeroEcrou = numeroEcrou;
+// 		    this.nomEtablissement = nomEtablissement;
+// 		    this.dateNaissance = dateNaissance;
+// 		    this.dateEntree = dateEntree;
+// 		    this.statut = statut;
+// 		}
 
 }

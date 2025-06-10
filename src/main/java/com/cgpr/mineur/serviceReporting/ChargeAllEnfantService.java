@@ -323,8 +323,9 @@ public class ChargeAllEnfantService {
 					s.getAffaireId().getNumOrdinaleArrestation() + "-" +
 					s.getNumOrdinalAffaire() + "-accusation";
 			Document docForAccusation = documentsMap.get(accusationKey);
-
+			 
 			if (docForAccusation != null) {
+				 
 				s.setDateEmission(docForAccusation.getDateEmission());
 				if (docForAccusation instanceof CarteRecup) {
 					CarteRecup c = (CarteRecup) docForAccusation;

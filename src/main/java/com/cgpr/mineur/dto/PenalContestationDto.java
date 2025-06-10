@@ -19,9 +19,14 @@ public class PenalContestationDto  {
 	 private String tnumide;
 	    private String tcoddet;
 	    private String tnumseqaff;
-	    private String tcodco;
-	    private String tdatco;
+	    private String firstname;
+	    private String motherName;
+	    private String birthDate;
+	    private String adresse;
+	    private String codeDocument;
+	    private String  codeDocumentJugement;
+	    private String dateContestation;
 	    private String numAffaire;
 	    private String libelleTribunal;
-	    private String tlibtco;
+	    private String libelleContestation;
 }

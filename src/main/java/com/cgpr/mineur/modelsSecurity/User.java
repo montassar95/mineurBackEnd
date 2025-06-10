@@ -1,61 +1,65 @@
 package com.cgpr.mineur.modelsSecurity;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.cgpr.mineur.models.Etablissement;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
- 
- @Getter
- @Setter
- @ToString
+
+@Getter
+@Setter
 @Entity
 @Table(
     name = "users", 
-    uniqueConstraints = { 
-        @UniqueConstraint(columnNames = "username") 
+    uniqueConstraints = {
+        @UniqueConstraint(columnNames = "username")
     }
 )
 public class User {
 
     @Id
-    @GeneratedValue 
+    @GeneratedValue
     private Long id;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(min = 3, max = 20)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @NotBlank
     @Size(max = 120)
+    @JsonIgnore // Empêche le mot de passe d'apparaître dans les JSON
+    @Column(nullable = false)
     private String password;
 
+    @Size(max = 50)
     private String nom;
+
+    @Size(max = 50)
     private String prenom;
-    
-    @Column(name = "num_administratif")
+
+    @Column(name = "num_administratif", length = 50)
     private String numAdministratif;
+
+    @Column(name = "telephone", length = 20)
+    private String telephone;
+
+    @Column(name = "last_login ")
+    private LocalDateTime lastLogin ;
+
+    
+    private LocalDateTime lastPasswordModifiedDate;
     
     
- 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "etaFK")
     private Etablissement etablissement;
 
@@ -67,11 +71,10 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
- 
-    public User() {
-	}
+    public User() {}
 
-	 
- 
- 
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
 }

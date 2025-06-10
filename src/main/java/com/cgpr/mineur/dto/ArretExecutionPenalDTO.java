@@ -19,9 +19,21 @@ import lombok.ToString;
 public class ArretExecutionPenalDTO {
  
 	
-	  private String tnumide;
-	    private String tcoddet;
-	    private String tnumseqaff;
+	 // Identifiants
+    private String tnumide;
+    private String tcoddet;
+    private String tnumseqaff;
+
+    // Informations personnelles
+    private String firstname; // Nom complet (nom + père + grand-père)
+    private String motherName; // Mère + grand-mère
+    private String birthDate;
+    private String adresse;
+
+    // Informations de détention
+    private String numeroEcrou;
+    private String prision;
+
 	    private String codeDocument;
 	    private String codeDocumentSecondaire;
 	    private String typeActe;

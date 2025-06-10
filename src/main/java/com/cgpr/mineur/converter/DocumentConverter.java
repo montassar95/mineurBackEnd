@@ -10,6 +10,7 @@ import com.cgpr.mineur.models.CartePropagation;
 import com.cgpr.mineur.models.CarteRecup;
 import com.cgpr.mineur.models.ChangementLieu;
 import com.cgpr.mineur.models.Document;
+import com.cgpr.mineur.models.RefuseRevue;
 import com.cgpr.mineur.models.Transfert;
  
 public  class DocumentConverter   {
@@ -41,6 +42,9 @@ public  class DocumentConverter   {
         }
 	    else if (entity instanceof CarteHeber  ) {
             return  CarteHeberConverter.entityToDto((CarteHeber) entity) ;
+        }
+	    else if (entity instanceof RefuseRevue  ) {
+            return  RefuseRevueConverter.entityToDto((RefuseRevue) entity) ;
         }
 	    else {
 	    return DocumentDto.builder()

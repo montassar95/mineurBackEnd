@@ -11,7 +11,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public class RefuseRevueDto extends DocumentDto {
 
 	 

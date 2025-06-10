@@ -216,7 +216,14 @@ public class AffaireServiceImpl implements AffaireService {
 			AffaireUtils.calculerArret(element, dto);
 
 			// Définir la date de jugement principale
-			dto.setDateJugementPrincipale(dateFormat.format(element.getDateEmission()));
+			System.out.println(element.toString());
+			if (element.isAffairePrincipale()) {
+				dto.setDateJugementPrincipale(
+					    element.getDateEmission() != null ? dateFormat.format(element.getDateEmission()) : null
+					);
+			}
+			
+
 
 			// Vérifier les types de documents spécifiques et définir les indicateurs
 			// appropriés

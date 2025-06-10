@@ -154,7 +154,35 @@ public class ToolsForReporting2 {
 			return value + " " + fallback + " ";
 		}
 	}
+	    
+	public static String generateLegalCaseString(
+			Integer totalAnnees,
+		      Integer totalMois,
+		      Integer totalJours ) {
+		StringBuilder result = new StringBuilder();
+	 
+		if (totalAnnees != 0) {
+			result.append(generateTimeUnitString(totalAnnees, "عام", "عامين", "أعوام", "عام"));
+			if (totalMois != 0 || totalJours != 0) {
+				result.append(" و ");
+			}
+		}
 
+		if (totalMois != 0) {
+			result.append(generateTimeUnitString(totalMois, "شهر", "شهرين", "أشهر", "شهر"));
+			if (totalJours != 0) {
+				result.append(" و ");
+			}
+		}
+
+		if (totalJours != 0) {
+			result.append(generateTimeUnitString(totalJours, "يوم", "يومين", "أيام", "يوم"));
+		}
+
+		 
+
+		return result.toString().trim();
+	}
 	public static String generateLegalCaseString(Affaire affaire) {
 		StringBuilder result = new StringBuilder();
 		result.append("مدة الحكم: ");
@@ -190,7 +218,6 @@ public class ToolsForReporting2 {
 
 		return result.toString().trim();
 	}
-
 	public static String generateRemarqueString(Affaire affaire) {
 		if (affaire.getTypeDocument().toString().equals("ArretEx")) {
 			return "    تم  إيقاف الحكم  : سراح " + (affaire.getAffaireAffecter() != null

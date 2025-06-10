@@ -27,7 +27,7 @@ public class FicheDeDetentionDto {
 	private int   moisArret;
 	private int  anneeArret;
 
-	private String   dateJugementPrincipale ;
+	 private String   dateJugementPrincipale ;
 	
 	private String dateAppelParquet ;
 	private String  dateAppelEnfant ;

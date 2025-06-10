@@ -2,9 +2,19 @@ package com.cgpr.mineur.repository;
 
 import static com.cgpr.mineur.tools.ToolsForReporting2.generateTimeUnitString;
 
+import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+ 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -13,17 +23,24 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import com.cgpr.mineur.config.SQLLoader;
 import com.cgpr.mineur.dto.AccusationExtraitJugementDTO;
 import com.cgpr.mineur.dto.ActeJudiciaire;
 import com.cgpr.mineur.dto.AffairePenaleDto;
 import com.cgpr.mineur.dto.ArretExecutionPenalDTO;
+import com.cgpr.mineur.dto.EvasionCaptureDTO;
+import com.cgpr.mineur.dto.MutationResidenceDTO;
+import com.cgpr.mineur.dto.ParticipantAffaireDTO;
 import com.cgpr.mineur.dto.PenalContestationDto;
+import com.cgpr.mineur.dto.PenalContrainteDTO;
+import com.cgpr.mineur.dto.PenalGraceDto;
 import com.cgpr.mineur.dto.PenalJugementDTO;
 import com.cgpr.mineur.dto.PenalMandatDepotDTO;
 import com.cgpr.mineur.dto.PenalTransfertDto;
 import com.cgpr.mineur.dto.PenaleDetentionInfoDto;
 import com.cgpr.mineur.dto.PrisonerPenaleDto;
 import com.cgpr.mineur.dto.SearchDetenuDto;
+import com.cgpr.mineur.tools.ToolsForReporting2;
 
 
 //---------------------------------------------------------
@@ -44,10 +61,14 @@ public class PrisonerPenalRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     
+    @PersistenceContext
+    private EntityManager entityManager;
     
     public SearchDetenuDto trouverDetenusParPrisonerIdDansPrisons(String prisonerId) {
         String sql = "SELECT " + 
-                "    iden.TNUMIDE AS prisoner_id, " + 
+                "    iden.TNUMIDE AS prisoner_id , " + 
+                "    TO_NUMBER(res.TCODDET) AS tcoddet, " + 
+                
                 "    iden.TPNOMA AS firstname, " + 
                 "    iden.TPPERA AS father_name, " + 
                 "    iden.TPGPERA AS grandfather_name, " + 
@@ -93,6 +114,7 @@ public class PrisonerPenalRepository {
                     prisoner.setNumeroEcrou(rs.getString("numero_ecrou"));
                     prisoner.setDateEntree(rs.getString("date_entre"));
                     prisoner.setNomEtablissement(rs.getString("prision"));
+                    prisoner.setNumOrdinaleArrestation(rs.getLong("tcoddet"));
                     return prisoner;
                 }
             );
@@ -106,6 +128,8 @@ public class PrisonerPenalRepository {
     	 System.out.println("----------------- Recherche simple ------------------------------");
     	String sql = " SELECT " + 
                 "    iden.TNUMIDE AS prisoner_id, " + 
+           
+        "    TO_NUMBER(res.TCODDET) AS tcoddet, " + 
                 "    iden.TPNOMA AS firstname, " + 
                 "    iden.TPPERA AS father_name, " + 
                 "    iden.TPGPERA AS grandfather_name, " + 
@@ -196,6 +220,8 @@ public class PrisonerPenalRepository {
                 prisoner.setNumeroEcrou(rs.getString("numero_ecrou"));
                 prisoner.setDateEntree(rs.getString("date_entre"));
                 prisoner.setNomEtablissement(rs.getString("prision"));
+                prisoner.setNumOrdinaleArrestation(rs.getLong("tcoddet"));
+                
                 return prisoner;
             }
         );
@@ -252,6 +278,7 @@ public class PrisonerPenalRepository {
                          prisoner.setNumeroEcrou(rs.getString("numero_ecrou"));
                          prisoner.setDateEntree(rs.getString("date_entre"));
                          prisoner.setNomEtablissement(rs.getString("prision"));
+                         prisoner.setNumOrdinaleArrestation(rs.getLong("tcoddet"));
                          return prisoner;
                      }
                  );
@@ -263,7 +290,9 @@ public class PrisonerPenalRepository {
     public List<SearchDetenuDto> trouverDetenusParNumeroEcrouDansPrisons(String numArr ) {
         // Construction de la requête SQL avec jointure
     	String sql = " SELECT " + 
-                "    iden.TNUMIDE AS prisoner_id, " + 
+                "    iden.TNUMIDE AS prisoner_id, " +
+             
+        "    TO_NUMBER(res.TCODDET) AS tcoddet, " + 
                 "    iden.TPNOMA AS firstname, " + 
                 "    iden.TPPERA AS father_name, " + 
                 "    iden.TPGPERA AS grandfather_name, " + 
@@ -315,12 +344,14 @@ public class PrisonerPenalRepository {
                 prisoner.setNumeroEcrou(rs.getString("numero_ecrou"));
                 prisoner.setDateEntree(rs.getString("date_entre"));
                 prisoner.setNomEtablissement(rs.getString("prision"));
+                prisoner.setNumOrdinaleArrestation(rs.getLong("tcoddet"));
+                
                 return prisoner;
             }
         );
     }
     
-    public PrisonerPenaleDto findPrisonerPenalByPrisonerId(String prisonerId) {
+    public PrisonerPenaleDto findPrisonerPenalByPrisonerId(String prisonerId, String tcoddet) {
     	// Construction de la requête SQL avec jointure
     	
 //    	String sql = 
@@ -447,7 +478,24 @@ public class PrisonerPenalRepository {
         		"    contestGlobale.TDATCO AS dateContestation,   " + 
         		"    contest.TLIBTCO AS typeContestation,    " + 
         		" detention.TDATLIBE AS dateLiberation , " + 
-        		"     motifLiberationTab.tlibmot AS motifLiberation   "+
+        		"     motifLiberationTab.tlibmot AS motifLiberation ,   "+
+        		 "  CASE " +
+        		    "    WHEN deces.tdatdec IS NOT NULL " +
+        		    "      OR deces.tcausdec IS NOT NULL " +
+        		    "      OR deces.tlieudec IS NOT NULL " +
+        		    "    THEN " +
+        		    "      'توفي بتاريخ ' || NVL(TO_CHAR(deces.tdatdec, 'DD-MM-YYYY'), '') || " +
+        		    "      CASE " +
+        		    "        WHEN deces.tcausdec IS NOT NULL THEN ' بسبب ' || deces.tcausdec " +
+        		    "        ELSE '' " +
+        		    "      END || " +
+        		    "      CASE " +
+        		    "        WHEN deces.tlieudec IS NOT NULL THEN '، وذلك في   ' || deces.tlieudec " +
+        		    "        ELSE '' " +
+        		    "      END || '.' " +
+        		    "    ELSE " +
+        		    "      '' " +
+        		    "  END AS phrase_deces " +
         		"FROM   " + 
         		"    TIDENTITE@DBLINKMINEURPROD iden   " + 
         		"LEFT JOIN   " + 
@@ -479,20 +527,23 @@ public class PrisonerPenalRepository {
         		"  ON  detention.tnumide = res.tnumide and detention. tcoddet = res.TCODDET " + 
         	 
         		" LEFT JOIN   tmotif@DBLINKMINEURPROD motifLiberationTab  on motifLiberationTab.tcodmot = detention.tcodmot "+
+        		" LEFT JOIN   tdeces@DBLINKMINEURPROD deces  on deces.TNUMIDE = iden.TNUMIDE "+
         		"WHERE   " + 
+        		"    iden.TNUMIDE = ? AND res.TCODDET = ?  " +
          
-        		"    res.TCODDET = (   " + 
-        		"        SELECT MAX(r2.TCODDET)   " + 
-        		"        FROM TRESIDENCE@DBLINKMINEURPROD r2   " + 
-        		"        WHERE r2.TNUMIDE = res.TNUMIDE   " + 
-        		"    ) AND   " + 
+//        		" AND   res.TCODDET = (   " + 
+//        		"        SELECT MAX(r2.TCODDET)   " + 
+//        		"        FROM TRESIDENCE@DBLINKMINEURPROD r2   " + 
+//        		"        WHERE r2.TNUMIDE = res.TNUMIDE   " + 
+//        		"    )"
+        		" AND   " + 
         		"    res.TDATDR = (   " + 
         		"        SELECT MAX(r2.TDATDR)   " + 
         		"        FROM TRESIDENCE@DBLINKMINEURPROD r2   " + 
         		"        WHERE r2.TNUMIDE = iden.TNUMIDE   " + 
         		"          AND r2.TCODDET = res.TCODDET   " + 
-        		"    ) AND   " + 
-        		"    iden.TNUMIDE = ?   " + 
+        		"    )     " + 
+        		 
         		 "ORDER BY " + 
                  "        CASE WHEN res.TDATFR IS NULL THEN 1 ELSE 0 END DESC,   " + 
                  "        res.TDATFR DESC    " + 
@@ -504,7 +555,7 @@ public class PrisonerPenalRepository {
             // Exécution de la requête
             return jdbcTemplate.queryForObject(
                 sql,
-                new Object[]{prisonerId},
+                new Object[]{prisonerId,tcoddet},
                 (rs, rowNum) -> {
                     // Mapping du résultat de la requête vers un objet SearchDetenuDto
                 	PrisonerPenaleDto prisoner = new PrisonerPenaleDto();
@@ -669,7 +720,10 @@ public class PrisonerPenalRepository {
             		}
             		
             		
-            		
+            		 
+                     if(rs.getString("phrase_deces") != null) {
+                     	prisoner.setPhraseDeces(rs.getString("phrase_deces"));
+                     }
             		
             		
               		
@@ -686,34 +740,7 @@ public class PrisonerPenalRepository {
             throw new RuntimeException("Erreur lors de l'exécution de la requête pour l'ID prisonnier : " + prisonerId, e);
         }
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
     
     public List<AffairePenaleDto> findAffairesByNumideAndCoddet(String tnumide, String tcoddet) {
  //   	String sql = 
@@ -830,24 +857,53 @@ public class PrisonerPenalRepository {
     public PenalMandatDepotDTO getMandatDepot(String tnumide, String tcoddet, String tnumseqaff, String tcodma) {
         System.out.println(tnumide + " " + tcoddet + " " + tnumseqaff + " " + tcodma);
 
-        String sql = "SELECT tnumide, tcoddet, tnumseqaff, tcodma, TO_CHAR(TDATDMA, 'YYYY-MM-DD') AS TDATDMA, "
-        		+ "TO_CHAR(TDATAMA, 'YYYY-MM-DD') AS TDATAMA,"
-        		+ " ttextma " +
-                     "FROM TMANDATDEPOT@DBLINKMINEURPROD " +
-                     "WHERE tnumide = ? AND tcoddet = ? AND tnumseqaff = ? AND tcodma = ?";
+        String sql = "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, " +
+                "iden.TPNOMA || ' بن ' || iden.TPPERA || ' بن ' || iden.TNOMA AS firstname, " +
+                "iden.TPMER || ' بن ' || iden.TNOMMER AS mother_name, " +
+                "TO_CHAR(iden.TDATN, 'YYYY-MM-DD') AS birth_date, " +
+                "iden.tadr AS adresse, " +
+                "t.TTYPRES || '  ' || t.TCODRES || '  ' || t.TANNRES AS numero_ecrou, " +
+                "GETLIBELLEPRISON@DBLINKMINEURPROD(t.TCODGOU, t.TCODPR) AS prision, " +
+                "t.tcodma AS code_document, " +
+                "SUBSTR(t.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
+                "tr.libelle_tribunal, " +
+                "TO_CHAR(t.TDATAMA, 'YYYY-MM-DD') AS date_emission_mandat, " +
+                "TO_CHAR(t.TDATDMA, 'YYYY-MM-DD') AS date_depot_mandat, " +
+                "t.ttextma AS texte_mandat " +
+                "FROM TMANDATDEPOT@DBLINKMINEURPROD t " +
+                "LEFT JOIN tribunal@DBLINKMINEURPROD tr ON t.tcodtri = tr.code_tribunal " +
+                "LEFT JOIN TIDENTITE@DBLINKMINEURPROD iden ON t.TNUMIDE = iden.TNUMIDE " +
+                "WHERE t.tnumide = ? AND t.tcoddet = ? AND t.tnumseqaff = ? AND t.tcodma = ?";
+
 
         return jdbcTemplate.queryForObject(
             sql,
             new Object[]{tnumide, tcoddet, tnumseqaff, tcodma},
             (rs, rowNum) -> {
             	PenalMandatDepotDTO dto = new PenalMandatDepotDTO();
+            	  // Identifiants
                 dto.setTnumide(rs.getString("tnumide"));
                 dto.setTcoddet(rs.getString("tcoddet"));
                 dto.setTnumseqaff(rs.getString("tnumseqaff"));
-                dto.setTcodma(rs.getString("tcodma"));
-                dto.setTdatdma(rs.getString("tdatdma"));
-                dto.setTdatama(rs.getString("tdatama"));
-                dto.setTtextma(rs.getString("ttextma"));
+                
+                // Informations personnelles
+                dto.setFirstname(rs.getString("firstname"));
+                dto.setMotherName(rs.getString("mother_name"));
+                dto.setBirthDate(rs.getString("birth_date"));
+                dto.setAdresse(rs.getString("adresse"));
+                
+                // Détention
+                dto.setNumeroEcrou(rs.getString("numero_ecrou"));
+                dto.setPrision(rs.getString("prision"));
+
+                // Mandat
+                dto.setCodeDocument(rs.getString("code_document"));
+                dto.setNumAffaire(rs.getString("num_affaire"));
+                dto.setLibelleTribunal(rs.getString("libelle_tribunal"));
+                dto.setDateEmissionMandat(rs.getString("date_emission_mandat"));
+                dto.setDateDepotMandat(rs.getString("date_depot_mandat"));
+                dto.setTexteMandat(rs.getString("texte_mandat"));
+                
                 return dto;
             }
         );
@@ -883,6 +939,7 @@ public class PrisonerPenalRepository {
             dto.setTduraccj(rs.getInt("tduraccj"));
             dto.setTduraccm(rs.getInt("tduraccm"));
             dto.setTduracca(rs.getInt("tduracca"));
+            dto.setPeriodeTotale( ToolsForReporting2.generateLegalCaseString(dto.getTduracca(), dto.getTduraccm(), dto.getTduraccj()));
             return dto;
         });
     }
@@ -891,20 +948,39 @@ public class PrisonerPenalRepository {
     public Optional<PenalJugementDTO> getSinglePenalJugement(String tnumide, String tcoddet,  String tcodextj) {
 //    	String tnumseqaff,
         String sql = 
-            "SELECT " +
-            "  tnumide, " +
-            "  tcoddet, " +
-            "  tnumseqaff, " +
-            "  tcodextj, " +
-            "  TO_CHAR(tdatjug, 'YYYY-MM-DD') AS date_jugement, " + 
-            "  TO_CHAR(tdataex, 'YYYY-MM-DD') AS date_depot, " + 
-            "  tj.ttexjug, " +
-            "  tjt.libelle_tjugement, " +
-            "  TO_CHAR(tdatdpe, 'YYYY-MM-DD') AS date_debut_punition, " + 
-            "  TO_CHAR(tdatfpe, 'YYYY-MM-DD') AS date_fin_punition " +
-            "FROM tjugement@DBLINKMINEURPROD tj " +
-            "JOIN typejugement@DBLINKMINEURPROD tjt ON tj.tcodtju = tjt.code_tjugement " +
-            "WHERE tnumide = ? AND tcoddet = ? AND tcodextj = ?";
+            "SELECT  " + 
+            " " + 
+            " tj.TNUMIDE, tj.tcoddet, tj.tnumseqaff, " + 
+            "                iden.TPNOMA || ' بن ' || iden.TPPERA || ' بن ' || iden.TNOMA AS firstname, " + 
+            "                iden.TPMER || ' بن ' || iden.TNOMMER AS mother_name,  " + 
+            "                TO_CHAR(iden.TDATN, 'YYYY-MM-DD') AS birth_date,  " + 
+            "                iden.tadr AS adresse,  " + 
+            "                tj.TTYPRES || '  ' || tj.TCODRES || '  ' || tj.TANNRES AS numero_ecrou,  " + 
+            "                GETLIBELLEPRISON@DBLINKMINEURPROD(tj.TCODGOU, tj.TCODPR) AS prision,  " + 
+            "                tj.tcodextj AS code_document,  " + 
+            "  " + 
+            "  TO_CHAR(tj.tdatjug, 'YYYY-MM-DD') AS date_jugement,  " + 
+            "  TO_CHAR(tj.tdataex, 'YYYY-MM-DD') AS date_depot,  " + 
+            "  tj.ttexjug,  " + 
+            "  tjt.libelle_tjugement,  " + 
+            "  TO_CHAR(tj.tdatdpe, 'YYYY-MM-DD') AS date_debut_punition,  " + 
+            "  TO_CHAR(tj.tdatfpe, 'YYYY-MM-DD') AS date_fin_punition, " + 
+            "tnumjaf AS num_affaire, "+
+            "tr.libelle_tribunal, "+
+            "  tj.TDURPORA as periode_annee ,  " + 
+            "   tj.TDURPORM as periode_mois, " + 
+            "   tj.TDURPORJ as periode_jour " + 
+            "FROM  " + 
+            "  tjugement@DBLINKMINEURPROD tj  " + 
+            "JOIN  " + 
+            "  typejugement@DBLINKMINEURPROD tjt ON tj.tcodtju = tjt.code_tjugement  " + 
+            "LEFT JOIN TIDENTITE@DBLINKMINEURPROD iden ON tj.TNUMIDE = iden.TNUMIDE  " + 
+            "LEFT JOIN tribunal@DBLINKMINEURPROD  tr ON tj.tcodtri = tr.code_tribunal  "+
+            "  " + 
+            "WHERE  " + 
+            "  tj.tnumide = ?  " + 
+            "  AND tj.tcoddet = ?  " + 
+            "  AND tj.tcodextj = ?";
 //        AND tnumseqaff = ? 
         List<PenalJugementDTO> result = jdbcTemplate.query(sql, new Object[]{tnumide, tcoddet,  tcodextj},
 //        		tnumseqaff,
@@ -913,13 +989,37 @@ public class PrisonerPenalRepository {
                 dto.setTnumide(rs.getString("tnumide"));
                 dto.setTcoddet(rs.getString("tcoddet"));
                 dto.setTnumseqaff(rs.getString("tnumseqaff"));
-                dto.setTcodextj(rs.getString("tcodextj"));
+                
+                // Informations personnelles
+                dto.setFirstname(rs.getString("firstname"));
+                dto.setMotherName(rs.getString("mother_name"));
+                dto.setBirthDate(rs.getString("birth_date"));
+                dto.setAdresse(rs.getString("adresse"));
+                
+                // Détention
+                dto.setNumeroEcrou(rs.getString("numero_ecrou"));
+                dto.setPrision(rs.getString("prision"));
+
+                // Mandat
+                dto.setCodeDocument(rs.getString("code_document"));
                 dto.setDateJugement(rs.getString("date_jugement"));
                 dto.setDateDepot(rs.getString("date_depot"));
+                dto.setNumAffaire(rs.getString("num_affaire"));
+                dto.setLibelleTribunal(rs.getString("libelle_tribunal"));
                 dto.setTtexjug(rs.getString("ttexjug"));
-                dto.setLibelleTjugement(rs.getString("libelle_tjugement"));
+                // dto.setLibelleTjugement(rs.getString("libelle_tjugement"));
                 dto.setDateDebutPunition(rs.getString("date_debut_punition"));
                 dto.setDateFinPunition(rs.getString("date_fin_punition"));
+                
+                dto.setPeriodeAnnee(rs.getInt("periode_annee"));
+                dto.setPeriodeMois (rs.getInt("periode_mois"));
+                dto.setPeriodeJour (rs.getInt("periode_jour"));
+                
+                dto.setLibelleTjugement(
+                		
+                		ToolsForReporting2.generateLegalCaseString(dto.getPeriodeAnnee(), dto.getPeriodeMois(), dto.getPeriodeJour()) +" "+
+                		rs.getString("libelle_tjugement") 
+                		);
                 return dto;
             }
         );
@@ -931,41 +1031,64 @@ public class PrisonerPenalRepository {
     public PenalTransfertDto getTransfert(String tnumide, String tcoddet, String tnumseqaff, String tcodtraf) {
         System.out.println(tnumide + " " + tcoddet + " " + tnumseqaff + " " + tcodtraf);
 
-        String sql = "SELECT " +
-                     "t.tnumide, " +
-                     "t.tcoddet, " +
-                     "t.tnumseqaff, " +
-                     "t.tcodtraf, " +
-                     "TO_CHAR(t.tdattran, 'YYYY-MM-DD') AS tdattran, " +
-                     "t.tnumjaf, " +
-                     "trib1.LIBELLE_TRIBUNAL AS libelle_tribunal_depart, " +
-                     "t.tnumjafn, " +
-                     "trib2.LIBELLE_TRIBUNAL AS libelle_tribunal_arrivee " +
-                     "FROM TTRANSFERT@DBLINKMINEURPROD t " +
-                     "LEFT JOIN TRIBUNAL@DBLINKMINEURPROD trib1 ON t.tcodtri = trib1.CODE_TRIBUNAL " +
-                     "LEFT JOIN TRIBUNAL@DBLINKMINEURPROD trib2 ON t.tcodtrin = trib2.CODE_TRIBUNAL " +
-                     "WHERE t.tnumide = ? " +
-                     "AND t.tcoddet = ? " +
-                     "AND t.tnumseqaff = ? " +
-                     "AND t.tcodtraf = ?";
+        String sql = "SELECT  " + 
+        		"    t.tnumide,  " + 
+        		"    t.tcoddet,  " + 
+        		"    t.tnumseqaff,  " + 
+        		"    iden.TPNOMA || ' بن ' || iden.TPPERA || ' بن ' || iden.TNOMA AS firstname, " + 
+        		"    iden.TPMER || ' بن ' || iden.TNOMMER AS mother_name, " + 
+        		"    TO_CHAR(iden.TDATN, 'YYYY-MM-DD') AS birth_date, " + 
+        		"    iden.tadr AS adresse, " + 
+        		"  " + 
+        		"    t.tcodtraf AS code_document, " + 
+        		"     " + 
+        		"    TO_CHAR(t.tdattran, 'YYYY-MM-DD') AS date_transfert, " + 
+        		"    t.tnumjaf AS num_affaire_depart, " + 
+        		"    trib1.LIBELLE_TRIBUNAL AS libelle_tribunal_depart, " + 
+        		"    t.tnumjafn AS num_affaire_arrivee , " + 
+        		"    trib2.LIBELLE_TRIBUNAL AS libelle_tribunal_arrivee, " + 
+        		"    tty.TLIBTYPTR AS type_transfert"+
+        		"     " + 
+        		"FROM TTRANSFERT@DBLINKMINEURPROD t " + 
+        		"LEFT JOIN tribunal@DBLINKMINEURPROD trib1 ON t.tcodtri  = trib1.code_tribunal " + 
+        		"LEFT JOIN tribunal@DBLINKMINEURPROD trib2 ON t.tcodtrin  = trib2.code_tribunal " + 
+        		"LEFT JOIN ttypetransfert@DBLINKMINEURPROD tty ON t.TCODREST = tty.TCODTYPTR "+
+        		"LEFT JOIN TIDENTITE@DBLINKMINEURPROD iden ON t.TNUMIDE = iden.TNUMIDE " + 
+        		"WHERE t.tnumide = ?  " + 
+        		"  AND t.tcoddet = ?  " + 
+        		"  AND t.tnumseqaff = ?  " + 
+        		"  AND t.tcodtraf = ?  ";
 
         List<PenalTransfertDto> result = jdbcTemplate.query(
-            sql,
-            new Object[]{tnumide, tcoddet, tnumseqaff, tcodtraf},
-            (rs, rowNum) -> {
-                PenalTransfertDto dto = new PenalTransfertDto();
-                dto.setTnumide(rs.getString("tnumide"));
-                dto.setTcoddet(rs.getString("tcoddet"));
-                dto.setTnumseqaff(rs.getString("tnumseqaff"));
-                dto.setTcodtraf(rs.getString("tcodtraf"));
-                dto.setTdattran(rs.getString("tdattran"));
-                dto.setTnumjaf(rs.getString("tnumjaf"));
-                dto.setLibelleTribunalDepart(rs.getString("libelle_tribunal_depart"));
-                dto.setTnumjafn(rs.getString("tnumjafn"));
-                dto.setLibelleTribunalArrivee(rs.getString("libelle_tribunal_arrivee"));
-                return dto;
-            }
-        );
+        	    sql,
+        	    new Object[]{tnumide, tcoddet, tnumseqaff, tcodtraf},
+        	    (rs, rowNum) -> {
+        	        PenalTransfertDto dto = new PenalTransfertDto();
+        	        dto.setTnumide(rs.getString("tnumide"));
+        	        dto.setTcoddet(rs.getString("tcoddet"));
+        	        dto.setTnumseqaff(rs.getString("tnumseqaff"));
+        	        dto.setFirstname(rs.getString("firstname"));
+        	        dto.setMotherName(rs.getString("mother_name"));
+        	        dto.setBirthDate(rs.getString("birth_date"));
+        	        dto.setAdresse(rs.getString("adresse"));
+        	        dto.setCodeDocument(rs.getString("code_document"));
+        	        dto.setDateTransfert(rs.getString("date_transfert"));
+        	        dto.setNumAffaireDepart(rs.getString("num_affaire_depart"));
+        	        dto.setLibelleTribunalDepart(rs.getString("libelle_tribunal_depart"));
+        	        dto.setNumAffaireArrivee(rs.getString("num_affaire_arrivee"));
+        	        dto.setLibelleTribunalArrivee(rs.getString("libelle_tribunal_arrivee"));
+        	        dto.setTypeTransfert(rs.getString("type_transfert"));
+        	        if(dto.getNumAffaireDepart().toString().equals(
+        	        		dto.getNumAffaireArrivee().toString()
+        	        		))
+        	        		{
+        	        	
+        	        	   dto.setNumAffaireArrivee("(دون عدد قضية) ");
+        	        }
+        	        return dto;
+        	    }
+        	);
+
 
         return result.isEmpty() ? null : result.get(0);
     }
@@ -973,38 +1096,54 @@ public class PrisonerPenalRepository {
     
     
     public PenalContestationDto getContestation(String tnumide, String tcoddet, String tnumseqaff, String TCODEXTJ , String codeDocumentSecondaire) {
-        String sql = "SELECT " +
-                     "t.tnumide, " +
-                     "t.tcoddet, " +
-                     "t.tnumseqaff, " +
-                     "t.tcodco, " +
-                     "TO_CHAR(t.tdatco, 'YYYY-MM-DD') AS tdatco, " +
-                     "SUBSTR(t.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
-                     "trib1.LIBELLE_TRIBUNAL AS libelle_tribunal, " +
-                     "type_contestation.tlibtco " +
-                     "FROM TCONTESTATION@DBLINKMINEURPROD t " +
-                     "LEFT JOIN TRIBUNAL@DBLINKMINEURPROD trib1 ON t.tcodtri = trib1.CODE_TRIBUNAL " +
-                     "LEFT JOIN TTYPECONTESTATION@DBLINKMINEURPROD type_contestation ON t.tcodtco = type_contestation.tcodtco " +
-                     "WHERE t.tnumide = ? " +
-                     "AND t.tcoddet = ? " +
-                     "AND t.tnumseqaff = ? " +
-                     "AND t.TCODEXTJ = ? " +
-                     
-                     "AND t.tcodco = ?";
+        String sql = "SELECT  " + 
+        		"    t.tnumide,  " + 
+        		"    t.tcoddet,  " + 
+        		"    t.tnumseqaff, " + 
+        		"    iden.TPNOMA || ' بن ' || iden.TPPERA || ' بن ' || iden.TNOMA AS firstname, " + 
+        		"    iden.TPMER || ' بن ' || iden.TNOMMER AS mother_name, " + 
+        		"    TO_CHAR(iden.TDATN, 'YYYY-MM-DD') AS birth_date, " + 
+        		"    iden.tadr AS adresse, " + 
+        		"    t.tcodco  AS code_document ,  " + 
+        		"    t.TCODEXTJ  AS code_document_jugement ,  " + 
+        		
+        		"    TO_CHAR(t.tdatco, 'YYYY-MM-DD') AS date_contestation,  " + 
+        		"    SUBSTR(t.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire,  " + 
+        		"    trib1.LIBELLE_TRIBUNAL AS libelle_tribunal,  " + 
+        		"    type_contestation.tlibtco  " + 
+        		"FROM  " + 
+        		"    TCONTESTATION@DBLINKMINEURPROD t  " + 
+        		"LEFT JOIN  " + 
+        		"    TRIBUNAL@DBLINKMINEURPROD trib1 ON t.tcodtri = trib1.CODE_TRIBUNAL  " + 
+        		"LEFT JOIN  " + 
+        		"    TTYPECONTESTATION@DBLINKMINEURPROD type_contestation ON t.tcodtco = type_contestation.tcodtco  " + 
+        		"     " + 
+        		"LEFT JOIN TIDENTITE@DBLINKMINEURPROD  iden ON t.TNUMIDE = iden.TNUMIDE " + 
+        		"WHERE   " + 
+        		"t.tnumide = ?  " + 
+        		"  AND t.tcoddet = ?  " + 
+        		"  AND t.tnumseqaff = ?  " + 
+        		" AND t.TCODEXTJ  = ?  " + 
+        		"   AND t.tcodco = ?";
 
         List<PenalContestationDto> result = jdbcTemplate.query(
             sql,
             new Object[]{tnumide, tcoddet, tnumseqaff, TCODEXTJ ,codeDocumentSecondaire},
             (rs, rowNum) -> {
-                PenalContestationDto dto = new PenalContestationDto();
+            	PenalContestationDto dto = new PenalContestationDto();
                 dto.setTnumide(rs.getString("tnumide"));
                 dto.setTcoddet(rs.getString("tcoddet"));
+                dto.setCodeDocumentJugement(rs.getString("code_document_jugement"));
                 dto.setTnumseqaff(rs.getString("tnumseqaff"));
-                dto.setTcodco(rs.getString("tcodco"));
-                dto.setTdatco(rs.getString("tdatco"));
+                dto.setFirstname(rs.getString("firstname"));
+                dto.setMotherName(rs.getString("mother_name"));
+                dto.setBirthDate(rs.getString("birth_date"));
+                dto.setAdresse(rs.getString("adresse"));
+                dto.setCodeDocument(rs.getString("code_document"));
+                dto.setDateContestation(rs.getString("date_contestation"));
                 dto.setNumAffaire(rs.getString("num_affaire"));
                 dto.setLibelleTribunal(rs.getString("libelle_tribunal"));
-                dto.setTlibtco(rs.getString("tlibtco"));
+                dto.setLibelleContestation(rs.getString("tlibtco"));
                 return dto;
             }
         );
@@ -1026,10 +1165,32 @@ public class PrisonerPenalRepository {
     		    "WHERE t.tnumide = ? AND t.tcoddet = ? AND t.tnumseqaff = ? " +
 
     		    "UNION ALL " +
+    		    
+    		    "SELECT  " + 
+    		    "    t.tnumide, " + 
+    		    "    t.tcoddet, " + 
+    		    "    t.tnumseqaff, " + 
+    		    "    t.tcodcon AS code_document, " + 
+    		    "    ' ' AS code_document_secondaire, " + 
+    		    "    'tcontrainte' AS type_acte, " + 
+    		    "    TO_CHAR(t.tdatcon, 'YYYY-MM-DD') AS date_acte, " + 
+    		    "    SUBSTR(t.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " + 
+    		    "    tr.libelle_tribunal , " + 
+    		    "    'جبــر بالسّجــن' AS type_document, ' ' AS type_motif, '3' AS priorite " + 
+    		    "    " + 
+    		    "FROM  " + 
+    		    "    TCONTRAINTE@DBLINKMINEURPROD t " + 
+    		    "LEFT JOIN  " + 
+    		    "    tribunal@DBLINKMINEURPROD tr ON t.tcodtri = tr.code_tribunal " + 
+    		    "LEFT JOIN  " + 
+    		    "    tmotif@DBLINKMINEURPROD motif ON motif.tcodmot = t.tcodmot " + 
+    		    "WHERE t.tnumide = ? AND t.tcoddet = ? AND t.tnumseqaff = ? " +
+    		    
+  "UNION ALL " +
 
     		    "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, t.tcodma AS code_document, ' ' as code_document_secondaire, 'tmandatdepot' AS type_acte, " +
     		    "TO_CHAR(t.TDATAMA, 'YYYY-MM-DD') AS date_acte, SUBSTR(t.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
-    		    "tr.libelle_tribunal, 'بطاقة إيداع', ' ' AS type_motif, '1' AS priorite " +
+    		    "tr.libelle_tribunal, 'بطاقة إيــداع'AS type_document , ' ' AS type_motif, '1' AS priorite " +
     		    "FROM TMANDATDEPOT@DBLINKMINEURPROD t " +
     		    "LEFT JOIN tribunal@DBLINKMINEURPROD tr ON t.tcodtri = tr.code_tribunal " +
     		    "WHERE t.tnumide = ? AND t.tcoddet = ? AND t.tnumseqaff = ? " +
@@ -1038,7 +1199,7 @@ public class PrisonerPenalRepository {
 
     		    "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, t.tcodtraf AS code_document, ' ' as code_document_secondaire, 'ttransfert' AS type_acte, " +
     		    "TO_CHAR(t.tdattran, 'YYYY-MM-DD') AS date_acte, SUBSTR(t.tnumjafn, 4, 6) || ' - ' || SUBSTR(t.tnumjafn, 1, 3) AS num_affaire, " +
-    		    "tr.libelle_tribunal, tty.TLIBTYPTR, ' ' AS type_motif, '2' AS priorite " +
+    		    "tr.libelle_tribunal,'إحـــــــــــالة' AS type_document, ' ' AS type_motif, '2' AS priorite " +
     		    "FROM TTRANSFERT@DBLINKMINEURPROD t " +
     		    "LEFT JOIN tribunal@DBLINKMINEURPROD tr ON t.tcodtrin = tr.code_tribunal " +
     		    "LEFT JOIN ttypetransfert@DBLINKMINEURPROD tty ON t.TCODREST = tty.TCODTYPTR " +
@@ -1048,7 +1209,7 @@ public class PrisonerPenalRepository {
 
     		    "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, t.TCODEXTJ AS code_document, t.TCODCO as code_document_secondaire, 'tcontestation' AS type_acte, " +
     		    "TO_CHAR(t.TDATCO, 'YYYY-MM-DD') AS date_acte, SUBSTR(t.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
-    		    "tr.libelle_tribunal, tty.TLIBTCO, ' ' AS type_motif, '4' AS priorite " +
+    		    "tr.libelle_tribunal, 'طعـــــــــن'AS type_document , ' ' AS type_motif, '4' AS priorite " +
     		    "FROM tcontestation@DBLINKMINEURPROD t " +
     		    "LEFT JOIN tribunal@DBLINKMINEURPROD tr ON t.tcodtri = tr.code_tribunal " +
     		    "LEFT JOIN ttypecontestation@DBLINKMINEURPROD tty ON t.TCODTCO = tty.TCODTCO " +
@@ -1058,7 +1219,7 @@ public class PrisonerPenalRepository {
 
     		    "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, t.TCODEXTJ AS code_document, ' ' as code_document_secondaire, 'tjugementLibre' AS type_acte, " +
     		    "TO_CHAR(t.TDATFPE, 'YYYY-MM-DD') AS date_acte, SUBSTR(aff.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
-    		    "tr.libelle_tribunal, motif.tlibmot, motif.TYPE_MOTIF AS type_motif, '7' AS priorite " +
+    		    "tr.libelle_tribunal, 'ســـــــــــراح'AS type_document , motif.TYPE_MOTIF AS type_motif, '7' AS priorite " +
     		    "FROM tjugement@DBLINKMINEURPROD t " +
     		    "LEFT JOIN tmotif@DBLINKMINEURPROD motif ON motif.tcodmot = t.tcodmot " +
     		    "LEFT JOIN tideaff@DBLINKMINEURPROD aff ON t.tnumide = aff.tnumide AND t.tcoddet = aff.tcoddet AND t.tnumseqaff = aff.tnumseqaff AND t.TDATFPE = aff.tdatdep " +
@@ -1069,7 +1230,7 @@ public class PrisonerPenalRepository {
 
     		    "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, t.tcodma AS code_document,  ' ' as code_document_secondaire, 'tmandatdepotLibre' AS type_acte, " +
     		    "TO_CHAR(t.tdatfma, 'YYYY-MM-DD') AS date_acte, SUBSTR(aff.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
-    		    "tr.libelle_tribunal, motif.tlibmot, motif.TYPE_MOTIF AS type_motif, '5' AS priorite " +
+    		    "tr.libelle_tribunal, 'ســـــــــــراح'AS type_document , motif.TYPE_MOTIF AS type_motif, '5' AS priorite " +
     		    "FROM tmandatdepot@DBLINKMINEURPROD t " +
     		    "LEFT JOIN tmotif@DBLINKMINEURPROD motif ON motif.tcodmot = t.tcodmot " +
     		    "LEFT JOIN tideaff@DBLINKMINEURPROD aff ON t.tnumide = aff.tnumide AND t.tcoddet = aff.tcoddet AND t.tnumseqaff = aff.tnumseqaff AND t.tdatfma = aff.tdatdep " +
@@ -1080,7 +1241,7 @@ public class PrisonerPenalRepository {
 
     		    "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, t.tcodtraf AS code_document,  ' ' as code_document_secondaire,  'ttransfertLibre' AS type_acte, " +
     		    "TO_CHAR(t.tdatfma, 'YYYY-MM-DD') AS date_acte, SUBSTR(aff.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
-    		    "tr.libelle_tribunal, motif.tlibmot, motif.TYPE_MOTIF AS type_motif, '7' AS priorite " +
+    		    "tr.libelle_tribunal,'ســـــــــــراح'AS type_document , motif.TYPE_MOTIF AS type_motif, '7' AS priorite " +
     		    "FROM TTRANSFERT@DBLINKMINEURPROD t " +
     		    "LEFT JOIN tmotif@DBLINKMINEURPROD motif ON motif.tcodmot = t.tcodmot " +
     		    "LEFT JOIN tideaff@DBLINKMINEURPROD aff ON t.tnumide = aff.tnumide AND t.tcoddet = aff.tcoddet AND t.tnumseqaff = aff.tnumseqaff AND t.tdatfma = aff.tdatdep " +
@@ -1095,7 +1256,8 @@ public class PrisonerPenalRepository {
     	        tnumide, tcoddet, tnumseqaff,  // 4. contestation
     	        tnumide, tcoddet, tnumseqaff,  // 5. jugement (TDATFPE)
     	        tnumide, tcoddet, tnumseqaff,  // 6. mandat (tdatfma)
-    	        tnumide, tcoddet, tnumseqaff   // 7. transfert (tdatfma)
+    	        tnumide, tcoddet, tnumseqaff ,  // 7. transfert (tdatfma)
+    	        tnumide, tcoddet, tnumseqaff   // 8. contrainte (tdatfma)
     	    };
 
         return jdbcTemplate.query(sql, params,
@@ -1136,7 +1298,14 @@ public class PrisonerPenalRepository {
 
         switch (typeActe) {
             case "tjugementLibre":
-                sql = "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, t.TCODEXTJ AS code_document, " +
+                sql = "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, " +
+                        "iden.TPNOMA || ' بن ' || iden.TPPERA || ' بن ' || iden.TNOMA AS firstname, " +
+                        "iden.TPMER || ' بن ' || iden.TNOMMER AS mother_name, " +
+                        "TO_CHAR(iden.TDATN, 'YYYY-MM-DD') AS birth_date, " +
+                        "iden.tadr AS adresse, " +
+                        "t.TTYPRES || '  ' || t.TCODRES || '  ' || t.TANNRES AS numero_ecrou, " +
+                        "GETLIBELLEPRISON@DBLINKMINEURPROD(t.TCODGOU, t.TCODPR) AS prision, " +
+                	  "t.TCODEXTJ AS code_document, " +
                       "' ' AS code_document_secondaire, 'tjugementLibre' AS type_acte, " +
                       "TO_CHAR(t.TDATFPE, 'YYYY-MM-DD') AS date_acte, " +
                       "SUBSTR(aff.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
@@ -1145,11 +1314,19 @@ public class PrisonerPenalRepository {
                       "LEFT JOIN tmotif@DBLINKMINEURPROD motif ON motif.tcodmot = t.tcodmot " +
                       "LEFT JOIN tideaff@DBLINKMINEURPROD aff ON t.tnumide = aff.tnumide AND t.tcoddet = aff.tcoddet AND t.tnumseqaff = aff.tnumseqaff AND t.TDATFPE = aff.tdatdep " +
                       "LEFT JOIN tribunal@DBLINKMINEURPROD tr ON aff.TCODTRI = tr.code_tribunal " +
+                      "LEFT JOIN TIDENTITE@DBLINKMINEURPROD iden ON t.TNUMIDE = iden.TNUMIDE " + 
                       "WHERE t.tnumide = ? AND t.tcoddet = ? AND t.tnumseqaff = ? AND t.tcodmot IS NOT NULL";
                 break;
 
             case "tmandatdepotLibre":
-                sql = "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, t.tcodma AS code_document, " +
+                sql = "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, " +
+                        "iden.TPNOMA || ' بن ' || iden.TPPERA || ' بن ' || iden.TNOMA AS firstname, " +
+                        "iden.TPMER || ' بن ' || iden.TNOMMER AS mother_name, " +
+                        "TO_CHAR(iden.TDATN, 'YYYY-MM-DD') AS birth_date, " +
+                        "iden.tadr AS adresse, " +
+                        "t.TTYPRES || '  ' || t.TCODRES || '  ' || t.TANNRES AS numero_ecrou, " +
+                        "GETLIBELLEPRISON@DBLINKMINEURPROD(t.TCODGOU, t.TCODPR) AS prision, " +
+                	  "t.tcodma AS code_document, " +
                       "' ' AS code_document_secondaire, 'tmandatdepotLibre' AS type_acte, " +
                       "TO_CHAR(t.tdatfma, 'YYYY-MM-DD') AS date_acte, " +
                       "SUBSTR(aff.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
@@ -1158,11 +1335,19 @@ public class PrisonerPenalRepository {
                       "LEFT JOIN tmotif@DBLINKMINEURPROD motif ON motif.tcodmot = t.tcodmot " +
                       "LEFT JOIN tideaff@DBLINKMINEURPROD aff ON t.tnumide = aff.tnumide AND t.tcoddet = aff.tcoddet AND t.tnumseqaff = aff.tnumseqaff AND t.tdatfma = aff.tdatdep " +
                       "LEFT JOIN tribunal@DBLINKMINEURPROD tr ON aff.TCODTRI = tr.code_tribunal " +
+                      "LEFT JOIN TIDENTITE@DBLINKMINEURPROD iden ON t.TNUMIDE = iden.TNUMIDE " + 
                       "WHERE t.tnumide = ? AND t.tcoddet = ? AND t.tnumseqaff = ? AND t.tcodmot IS NOT NULL";
                 break;
 
             case "ttransfertLibre":
-                sql = "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, t.tcodtraf AS code_document, " +
+                sql = "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, " +
+                        "iden.TPNOMA || ' بن ' || iden.TPPERA || ' بن ' || iden.TNOMA AS firstname, " +
+                        "iden.TPMER || ' بن ' || iden.TNOMMER AS mother_name, " +
+                        "TO_CHAR(iden.TDATN, 'YYYY-MM-DD') AS birth_date, " +
+                        "iden.tadr AS adresse, " +
+                        "NULL AS numero_ecrou, " +
+                        "NULL AS prision, "+
+                		 "t.tcodtraf AS code_document, " +
                       "' ' AS code_document_secondaire, 'ttransfertLibre' AS type_acte, " +
                       "TO_CHAR(t.tdatfma, 'YYYY-MM-DD') AS date_acte, " +
                       "SUBSTR(aff.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
@@ -1171,9 +1356,30 @@ public class PrisonerPenalRepository {
                       "LEFT JOIN tmotif@DBLINKMINEURPROD motif ON motif.tcodmot = t.tcodmot " +
                       "LEFT JOIN tideaff@DBLINKMINEURPROD aff ON t.tnumide = aff.tnumide AND t.tcoddet = aff.tcoddet AND t.tnumseqaff = aff.tnumseqaff AND t.tdatfma = aff.tdatdep " +
                       "LEFT JOIN tribunal@DBLINKMINEURPROD tr ON aff.TCODTRI = tr.code_tribunal " +
+                      "LEFT JOIN TIDENTITE@DBLINKMINEURPROD iden ON t.TNUMIDE = iden.TNUMIDE " + 
                       "WHERE t.tnumide = ? AND t.tcoddet = ? AND t.tnumseqaff = ? AND t.tcodmot IS NOT NULL";
                 break;
-
+            case "tcontrainte":
+                sql = "SELECT t.tnumide, t.tcoddet, t.tnumseqaff, " +
+                        "iden.TPNOMA || ' بن ' || iden.TPPERA || ' بن ' || iden.TNOMA AS firstname, " +
+                        "iden.TPMER || ' بن ' || iden.TNOMMER AS mother_name, " +
+                        "TO_CHAR(iden.TDATN, 'YYYY-MM-DD') AS birth_date, " +
+                        "iden.tadr AS adresse, " +
+                        "NULL AS numero_ecrou, " +
+                        "NULL AS prision, "+
+                		 "t.tcodtraf AS code_document, " +
+                      "' ' AS code_document_secondaire, 'ttransfertLibre' AS type_acte, " +
+                      "TO_CHAR(t.tdatfma, 'YYYY-MM-DD') AS date_acte, " +
+                      "SUBSTR(aff.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
+                      "tr.libelle_tribunal, motif.tlibmot, motif.TYPE_MOTIF AS type_motif, '7' AS priorite " +
+                      "FROM TTRANSFERT@DBLINKMINEURPROD t " +
+                      "LEFT JOIN tmotif@DBLINKMINEURPROD motif ON motif.tcodmot = t.tcodmot " +
+                      "LEFT JOIN tideaff@DBLINKMINEURPROD aff ON t.tnumide = aff.tnumide AND t.tcoddet = aff.tcoddet AND t.tnumseqaff = aff.tnumseqaff AND t.tdatfma = aff.tdatdep " +
+                      "LEFT JOIN tribunal@DBLINKMINEURPROD tr ON aff.TCODTRI = tr.code_tribunal " +
+                      "LEFT JOIN TIDENTITE@DBLINKMINEURPROD iden ON t.TNUMIDE = iden.TNUMIDE " + 
+                      "WHERE t.tnumide = ? AND t.tcoddet = ? AND t.tnumseqaff = ? AND t.tcodmot IS NOT NULL";
+                break;
+                
             default:
                 throw new IllegalArgumentException("Type acte inconnu : " + typeActe);
         }
@@ -1183,9 +1389,19 @@ public class PrisonerPenalRepository {
             new Object[]{tnumide, tcoddet, tnumseqaff},
             (rs, rowNum) -> {
             	ArretExecutionPenalDTO dto = new ArretExecutionPenalDTO();
-                dto.setTnumide(rs.getString("tnumide"));
-                dto.setTcoddet(rs.getString("tcoddet"));
-                dto.setTnumseqaff(rs.getString("tnumseqaff"));
+            	  dto.setTnumide(rs.getString("tnumide"));
+                  dto.setTcoddet(rs.getString("tcoddet"));
+                  dto.setTnumseqaff(rs.getString("tnumseqaff"));
+                  
+                  // Informations personnelles
+                  dto.setFirstname(rs.getString("firstname"));
+                  dto.setMotherName(rs.getString("mother_name"));
+                  dto.setBirthDate(rs.getString("birth_date"));
+                  dto.setAdresse(rs.getString("adresse"));
+                  
+                  // Détention
+                  dto.setNumeroEcrou(rs.getString("numero_ecrou"));
+                  dto.setPrision(rs.getString("prision"));
                 dto.setCodeDocument(rs.getString("code_document"));
                 dto.setCodeDocumentSecondaire(rs.getString("code_document_secondaire"));
                 dto.setTypeActe(rs.getString("type_acte"));
@@ -1233,6 +1449,236 @@ public class PrisonerPenalRepository {
             info.setDateEntre(rs.getString("date_entre"));
             info.setDateSortie(rs.getString("date_sortie"));
             return info;
+        });
+    }
+    
+    
+    
+    
+    
+    public PenalContrainteDTO getContrainte(String tnumide, String tcoddet, String tnumseqaff) {
+        String sql = "SELECT " +
+                "t.tnumide, t.tcoddet, t.tnumseqaff, " +
+                "iden.TPNOMA || ' بن ' || iden.TPPERA || ' بن ' || iden.TNOMA AS firstname, " +
+                "iden.TPMER || ' بن ' || iden.TNOMMER AS mother_name, " +
+                "TO_CHAR(iden.TDATN, 'YYYY-MM-DD') AS birth_date, " +
+                "iden.tadr AS adresse, " +
+                "t.TTYPRES || '  ' || t.TCODRES || '  ' || t.TANNRES AS numero_ecrou, " +
+                "GETLIBELLEPRISON@DBLINKMINEURPROD(t.TCODGOU, t.TCODPR) AS prision, " +
+                "t.tcodcon AS code_document, " +
+                "TO_CHAR(t.tdatcon, 'YYYY-MM-DD') AS date_jugement, " +
+                "TO_CHAR(t.tdatac, 'YYYY-MM-DD') AS date_depot, " +
+                "SUBSTR(t.tnumjaf, 4, 6) || ' - ' || SUBSTR(t.tnumjaf, 1, 3) AS num_affaire, " +
+                "tr.libelle_tribunal, " +
+                "f.libelle_famille_acc, " +
+                "TO_CHAR(t.tmoncv) AS montant_amende, " +
+                "TO_CHAR(t.tfrais) AS frais_judiciaires, " +
+                "TO_CHAR(t.tmonrem) AS versements_payes, " +
+                "TO_CHAR(t.tducecv) AS jours_comptabilises, " +
+                "TO_CHAR(t.tresapay) AS reste_du, " +
+                "TO_CHAR(t.tdurjcal) AS duree_affaire, " +
+                "TO_CHAR(t.tdatrec, 'YYYY-MM-DD') AS date_revision_jbr, " +
+                "TO_CHAR(t.tducrec) AS duree_apres_revision, " +
+                "TO_CHAR(t.tdatdpe, 'YYYY-MM-DD') AS date_debut_peine, " +
+                "TO_CHAR(t.tdatfpe, 'YYYY-MM-DD') AS date_fin_peine " +
+                "FROM TCONTRAINTE@DBLINKMINEURPROD t " +
+                "LEFT JOIN tribunal@DBLINKMINEURPROD tr ON t.tcodtri = tr.code_tribunal " +
+                "JOIN famille_accusation@DBLINKMINEURPROD f ON t.tcodfac = f.code_famille_acc " +
+                "LEFT JOIN TIDENTITE@DBLINKMINEURPROD iden ON t.TNUMIDE = iden.TNUMIDE " +
+                "WHERE t.tnumide = ? AND t.tcoddet = ? AND t.tnumseqaff = ?";
+
+        return jdbcTemplate.queryForObject(sql, new Object[]{tnumide, tcoddet, tnumseqaff},
+                (rs, rowNum) -> {
+                	PenalContrainteDTO dto = new PenalContrainteDTO();
+                    dto.setTnumide(rs.getString("tnumide"));
+                    dto.setTcoddet(rs.getString("tcoddet"));
+                    dto.setTnumseqaff(rs.getString("tnumseqaff"));
+                    dto.setFirstname(rs.getString("firstname"));
+                    dto.setMotherName(rs.getString("mother_name"));
+                    dto.setBirthDate(rs.getString("birth_date"));
+                    dto.setAdresse(rs.getString("adresse"));
+                    dto.setNumeroEcrou(rs.getString("numero_ecrou"));
+                    dto.setPrision(rs.getString("prision"));
+                    dto.setCodeDocument(rs.getString("code_document"));
+                    dto.setDateJugement(rs.getString("date_jugement"));
+                    dto.setDateDepot(rs.getString("date_depot"));
+                    dto.setNumAffaire(rs.getString("num_affaire"));
+                    dto.setLibelleTribunal(rs.getString("libelle_tribunal"));
+                    dto.setLibelleFamilleAcc(rs.getString("libelle_famille_acc"));
+                    dto.setMontantAmende(rs.getString("montant_amende"));
+                    dto.setFraisJudiciaires(rs.getString("frais_judiciaires"));
+                    dto.setVersementsPayes(rs.getString("versements_payes"));
+                    dto.setJoursComptabilises(rs.getString("jours_comptabilises"));
+                    dto.setResteDu(rs.getString("reste_du"));
+                    dto.setDureeAffaire(rs.getString("duree_affaire"));
+                    dto.setDateRevisionJbr(rs.getString("date_revision_jbr"));
+                    dto.setDureeApresRevision(rs.getString("duree_apres_revision"));
+                    dto.setDateDebutPeine(rs.getString("date_debut_peine"));
+                    dto.setDateFinPeine(rs.getString("date_fin_peine"));
+                    return dto;
+                });
+    }
+
+
+    
+    public List<PenalGraceDto> getPenalGraces(String tnumide, String tcoddet) {
+        String sql = "SELECT " +
+                "g.tngrace, " +
+                "c.code_change, " +
+                "c.LIBELLE_CHANGE, " +
+                "g.tdura, g.tdurm, g.tdurj, " +
+                "g.tdatgr AS date_grace, " +
+                "g.tdatlib AS date_liberation " +
+                "FROM tgrace@DBLINKMINEURPROD g " +
+                "LEFT JOIN change@DBLINKMINEURPROD c ON c.code_change = g.tnchange " +
+                "WHERE g.tnumide = ? AND g.tcoddet = ? " +
+                "ORDER BY g.tngrace";
+
+        return jdbcTemplate.query(sql, new Object[]{tnumide, tcoddet}, this::mapRowToPenalGrace);
+    }
+
+    private PenalGraceDto mapRowToPenalGrace(ResultSet rs, int rowNum) throws SQLException {
+    	PenalGraceDto pg = new PenalGraceDto();
+        pg.setTngrace(rs.getString("tngrace"));
+        pg.setCodeChange(rs.getString("code_change"));
+        pg.setLibelleChange(rs.getString("LIBELLE_CHANGE"));
+        pg.setTdura(rs.getInt("tdura"));
+        pg.setTdurm(rs.getInt("tdurm"));
+        pg.setTdurj(rs.getInt("tdurj"));
+        pg.setDateGrace(rs.getString("date_grace"));
+        pg.setDateLiberation(rs.getString("date_liberation"));
+        pg.setTextDuree(  ToolsForReporting2.generateLegalCaseString(pg.getTdura(), pg.getTdurm(), pg.getTdurj()) );
+        return pg;
+    }
+    
+    
+    
+    
+    
+    public List<MutationResidenceDTO> getMutationResidence(String numide, String coddet) {
+        try {
+            String sql = SQLLoader.loadSQL("sql/mutationResidence.sql");
+
+            Query query = entityManager.createNativeQuery(sql);
+
+            // Bind parameters (ajoute tous les paramètres utilisés dans la requête)
+            query.setParameter("prisonerId", numide);
+            query.setParameter("detentionCode", coddet);
+
+            // Exécution et récupération des résultats sous forme liste d'objets
+            @SuppressWarnings("unchecked")
+            List<Object[]> results = query.getResultList();
+
+            List<MutationResidenceDTO> dtoList = new ArrayList<>();
+
+            for (Object[] row : results) {
+                MutationResidenceDTO dto = new MutationResidenceDTO();
+
+                // Attention à l'ordre des colonnes retournées par ta requête SQL
+                // Ici on suppose cet ordre d'après ta requête et alias SQL :
+
+                dto.setNumeroLigne(row[0] != null ? row[0].toString() : null);           // numero_ligne
+                dto.setPrisonerId(row[1] != null ? row[1].toString() : null);            // prisoner_id
+                dto.setNumroDetention(row[2] != null ? row[2].toString() : null);        // numro_detention
+                dto.setNumeroSequentielle(row[3] != null ? row[3].toString() : null);    // numero_sequentielle
+                dto.setNumeroEcrou(row[4] != null ? row[4].toString() : null);            // numero_ecrou
+                dto.setPrision(row[5] != null ? row[5].toString() : null);               // prision
+                dto.setDateDebut(row[6] != null ? row[6].toString() : null);             // date_debut
+                dto.setDateFin(row[7] != null ? row[7].toString() : null);               // date_fin
+                dto.setDateMutation(row[8] != null ? row[8].toString() : null);          // date_mutation
+                dto.setMotifMutation(row[9] != null ? row[9].toString() : null);         // motif_mutation
+
+                dtoList.add(dto);
+            }
+
+            return dtoList;
+
+        } catch (IOException e) {
+            throw new RuntimeException("Erreur de chargement du fichier SQL", e);
+        }
+    }
+
+    public List<EvasionCaptureDTO> getEvasionsWithCaptures(String tnumide, String tcoddet) {
+        String sql = "SELECT " +
+                "evasion.tnumide, " +
+                "evasion.tcoddet, " +
+                "evasion.tcodeva, " +
+                "TO_CHAR(evasion.tdateva, 'DD-MM-YYYY') AS date_evasion, " +
+                "evasion.thoreva, " +
+                "evasion.tproeva, " +
+                "evasion.TTYPRES || '  ' || evasion.TCODRES || '  ' || evasion.TANNRES AS numero_ecrou_evasion, " +
+                "GETLIBELLEPRISON@DBLINKMINEURPROD(evasion.TCODGOU, evasion.TCODPR) AS prison_evasion, " +
+                "capture.tcodcap, " +
+                "TO_CHAR(capture.tdatcap, 'DD-MM-YYYY') AS date_capture, " +
+                "TO_CHAR(capture.tdatepr, 'DD-MM-YYYY') AS date_entree, " +
+                "capture.TTYPRES || '  ' || capture.TCODRES || '  ' || capture.TANNRES AS numero_ecrou_capture, " +
+                "GETLIBELLEPRISON@DBLINKMINEURPROD(capture.TCODGOU, capture.TCODPR) AS prison_capture " +
+                "FROM tevasion@DBLINKMINEURPROD evasion " +
+                "LEFT JOIN tcapture@DBLINKMINEURPROD capture ON " +
+                "evasion.tnumide = capture.tnumide " +
+                "AND evasion.tcoddet = capture.tcoddet " +
+                "AND evasion.tcodeva = capture.tcodcap " +
+                "WHERE evasion.TNUMIDE = ? AND evasion.TCODDET = ? " +
+                "order by evasion.tcodeva";
+
+        return jdbcTemplate.query(sql, new Object[]{tnumide, tcoddet}, (rs, rowNum) -> {
+            EvasionCaptureDTO dto = new EvasionCaptureDTO();
+            dto.setTnumide(rs.getString("tnumide"));
+            dto.setTcoddet(rs.getString("tcoddet"));
+            dto.setTcodeva(rs.getString("tcodeva"));
+            dto.setDateEvasion(rs.getString("date_evasion"));
+            dto.setHeureEvasion(rs.getString("thoreva"));
+            dto.setProcedureEvasion(rs.getString("tproeva"));
+            dto.setNumeroEcrouEvasion(rs.getString("numero_ecrou_evasion"));
+            dto.setPrisonEvasion(rs.getString("prison_evasion"));
+
+            dto.setTcodcap(rs.getString("tcodcap"));
+            dto.setDateCapture(rs.getString("date_capture"));
+            dto.setDateEntree(rs.getString("date_entree"));
+            dto.setNumeroEcrouCapture(rs.getString("numero_ecrou_capture"));
+            dto.setPrisonCapture(rs.getString("prison_capture"));
+            return dto;
+        });
+    }
+
+    public List<ParticipantAffaireDTO> findParticipantsAffaire(String tnumide, String tcoddet) {
+        String sql = "SELECT DISTINCT " +
+                "a2.tnumide, a2.TCODDET, " +
+                "iden.TPNOMA AS firstname, " +
+                "iden.TPPERA AS father_name, " +
+                "iden.TPGPERA AS grandfather_name, " +
+                "iden.TNOMA AS lastname, " +
+                "TO_CHAR(iden.TDATN , 'YYYY-MM-DD') AS birth_date, " +
+                "iden.TPMER AS mother_name, " +
+                "iden.TNOMMER AS maternal_grandmother_name, " +
+                "iden.tadr AS adresse, " +
+                "SUBSTR(a2.TNUMJAF, 4, 6) || ' - ' || SUBSTR(a2.TNUMJAF, 1, 3) AS tnumjaf_formatte2, " +
+                "TR.libelle_tribunal, " +
+                "na.libelle_nature " +
+                "FROM tideaff@DBLINKMINEURPROD a1 " +
+                "JOIN tideaff@DBLINKMINEURPROD a2 ON a1.TCODTRI = a2.TCODTRI AND a1.TNUMJAF = a2.TNUMJAF AND a1.TCODTAF = a2.TCODTAF " +
+                "LEFT JOIN TIDENTITE@DBLINKMINEURPROD iden ON iden.tnumide = a2.tnumide " +
+                "LEFT JOIN natureaffaire@DBLINKMINEURPROD na ON a2.TCODTAF = na.CODE_NATURE " +
+                "JOIN tribunal@DBLINKMINEURPROD TR ON a2.tcodtri = TR.code_tribunal " +
+                "WHERE a1.tnumide = ? AND a1.TCODDET = ? " +
+                "AND NOT (a2.tnumide = ? AND a2.TCODDET = ?)";
+
+        return jdbcTemplate.query(sql, new Object[]{tnumide, tcoddet, tnumide, tcoddet}, (rs, rowNum) -> {
+            ParticipantAffaireDTO dto = new ParticipantAffaireDTO();
+            dto.setTnumide(rs.getString("tnumide"));
+            dto.setTcoddet(rs.getString("tcoddet"));
+            dto.setFirstname(rs.getString("firstname"));
+            dto.setFatherName(rs.getString("father_name"));
+            dto.setGrandfatherName(rs.getString("grandfather_name"));
+            dto.setLastname(rs.getString("lastname"));
+            dto.setBirthDate(rs.getString("birth_date"));
+            dto.setMotherName(rs.getString("mother_name"));
+            dto.setMaternalGrandmotherName(rs.getString("maternal_grandmother_name"));
+            dto.setAdresse(rs.getString("adresse"));
+            dto.setTnumjafFormatte2(rs.getString("tnumjaf_formatte2"));
+            dto.setLibelleTribunal(rs.getString("libelle_tribunal"));
+            dto.setLibelleNature(rs.getString("libelle_nature"));
+            return dto;
         });
     }
 

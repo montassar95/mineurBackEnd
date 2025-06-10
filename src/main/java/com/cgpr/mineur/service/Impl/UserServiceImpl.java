@@ -1,5 +1,7 @@
 package com.cgpr.mineur.service.Impl;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,18 +28,22 @@ public class UserServiceImpl implements UserService {
         return passwordEncoder.matches(oldPassword, user.getPassword());
     }
 
+   
     @Override
     public void updatePassword(Long userId, String oldPassword, String newPassword) {
         if (!checkOldPassword(userId, oldPassword)) {
-            throw new  InvalidPasswordException("Old password is incorrect");  
+            throw new InvalidPasswordException("كلمة المرور القديمة غير صحيحة");
         }
 
         User user = userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("User not found"));
-        
+
         user.setPassword(passwordEncoder.encode(newPassword));
+        user.setLastPasswordModifiedDate(LocalDateTime.now());  // ✅ mise à jour de la date
+
         userRepository.save(user);
     }
+
 
 	@Override
 	public User getById(Long userId) {

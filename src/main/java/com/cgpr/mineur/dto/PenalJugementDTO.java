@@ -16,10 +16,32 @@ import lombok.ToString;
 @ToString
 public class PenalJugementDTO {
 
-	private String tnumide;
+	//private String tnumide;
+  //  private String tcoddet;
+ //   private String tnumseqaff;
+  //  private String tcodextj;
+	
+	 // Identifiants
+    private String tnumide;
     private String tcoddet;
     private String tnumseqaff;
-    private String tcodextj;
+
+    // Informations personnelles
+    private String firstname; // Nom complet (nom + père + grand-père)
+    private String motherName; // Mère + grand-mère
+    private String birthDate;
+    private String adresse;
+
+    // Informations de détention
+    private String numeroEcrou;
+    private String prision;
+
+    // Mandat
+    private String codeDocument;
+    
+    private String numAffaire;
+    private String libelleTribunal;
+    
     private String dateJugement;
     private String dateDepot;
     private String ttexjug;
@@ -27,5 +49,8 @@ public class PenalJugementDTO {
     private String dateDebutPunition;
     private String dateFinPunition;
     
+   private int periodeAnnee;
+   private int periodeMois;
+   private int periodeJour;
     private List <AccusationExtraitJugementDTO> accusationExtraitJugementDTOs;
 }

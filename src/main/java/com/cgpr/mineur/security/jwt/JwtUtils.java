@@ -1,6 +1,10 @@
 package com.cgpr.mineur.security.jwt;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,19 +28,41 @@ public class JwtUtils {
 
 	public String generateJwtToken(Authentication authentication) {
 
-		UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+ 
+		
+		UserDetailsImpl user = (UserDetailsImpl) authentication.getPrincipal();
+		List<String> roles = user.getAuthorities().stream()
+		    .map(item -> item.getAuthority())
+		    .collect(Collectors.toList());
 
 		return Jwts.builder()
-				.setSubject((userPrincipal.getUsername()))
-				.setIssuedAt(new Date())
-				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-				.signWith(SignatureAlgorithm.HS512, jwtSecret)
-				.compact();
+		    .setSubject(user.getUsername())  // username dans "sub"
+		    .claim("id", user.getId())
+		    .claim("username", user.getUsername())  // facultatif, déjà dans subject
+		    .claim("roles", roles)
+		    .claim("nom", user.getNom())
+		    .claim("prenom", user.getPrenom())
+		    .claim("etablissement", user.getEtablissement()) // doit être JSON-sérialisable
+		    .setIssuedAt(new Date())
+		    .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+		    .signWith(SignatureAlgorithm.HS512, jwtSecret)
+		    .compact();
+
 	}
 
 	public String getUserNameFromJwtToken(String token) {
 		return Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody().getSubject();
 	}
+	 
+//Remarque il faut recuperer usernamedepuis getSubject et non claims
+//	public String getUserNameFromJwtToken(String token) {
+//	    Claims claims = Jwts.parser()
+//	                       .setSigningKey(jwtSecret)
+//	                       .parseClaimsJws(token)
+//	                       .getBody();
+//	    return claims.get("username", String.class);
+//	}
+
 
 	public boolean validateJwtToken(String authToken) {
 		try {

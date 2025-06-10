@@ -68,6 +68,8 @@ public class PrisonerPenaleDto {
 	private String codeImage;
 	
  	private int statut;
+ 	private String phraseDeces;
  	
+ 	//private PenalSyntheseDto penalSyntheseDto;
  	
 }

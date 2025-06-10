@@ -34,7 +34,7 @@ public class RefuseRevueServiceImpl implements RefuseRevueService{
 
 	@Override
 	public RefuseRevueDto save(  RefuseRevueDto refuseRevueDto) {
-
+  System.out.println(refuseRevueDto.getAffaire().toString());
 		if (refuseRevueDto.getAffaire().getAffaireLien() != null) {
 			refuseRevueDto.getAffaire().getAffaireLien().setStatut(1);
 			System.out.println("=========================debut lien ==================================");
@@ -65,7 +65,8 @@ public class RefuseRevueServiceImpl implements RefuseRevueService{
 		RefuseRevue c = refuseRevueRepository.save( RefuseRevueConverter.dtoToEntity(refuseRevueDto)  );
 
 		try {
-			return RefuseRevueConverter.entityToDto(c);
+			 return RefuseRevueConverter.entityToDto(c);
+			 
 		} catch (Exception e) {
 			return  null;
 		}

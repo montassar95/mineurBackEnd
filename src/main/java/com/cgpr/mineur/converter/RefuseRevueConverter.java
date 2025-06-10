@@ -1,5 +1,7 @@
 package com.cgpr.mineur.converter;
 
+import java.util.Optional;
+
 import javax.persistence.EntityNotFoundException;
 
 import com.cgpr.mineur.dto.RefuseRevueDto;
@@ -18,6 +20,21 @@ public class RefuseRevueConverter extends DocumentConverter {
 
 	        return RefuseRevueDto.builder()
 	                // Populate fields from entity to DTO
+	        		
+	          		.documentId(DocumentIdConverter.entityToDto(entity.getDocumentId()))
+	        		.typeDocument(entity.getTypeDocument())
+		            .typeDocumentActuelle(entity.getTypeDocumentActuelle())
+		            .affaire(AffaireConverter.entityToDtoBasic(entity.getAffaire()))
+		            .dateEmission(entity.getDateEmission())
+		            .dateDepotCarte(entity.getDateDepotCarte())
+		            .typeAffaire(Optional.ofNullable(entity.getTypeAffaire())
+		                                .map(TypeAffaireConverter::entityToDto)
+		                                .orElse(null))
+		            .numArrestation(entity.getNumArrestation())
+		            .etablissement(EtablissementConverter.entityToDto(entity.getEtablissement()))
+//			            .user(UserConverter.entityToDto(entity.getUser()))
+		            .dateInsertion(entity.getDateInsertion())
+		            
 	        		  .textJugement(entity.getTextJugement())
 	                .build();
 	    }

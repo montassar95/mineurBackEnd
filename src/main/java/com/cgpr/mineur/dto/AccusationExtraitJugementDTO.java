@@ -25,6 +25,8 @@ public class AccusationExtraitJugementDTO {
 	    private int tduraccj;
 	    private int tduraccm;
 	    private int tduracca;
+	    
+	    private String periodeTotale;
 	
  
 

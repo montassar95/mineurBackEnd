@@ -1,5 +1,7 @@
 package com.cgpr.mineur.controllers;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,16 @@ import com.cgpr.mineur.dto.AffairePenaleDto;
 import com.cgpr.mineur.dto.ArretExecutionPenalDTO;
 import com.cgpr.mineur.dto.EnfantDto;
 import com.cgpr.mineur.dto.EnfantVerifieDto;
+import com.cgpr.mineur.dto.EvasionCaptureDTO;
+import com.cgpr.mineur.dto.MutationResidenceDTO;
+import com.cgpr.mineur.dto.ParticipantAffaireDTO;
+import com.cgpr.mineur.dto.PenalAffaireDTO;
 import com.cgpr.mineur.dto.PenalContestationDto;
+import com.cgpr.mineur.dto.PenalContrainteDTO;
+import com.cgpr.mineur.dto.PenalGraceDto;
 import com.cgpr.mineur.dto.PenalJugementDTO;
 import com.cgpr.mineur.dto.PenalMandatDepotDTO;
+import com.cgpr.mineur.dto.PenalSyntheseDto;
 import com.cgpr.mineur.dto.PenalTransfertDto;
 import com.cgpr.mineur.dto.PenaleDetentionInfoDto;
 import com.cgpr.mineur.dto.PrisonerPenaleDto;
@@ -35,7 +44,7 @@ import com.cgpr.mineur.service.PrisonerPenalService;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/api/enfant")
+@RequestMapping("/api/enfant/")
 public class EnfantController {
 	@Autowired
 	private EnfantService enfantService;
@@ -134,11 +143,11 @@ public class EnfantController {
 			return new ApiResponse<>(HttpStatus.NOT_FOUND.value(), "Enfant Not FOund", null);
 		}
 	}
-	@GetMapping("/findPrisonerPenalByPrisonerId/{id}")
-	public ApiResponse<PrisonerPenaleDto> findPrisonerPenalByPrisonerId(@PathVariable("id") String id) {
-		PrisonerPenaleDto enfanttData = prisonerPenalService.findPrisonerPenalByPrisonerId(id);
+	@GetMapping("/findPrisonerPenalByPrisonerId/{id}/{tcoddet}")
+	public ApiResponse<PrisonerPenaleDto> findPrisonerPenalByPrisonerId(@PathVariable("id") String id , @PathVariable("tcoddet") String  tcoddet) {
+		PrisonerPenaleDto prisonerPenaleDto = prisonerPenalService.findPrisonerPenalByPrisonerId(id,tcoddet);
 		
-		return new ApiResponse<>(HttpStatus.OK.value(), "Enfant fetched suucessfully", enfanttData);
+		return new ApiResponse<>(HttpStatus.OK.value(), "Enfant fetched suucessfully", prisonerPenaleDto);
 	}
 
 	
@@ -256,6 +265,15 @@ public class EnfantController {
 	}
 	 
 	 
+	@GetMapping("/getContrainte/{tnumide}/{tcoddet}/{tnumseqaff}")
+	public ApiResponse<PenalContrainteDTO> getContrainte( @PathVariable String tnumide,@PathVariable String tcoddet,@PathVariable String tnumseqaff ) {
+		System.out.println(tnumide + " "+tcoddet+ " "+tnumseqaff + " yes 9 ");
+		PenalContrainteDTO penalContrainteDTO = prisonerPenalService.getContrainte(tnumide, tcoddet, tnumseqaff  );
+		System.out.println(penalContrainteDTO.toString());
+		return new ApiResponse<>(HttpStatus.OK.value(), "Contestation Successfully", penalContrainteDTO);
+		
+		
+	}
 	
 	@GetMapping("/getActesJudiciaires/{tnumide}/{tcoddet}/{tnumseqaff}")
 	public ApiResponse<List<ActeJudiciaire>> getActesJudiciaires( @PathVariable String tnumide,@PathVariable String tcoddet,@PathVariable String tnumseqaff   ) {
@@ -278,14 +296,118 @@ public class EnfantController {
 	 
 	 
 	 @GetMapping("/trouverToutDetentionInfosParPrisonerIdDansPrisons/{prisonerId}")
-		public ApiResponse<List<PenaleDetentionInfoDto>> trouverToutDetentionInfosParPrisonerIdDansPrisons( @PathVariable String prisonerId ) {
-			System.out.println(prisonerId   + " yes 6 ");
-			List<PenaleDetentionInfoDto> penaleDetentionInfoDtos = prisonerPenalService.trouverToutDetentionInfosParPrisonerIdDansPrisons(prisonerId );
+		public ApiResponse<List<PenaleDetentionInfoDto>> trouverToutDetentionInfosParPrisonerIdDansPrisons( @PathVariable String prisonerId  ) {
+			System.out.println(prisonerId    + " yes 6 ");
+			List<PenaleDetentionInfoDto> penaleDetentionInfoDtos = prisonerPenalService.trouverToutDetentionInfosParPrisonerIdDansPrisons(prisonerId  );
 			System.out.println(penaleDetentionInfoDtos.toString());
 			return new ApiResponse<>(HttpStatus.OK.value(), "arretExecutionPenalDTO Successfully", penaleDetentionInfoDtos);
 			
 			
 		}
 	 
+	 
+	 
+	 
+	 @GetMapping("/rechercherAffaires/{tnumide}/{tcoddet}/{minPage}/{maxPage}")
+	 public ApiResponse<List<PenalAffaireDTO>> rechercherAffaires(
+	         @PathVariable String tnumide,
+	         @PathVariable String tcoddet,
+	         @PathVariable int minPage , @PathVariable int maxPage) {
+
+	     System.out.println(tnumide + " yes 7 " + tcoddet);
+
+	     PenalSyntheseDto penalSyntheseDto = new PenalSyntheseDto();
+
+	    
+	     List<PenalAffaireDTO> penalAffaireDTOs = prisonerPenalService.rechercherAffaires(tnumide, tcoddet, minPage, maxPage);
+	     
+
+	     System.out.println(penalSyntheseDto.toString());
+
+	     return new ApiResponse<>(HttpStatus.OK.value(), "penaleAffaires Successfully", penalAffaireDTOs);
+	 }
+	 
+	 
+	 @GetMapping("/rechercherPenalSyntheseDetenu/{tnumide}/{tcoddet}")
+	 public ApiResponse<PenalSyntheseDto> rechercherPenalSyntheseDetenu(
+	         @PathVariable String tnumide,
+	         @PathVariable String tcoddet ) {
+
+	     System.out.println(tnumide + " yes 8 " + tcoddet);
+
+	     
  
+	    
+	     PenalSyntheseDto penalSyntheseDto = prisonerPenalService.rechercherPenalSyntheseDetenu(tnumide, tcoddet );
+	     
+
+	     System.out.println(penalSyntheseDto.toString());
+
+	     return new ApiResponse<>(HttpStatus.OK.value(), "penaleAffaires Successfully", penalSyntheseDto);
+	 }
+	 
+	 
+	 @GetMapping("/getPenalGraces/{tnumide}/{tcoddet}")
+	 public ApiResponse<List<PenalGraceDto>> getPenalGraces(
+	         @PathVariable String tnumide,
+	         @PathVariable String tcoddet ) {
+
+	     System.out.println(tnumide + " yes 30 " + tcoddet);
+
+	     
+	     List<PenalGraceDto> penalGraceDtos = prisonerPenalService.getPenalGraces(tnumide, tcoddet );
+	     
+
+	     return new ApiResponse<>(HttpStatus.OK.value(), "penalGraceDtos Successfully", penalGraceDtos);
+	 }
+	 
+	 
+	 
+	 @GetMapping("/getMutationResidence/{tnumide}/{tcoddet}")
+	 public ApiResponse<List<MutationResidenceDTO>> getMutationResidence(
+	         @PathVariable String tnumide,
+	         @PathVariable String tcoddet ) {
+
+	     System.out.println(tnumide + " yes 70 " + tcoddet);
+
+	     
+ 
+	    
+	     List<MutationResidenceDTO> mutationResidenceDTOs = prisonerPenalService.getMutationResidence(tnumide, tcoddet );
+	     
+
+	     
+
+	     return new ApiResponse<>(HttpStatus.OK.value(), "penalGraceDtos Successfully", mutationResidenceDTOs);
+	 }
+	 
+	  
+	 
+	 @GetMapping("/getEvasionsWithCaptures/{tnumide}/{tcoddet}")
+	 public ApiResponse<List<EvasionCaptureDTO>> getEvasionsWithCaptures(
+	         @PathVariable String tnumide,
+	         @PathVariable String tcoddet ) {
+
+	     System.out.println(tnumide + " yes 90 " + tcoddet);
+
+	     List<EvasionCaptureDTO> evasionCaptureDTOs = prisonerPenalService.getEvasionsWithCaptures(tnumide, tcoddet );
+	     
+
+	     return new ApiResponse<>(HttpStatus.OK.value(), "evasionCaptureDTOs Successfully", evasionCaptureDTOs);
+	 }
+	 
+	 @GetMapping("/findParticipantsAffaire/{tnumide}/{tcoddet}")
+	 public ApiResponse<List<ParticipantAffaireDTO>> findParticipantsAffaire(
+	         @PathVariable String tnumide,
+	         @PathVariable String tcoddet ) {
+
+	     System.out.println(tnumide + " yes 100 " + tcoddet);
+
+	     List<ParticipantAffaireDTO> participantAffaireDTOs = prisonerPenalService.findParticipantsAffaire(tnumide, tcoddet );
+	     
+
+	     return new ApiResponse<>(HttpStatus.OK.value(), "participantAffaireDTOs Successfully", participantAffaireDTOs);
+	 }
+	 
+	 
 }
